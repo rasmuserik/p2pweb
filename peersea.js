@@ -16,6 +16,8 @@ wss://sea.solsort.com/
     process.versions &&
     !!process.versions.node;
   const window = is_nodejs ? process.global : self;
+
+  // TODO: should be an `env` derrived from process.env or parsed location.hash
   const bootstrap_nodes = ((is_nodejs && process.env.SEA_BOOTSTRAP) ||
     (window.location &&
       window.location.hash &&

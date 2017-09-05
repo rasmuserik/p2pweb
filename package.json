@@ -1,0 +1,28 @@
+{
+  "name": "peersea",
+  "version": "0.1.0",
+  "description": "",
+  "main": "peersea.js",
+  "scripts": {
+    "prettier": "prettier --write peersea.js",
+    "readme": "cat peersea.js | sed -e 's/^/    /' | sed -e 's/^ *[/][/] \\?//' > README.md",
+    "dev": "./dev.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rasmuserik/peersea.git"
+  },
+  "author": "RasmusErik Voel Jensen <npmjs@solsort.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rasmuserik/peersea/issues"
+  },
+  "homepage": "https://peersea.solsort.com/",
+  "dependencies": {
+    "ws": "^2.2.0"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.0",
+    "prettier": "^1.6.1"
+  }
+}

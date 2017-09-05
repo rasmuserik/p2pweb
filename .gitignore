@@ -1,0 +1,4 @@
+.pid
+.pid-liveserver
+package-lock.json
+node_modules

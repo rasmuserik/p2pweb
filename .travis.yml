@@ -1,4 +1,8 @@
 language: node_js
 deploy:
   provider: npm
-email: npmjs@solsort.com
+  email: npmjs@solsort.com
+  api_key:
+    secure: NpMFVQCr2iZOnLX4uM43jan1f6S0HGNOEcddERQOoZl5vm0I3QPsgy7+7a2PyVoItgDnuSdjuxRlzHkcQb74nL8/GlIPgZGSekUyBAMZee4us/kDz3s/UtUufKJljeXv5wa2SMdxHHzFEOuArKaPH0f9lYH+jFEGba6JkSfW/TnW9vGUXCwSp4KMW9NlpXe8pxuH/jvDToCugv/9KHVC9ZoGgDHjB1yp2r4eozAyQTN/yxhalViufR0n9BQnd0ZOnTbz/iiwVmeNHVOo0QD0eWtECxwqbg5JloOWnrvKpvh4KvlkWibhofOk+M9NImCrhWfMEjgQ9VmMU1bu6JIhcrk3S3nVJCNXuENT4pG+punoSlfPskK5DaN21hrl4Lv3v67iaFj3eGryvXg9drKKh3FqSCtlO+/iCIfNnAZh7H9rqRnJXi5IH/ZhuKCA+DfXTDLv7X/dOvjFZo75kc4UJUrhjahbDAX+cC0cyGWcGzGzWLY31g3IKmBK5Toutuj92ingMLvH02TMEIMidAg9z7denLkpCe2xCYp+FwphImQuH/kUyu5AF5G7F5FZBbSEq+qczxlJez1ueiFLwCZZXAtsp4Cv3XGpN3t0nN1ajtJATM4Evpry6lVL+gviTtaKxALFt+Z3UhCTJka6nY4wHCXUAQTbJ6rQUiYf5Mh3xto=
+  on:
+    repo: solsort/p2pweb

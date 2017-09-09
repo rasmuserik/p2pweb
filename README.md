@@ -35,13 +35,13 @@ This is a library for building peer-to-peer web applications.
 
       const defaultBootstrap = "wss://sea.solsort.com/";
       const isNodeJs = getIsNodeJs();
-      /* istanbul ignore */
+      /* istanbul ignore next */
       const window = isNodeJs ? process.global : self;
       const env = getEnv();
       const bootstrapNodes = (env.SEA_BOOTSTRAP || defaultBootstrap)
         .trim()
         .split(/\s+/);
-      /* istanbul ignore */
+      /* istanbul ignore next */
       const assert = isNodeJs ? require("assert") : assertImpl();
       const networkAbstraction = {
         startSignalling: undefined,
@@ -85,7 +85,6 @@ This is a library for building peer-to-peer web applications.
         const t = Date.now() - t0;
         assert(90 < t, t);
         assert(t < 110, t);
-        console.log(t);
       });
     
       function pairsToObject(keyvals) {
@@ -123,7 +122,7 @@ This is a library for building peer-to-peer web applications.
     
 ## Assert
     
-      /* istanbul ignore */
+      /* istanbul ignore next */
       function assertImpl() {
         function assert(e, msg) {
           e || throwError(msg);
@@ -171,7 +170,7 @@ This is a library for building peer-to-peer web applications.
             await Promise.race([
               (async () => {
                 await sleep(testTimeout);
-                /* istanbul ignore */
+                /* istanbul ignore next */
                 throwError("timeout");
               })(),
               Promise.resolve(test.f())
@@ -208,9 +207,9 @@ This is a library for building peer-to-peer web applications.
 # Network Abstraction Implementation
 
     
+      /* istanbul ignore next */
 ## NodeJS
 
-      /* istanbul ignore else  */
       if (isNodeJs) {
         const WebSocket = require("ws");
     

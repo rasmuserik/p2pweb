@@ -173,11 +173,15 @@
     console.log("All tests ok :)");
     typeof process !== "undefined" && process.exit(0);
   }
+
+
+  // # Main
+
+  /* istanbul ignore else */
   if (env.RUN_TESTS) {
     setTimeout(runTests, 0);
-  }
 
-  // #
+  } else {
 
   networkAbstraction.connected = con => {
     con.onmessage = msg => console.log("msg", msg);
@@ -192,6 +196,7 @@
       data: JSON.stringify({ websocket: bootstrapNodes[0] })
     });
   }, 1000 * Math.random());
+  }
 
   //
   // # Network Abstraction Implementation

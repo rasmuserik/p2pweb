@@ -162,6 +162,7 @@ This is a library for building peer-to-peer web applications.
     
 ## NodeJS
 
+      /* istanbul ignore else  */
       if (isNodeJs) {
         const WebSocket = require("ws");
     

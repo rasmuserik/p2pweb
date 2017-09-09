@@ -13,7 +13,8 @@
   },
   "pre-commit": [
     "prettier",
-    "readme"
+    "readme",
+    "test"
   ],
   "repository": {
     "type": "git",

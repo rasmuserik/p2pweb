@@ -25,11 +25,16 @@
   //
   const defaultBootstrap = "wss://sea.solsort.com/";
   const isNodeJs = getIsNodeJs();
+
+  /* istanbul ignore else  */
   const window = isNodeJs ? process.global : self;
+
   const env = getEnv();
   const bootstrapNodes = (env.SEA_BOOTSTRAP || defaultBootstrap)
     .trim()
     .split(/\s+/);
+
+  /* istanbul ignore else  */
   const assert = isNodeJs ? require("assert") : assertImpl;
   const networkAbstraction = {
     startSignalling: () => throwError("startSignalling missing"),
@@ -46,6 +51,9 @@
       !!process.versions.node
     );
   }
+
+  /* istanbul ignore if */
+  if(!isNodeJs) {
   function assertImpl(e, msg) {
     e || throwError(msg);
   }
@@ -54,6 +62,7 @@
     throwError(
       `${msg || "assert.equal error:"}\n${String(a)} !== ${String(b)}`
     );
+  }
 
   function throwError(msg) {
     throw new Error(msg);
@@ -82,7 +91,10 @@
     return result;
   }
   function getEnv() {
-    if (isNodeJs) return process.env;
+    /* istanbul ignore else */
+    if (isNodeJs) {
+      return process.env;
+    } else {
     try {
       return pairsToObject(
         location.hash
@@ -93,6 +105,7 @@
     } catch (e) {
       console.log(e);
       return {};
+    }
     }
   }
   //

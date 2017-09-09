@@ -35,11 +35,16 @@ This is a library for building peer-to-peer web applications.
 
       const defaultBootstrap = "wss://sea.solsort.com/";
       const isNodeJs = getIsNodeJs();
+    
+      /* istanbul ignore else  */
       const window = isNodeJs ? process.global : self;
+    
       const env = getEnv();
       const bootstrapNodes = (env.SEA_BOOTSTRAP || defaultBootstrap)
         .trim()
         .split(/\s+/);
+    
+      /* istanbul ignore else  */
       const assert = isNodeJs ? require("assert") : assertImpl;
       const networkAbstraction = {
         startSignalling: () => throwError("startSignalling missing"),
@@ -56,14 +61,18 @@ This is a library for building peer-to-peer web applications.
           !!process.versions.node
         );
       }
-      function assertImpl(e, msg) {
-        e || throwError(msg);
+    
+      /* istanbul ignore if */
+      if (!isNodeJs) {
+        function assertImpl(e, msg) {
+          e || throwError(msg);
+        }
+        assertImpl.equal = (a, b, msg) =>
+          a === b ||
+          throwError(
+            `${msg || "assert.equal error:"}\n${String(a)} !== ${String(b)}`
+          );
       }
-      assertImpl.equal = (a, b, msg) =>
-        a === b ||
-        throwError(
-          `${msg || "assert.equal error:"}\n${String(a)} !== ${String(b)}`
-        );
     
       function throwError(msg) {
         throw new Error(msg);
@@ -92,17 +101,21 @@ This is a library for building peer-to-peer web applications.
         return result;
       }
       function getEnv() {
-        if (isNodeJs) return process.env;
-        try {
-          return pairsToObject(
-            location.hash
-              .slice(1)
-              .split("&")
-              .map(s => s.split("=").map(decodeURIComponent))
-          );
-        } catch (e) {
-          console.log(e);
-          return {};
+        /* istanbul ignore else */
+        if (isNodeJs) {
+          return process.env;
+        } else {
+          try {
+            return pairsToObject(
+              location.hash
+                .slice(1)
+                .split("&")
+                .map(s => s.split("=").map(decodeURIComponent))
+            );
+          } catch (e) {
+            console.log(e);
+            return {};
+          }
         }
       }
 

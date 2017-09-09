@@ -6,7 +6,8 @@
   "scripts": {
     "prettier": "prettier --write p2pweb.js --print-width 72",
     "readme": "cat p2pweb.js | sed -e 's/^/    /' | sed -e 's/^ *[/][/] \\?//' > README.md",
-    "dev": "./dev.sh"
+    "dev": "./dev.sh",
+    "git-add": "git add README.md p2pweb.js"
   },
   "pre-commit": [
     "prettier",

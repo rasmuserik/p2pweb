@@ -9,7 +9,8 @@
     "dev": "./dev.sh"
   },
   "pre-commit": [
-    "prettier"
+    "prettier",
+    "readme"
   ],
   "repository": {
     "type": "git",

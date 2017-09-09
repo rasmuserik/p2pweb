@@ -112,7 +112,7 @@ wss://sea.solsort.com/
           ws.onerror = err => {
             con.onclose && con.onclose();
             signal_connection.close();
-          }
+          };
           ws.onclose = () => con.onclose && con.onclose();
           ws.onopen = () => {
             connected(con);

@@ -47,13 +47,13 @@ This is a library for building peer-to-peer web applications.
       /* istanbul ignore else  */
       const assert = isNodeJs ? require("assert") : assertImpl;
       const networkAbstraction = {
-        startSignalling: () => throwError("startSignalling missing"),
-        receiveSignalling: () => throwError("receiveSignalling missing"),
-        connection: () => throwError("connection missing")
+        startSignalling: undefined,
+        receiveSignalling: undefined,
+        connection: undefined
       };
-
+    
 # Utility Functions
-
+    
       function getIsNodeJs() {
         return (
           typeof process !== "undefined" &&
@@ -62,21 +62,10 @@ This is a library for building peer-to-peer web applications.
         );
       }
     
-      /* istanbul ignore if */
-      if (!isNodeJs) {
-        function assertImpl(e, msg) {
-          e || throwError(msg);
-        }
-        assertImpl.equal = (a, b, msg) =>
-          a === b ||
-          throwError(
-            `${msg || "assert.equal error:"}\n${String(a)} !== ${String(b)}`
-          );
-      }
-    
       function throwError(msg) {
         throw new Error(msg);
       }
+    
       function tryFn(f, alt) {
         try {
           return f();
@@ -91,8 +80,17 @@ This is a library for building peer-to-peer web applications.
       });
     
       function sleep(n) {
-        return new Promise(resolve => setTimeout(resolve, n));
+        return new Promise((resolve, reject) => setTimeout(resolve, n));
       }
+      test(async () => {
+        const t0 = Date.now();
+        await sleep(100);
+        const t = Date.now() - t0;
+        assert(90 < t, t);
+        assert(t < 110, t);
+        console.log(t);
+      });
+    
       function pairsToObject(keyvals) {
         const result = {};
         for (const [key, val] of keyvals) {
@@ -100,6 +98,7 @@ This is a library for building peer-to-peer web applications.
         }
         return result;
       }
+    
       function getEnv() {
         /* istanbul ignore else */
         if (isNodeJs) {
@@ -118,9 +117,30 @@ This is a library for building peer-to-peer web applications.
           }
         }
       }
-
+    
+## Assert
+    
+      /* istanbul ignore if */
+      if (!isNodeJs) {
+        function assertImpl(e, msg) {
+          e || throwError(msg);
+        }
+        assertImpl.equal = (a, b, msg) =>
+          a === b ||
+          throwError(
+            `${msg || "assert.equal error:"}\n${String(a)} !== ${String(b)}`
+          );
+        assertImpl.throws = (f, check, msg) => {
+          assert(!check && !msg);
+          try {
+            f();
+            throwError("assert.throws error");
+          } catch (e) {}
+        };
+      }
+    
 ## Testing
-
+    
       function test(msg, f) {
         if (typeof msg === "function") {
           f = msg;
@@ -137,7 +157,11 @@ This is a library for building peer-to-peer web applications.
         for (const test of p2pweb._tests) {
           try {
             await Promise.race([
-              async () => (await sleep(testTimeout), throwError("timeout")),
+              (async () => {
+                await sleep(testTimeout);
+                /* istanbul ignore */
+                throwError("timeout");
+              })(),
               Promise.resolve(test.f())
             ]);
           } catch (e) {

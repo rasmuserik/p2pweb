@@ -1,23 +1,23 @@
 {
-  "name": "peersea",
+  "name": "p2pweb",
   "version": "0.1.0",
   "description": "",
-  "main": "peersea.js",
+  "main": "p2pweb.js",
   "scripts": {
-    "prettier": "prettier --write peersea.js --print-width 72",
-    "readme": "cat peersea.js | sed -e 's/^/    /' | sed -e 's/^ *[/][/] \\?//' > README.md",
+    "prettier": "prettier --write p2pweb.js --print-width 72",
+    "readme": "cat p2pweb.js | sed -e 's/^/    /' | sed -e 's/^ *[/][/] \\?//' > README.md",
     "dev": "./dev.sh"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rasmuserik/peersea.git"
+    "url": "git+https://github.com/rasmuserik/p2pweb.git"
   },
   "author": "RasmusErik Voel Jensen <npmjs@solsort.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rasmuserik/peersea/issues"
+    "url": "https://github.com/rasmuserik/p2pweb/issues"
   },
-  "homepage": "https://peersea.solsort.com/",
+  "homepage": "https://p2pweb.solsort.com/",
   "dependencies": {
     "ws": "^2.2.0"
   },

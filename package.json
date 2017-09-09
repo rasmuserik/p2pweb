@@ -1,6 +1,6 @@
 {
   "name": "p2pweb",
-  "version": "0.1.0",
+  "version": "0.0.1-SNAPSHOT",
   "description": "",
   "main": "p2pweb.js",
   "scripts": {
@@ -15,12 +15,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rasmuserik/p2pweb.git"
+    "url": "git+https://github.com/solsort/p2pweb.git"
   },
   "author": "RasmusErik Voel Jensen <npmjs@solsort.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rasmuserik/p2pweb/issues"
+    "url": "https://github.com/solsort/p2pweb/issues"
   },
   "homepage": "https://p2pweb.solsort.com/",
   "dependencies": {

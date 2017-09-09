@@ -34,6 +34,7 @@ do
   node p2pweb.js &
   echo $! >> .pid
 
+  sleep 1;
   SEA_URL=ws://localhost:3502 \
   SEA_BOOTSTRAP=ws://localhost:3500 \
   SEA_PORT=3502 \

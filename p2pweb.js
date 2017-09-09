@@ -25,13 +25,13 @@
   //
   const defaultBootstrap = "wss://sea.solsort.com/";
   const isNodeJs = getIsNodeJs();
-  /* istanbul ignore */
+  /* istanbul ignore next */
   const window = isNodeJs ? process.global : self;
   const env = getEnv();
   const bootstrapNodes = (env.SEA_BOOTSTRAP || defaultBootstrap)
     .trim()
     .split(/\s+/);
-  /* istanbul ignore */
+  /* istanbul ignore next */
   const assert = isNodeJs ? require("assert") : assertImpl();
   const networkAbstraction = {
     startSignalling: undefined,
@@ -75,7 +75,6 @@
     const t = Date.now() - t0;
     assert(90 < t, t);
     assert(t < 110, t);
-    console.log(t);
   });
 
   function pairsToObject(keyvals) {
@@ -85,7 +84,12 @@
     }
     return result;
   }
-  test(() => assert.deepEqual(pairsToObject([['a', 1],[2, 'b']]), {a: 1, '2': 'b'}));
+  test(() =>
+    assert.deepEqual(pairsToObject([["a", 1], [2, "b"]]), {
+      a: 1,
+      "2": "b"
+    })
+  );
 
   function getEnv() {
     /* istanbul ignore else */
@@ -108,7 +112,7 @@
 
   // ## Assert
 
-  /* istanbul ignore */
+  /* istanbul ignore next */
   function assertImpl() {
     function assert(e, msg) {
       e || throwError(msg);
@@ -116,16 +120,18 @@
 
     assert.equal = (a, b, msg) => {
       assert(!msg);
-    if(a !== b) {
-      throwError(
-        `${msg || "assert.equal error:"}\n${String(a)} !== ${String(b)}`
-      );
-    }
-    }
+      if (a !== b) {
+        throwError(
+          `${msg || "assert.equal error:"}\n${String(a)} !== ${String(
+            b
+          )}`
+        );
+      }
+    };
 
-    assert.deepEqual = (a , b ,msg) => {
+    assert.deepEqual = (a, b, msg) => {
       assert.equal(JSON.stringify(a), JSON.stringify(b), msg);
-    }
+    };
 
     assert.throws = (f, check, msg) => {
       assert(!check && !msg);
@@ -154,7 +160,7 @@
         await Promise.race([
           (async () => {
             await sleep(testTimeout);
-            /* istanbul ignore */
+            /* istanbul ignore next */
             throwError("timeout");
           })(),
           Promise.resolve(test.f())
@@ -191,9 +197,9 @@
   // # Network Abstraction Implementation
   //
 
+  /* istanbul ignore next */
   // ## NodeJS
   //
-  /* istanbul ignore else  */
   if (isNodeJs) {
     const WebSocket = require("ws");
 

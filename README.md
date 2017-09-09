@@ -35,17 +35,14 @@ This is a library for building peer-to-peer web applications.
 
       const defaultBootstrap = "wss://sea.solsort.com/";
       const isNodeJs = getIsNodeJs();
-    
-      /* istanbul ignore else  */
+      /* istanbul ignore */
       const window = isNodeJs ? process.global : self;
-    
       const env = getEnv();
       const bootstrapNodes = (env.SEA_BOOTSTRAP || defaultBootstrap)
         .trim()
         .split(/\s+/);
-    
-      /* istanbul ignore else  */
-      const assert = isNodeJs ? require("assert") : assertImpl;
+      /* istanbul ignore */
+      const assert = isNodeJs ? require("assert") : assertImpl();
       const networkAbstraction = {
         startSignalling: undefined,
         receiveSignalling: undefined,
@@ -98,6 +95,12 @@ This is a library for building peer-to-peer web applications.
         }
         return result;
       }
+      test(() =>
+        assert.deepEqual(pairsToObject([["a", 1], [2, "b"]]), {
+          a: 1,
+          "2": "b"
+        })
+      );
     
       function getEnv() {
         /* istanbul ignore else */
@@ -120,34 +123,43 @@ This is a library for building peer-to-peer web applications.
     
 ## Assert
     
-      /* istanbul ignore if */
-      if (!isNodeJs) {
-        function assertImpl(e, msg) {
+      /* istanbul ignore */
+      function assertImpl() {
+        function assert(e, msg) {
           e || throwError(msg);
         }
-        assertImpl.equal = (a, b, msg) =>
-          a === b ||
-          throwError(
-            `${msg || "assert.equal error:"}\n${String(a)} !== ${String(b)}`
-          );
-        assertImpl.throws = (f, check, msg) => {
+    
+        assert.equal = (a, b, msg) => {
+          assert(!msg);
+          if (a !== b) {
+            throwError(
+              `${msg || "assert.equal error:"}\n${String(a)} !== ${String(
+                b
+              )}`
+            );
+          }
+        };
+    
+        assert.deepEqual = (a, b, msg) => {
+          assert.equal(JSON.stringify(a), JSON.stringify(b), msg);
+        };
+    
+        assert.throws = (f, check, msg) => {
           assert(!check && !msg);
           try {
             f();
             throwError("assert.throws error");
           } catch (e) {}
         };
+    
+        return assert;
       }
     
 ## Testing
     
-      function test(msg, f) {
-        if (typeof msg === "function") {
-          f = msg;
-          msg = "";
-        }
+      function test(f) {
         p2pweb._tests = p2pweb._tests || [];
-        p2pweb._tests.push({ f, msg });
+        p2pweb._tests.push({ f });
       }
       async function runTests() {
         const testTimeout = 3000;
@@ -166,7 +178,6 @@ This is a library for building peer-to-peer web applications.
             ]);
           } catch (e) {
             console.log(test.f);
-            console.log(`error from "${test.msg}"`);
             throw e;
           }
         }

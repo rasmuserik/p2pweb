@@ -6,40 +6,34 @@ sleep 0.1
 echo $! > .pid-liveserver
 sleep 1;
 google-chrome \
-  "http://localhost:8080/#SEA_BOOTSTRAP=ws://localhost:3500" \
-  "http://localhost:8080/#SEA_BOOTSTRAP=ws://localhost:3501" \
-  "http://localhost:8080/#SEA_BOOTSTRAP=ws://localhost:3500" \
-  "http://localhost:8080/#SEA_BOOTSTRAP=ws://localhost:3501" \
-  "http://localhost:8080/#SEA_BOOTSTRAP=ws://localhost:3500" \
-  "http://localhost:8080/#SEA_BOOTSTRAP=ws://localhost:3501" \
-  "http://localhost:8080/#SEA_BOOTSTRAP=ws://localhost:3500" \
-  "http://localhost:8080/#SEA_BOOTSTRAP=ws://localhost:3501" \
-  "http://localhost:8080/#SEA_BOOTSTRAP=ws://localhost:3500" \
-  "http://localhost:8080/#SEA_BOOTSTRAP=ws://localhost:3501" \
+  "http://localhost:8080/#P2PWEB_BOOTSTRAP=ws://localhost:3500" \
+  "http://localhost:8080/#P2PWEB_BOOTSTRAP=ws://localhost:3501" \
+  "http://localhost:8080/#P2PWEB_BOOTSTRAP=ws://localhost:3500" \
+  "http://localhost:8080/#P2PWEB_BOOTSTRAP=ws://localhost:3501" \
+  "http://localhost:8080/#P2PWEB_BOOTSTRAP=ws://localhost:3500" \
+  "http://localhost:8080/#P2PWEB_BOOTSTRAP=ws://localhost:3501" \
+  "http://localhost:8080/#P2PWEB_BOOTSTRAP=ws://localhost:3500" \
+  "http://localhost:8080/#P2PWEB_BOOTSTRAP=ws://localhost:3501" \
+  "http://localhost:8080/#P2PWEB_BOOTSTRAP=ws://localhost:3500" \
+  "http://localhost:8080/#P2PWEB_BOOTSTRAP=ws://localhost:3501" \
   &
 touch p2pweb.js) &
 while inotifywait -e modify,close_write,move_self -q p2pweb.js
 do 
   kill `cat .pid`
+  P2PWEB_URL=ws://localhost RUN_TESTS=true node p2pweb.js && (
   sleep 0.5
-  SEA_URL=ws://localhost:3500 \
-  SEA_BOOTSTRAP=ws://localhost:3501 \
-  SEA_PORT=3500 \
+  P2PWEB_URL=ws://localhost:3500 \
+  P2PWEB_BOOTSTRAP=ws://localhost:3501 \
+  P2PWEB_PORT=3500 \
   node p2pweb.js &
   echo $! > .pid
 
   sleep 0.5
-  SEA_URL=ws://localhost:3501 \
-  SEA_BOOTSTRAP=ws:localhost:3500 \
-  SEA_PORT=3501 \
+  P2PWEB_URL=ws://localhost:3501 \
+  P2PWEB_BOOTSTRAP=ws:localhost:3500 \
+  P2PWEB_PORT=3501 \
   node p2pweb.js &
   echo $! >> .pid
-
-  sleep 0.5
-  SEA_URL=ws://localhost:3502 \
-  SEA_BOOTSTRAP=ws://example.com \
-  SEA_PORT=3502 \
-  RUN_TESTS=true \
-  node p2pweb.js
-  echo $! >> .pid
+  )
 done

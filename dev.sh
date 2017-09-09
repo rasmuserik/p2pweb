@@ -21,22 +21,25 @@ touch p2pweb.js) &
 while inotifywait -e modify,close_write,move_self -q p2pweb.js
 do 
   kill `cat .pid`
-  sleep 0.1
+  sleep 0.5
   SEA_URL=ws://localhost:3500 \
   SEA_BOOTSTRAP=ws://localhost:3501 \
   SEA_PORT=3500 \
   node p2pweb.js &
   echo $! > .pid
 
+  sleep 0.5
   SEA_URL=ws://localhost:3501 \
   SEA_BOOTSTRAP=ws:localhost:3500 \
   SEA_PORT=3501 \
   node p2pweb.js &
   echo $! >> .pid
 
-  sleep 1;
+  sleep 0.5
   SEA_URL=ws://localhost:3502 \
-  SEA_BOOTSTRAP=ws://localhost:3500 \
+  SEA_BOOTSTRAP=ws://example.com \
   SEA_PORT=3502 \
-  RUN_TESTS=true node p2pweb.js
+  RUN_TESTS=true \
+  node p2pweb.js
+  echo $! >> .pid
 done

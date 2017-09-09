@@ -1,10 +1,11 @@
 // #
 //
-// <img src=https://forsider.solsort.com/icon.png width=96 height=96 align=right>
+// <img src=https://p2pweb.solsort.com/icon.png width=96 height=96 align=right>
 //
 // [![website](https://img.shields.io/badge/website-p2pweb.solsort.com-blue.svg)](https://p2pweb.solsort.com/)
 // [![github](https://img.shields.io/badge/github-solsort/p2pweb-blue.svg)](https://github.com/solsort/p2pweb)
 // [![travis](https://img.shields.io/travis/solsort/p2pweb.svg)](https://travis-ci.org/solsort/p2pweb)
+// [![coveralls](https://img.shields.io/coveralls/solsort/p2pweb.svg)](https://coveralls.io/r/solsort/p2pweb?branch=master)
 // [![npm](https://img.shields.io/npm/v/p2pweb.svg)](https://www.npmjs.com/package/p2pweb)
 //
 // # P2P Web
@@ -154,9 +155,7 @@
   if (isNodeJs) {
     const WebSocket = require("ws");
 
-    const port = env.SEA_PORT;
-    assert(port);
-
+    const port = env.SEA_PORT || 3535;
     const url = env.SEA_URL;
     assert(url);
 

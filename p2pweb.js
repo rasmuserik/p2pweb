@@ -174,28 +174,25 @@
     typeof process !== "undefined" && process.exit(0);
   }
 
-
   // # Main
 
   /* istanbul ignore else */
   if (env.RUN_TESTS) {
     setTimeout(runTests, 0);
-
   } else {
+    networkAbstraction.connected = con => {
+      con.onmessage = msg => console.log("msg", msg);
+      con.onclose = () => console.log("close", con);
+      con.send(`hello ${isNodeJs}`);
+    };
 
-  networkAbstraction.connected = con => {
-    con.onmessage = msg => console.log("msg", msg);
-    con.onclose = () => console.log("close", con);
-    con.send(`hello ${isNodeJs}`);
-  };
-
-  setTimeout(() => {
-    const o = { close: () => {} };
-    let con = networkAbstraction.receiveSignalling(o);
-    o.onmessage({
-      data: JSON.stringify({ websocket: bootstrapNodes[0] })
-    });
-  }, 1000 * Math.random());
+    setTimeout(() => {
+      const o = { close: () => {} };
+      let con = networkAbstraction.receiveSignalling(o);
+      o.onmessage({
+        data: JSON.stringify({ websocket: bootstrapNodes[0] })
+      });
+    }, 1000 * Math.random());
   }
 
   //

@@ -152,6 +152,7 @@
 
   // ## NodeJS
   //
+  /* istanbul ignore else  */
   if (isNodeJs) {
     const WebSocket = require("ws");
 

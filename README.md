@@ -2,73 +2,93 @@
 
 (literate source code below)
 
-    (function() {
+    (function(p2pweb) {
       "use strict";
+
+# Main
 
 # Platform Abstraction
 
-      const default_bootstrap = `
-    wss://sea.solsort.com/
-    `;
+      const defaultBootstrap = "wss://sea.solsort.com/";
     
-      const is_nodejs =
+      const isNodejs =
         typeof process !== "undefined" &&
         process.versions &&
         !!process.versions.node;
-      const window = is_nodejs ? process.global : self;
+      const window = isNodejs ? process.global : self;
     
 TODO: should be an `env` derrived from process.env or parsed location.hash
-      const bootstrap_nodes = ((is_nodejs && process.env.SEA_BOOTSTRAP) ||
-        (window.location &&
-          window.location.hash &&
-          window.location.hash.includes("SEA_BOOTSTRAP=") &&
-          decodeURIComponent(
-            window.location.hash
-              .replace(/.*SEA_BOOTSTRAP=/, "")
-              .replace(/[&].*/, "")
-          )) ||
-        default_bootstrap)
+
+      const env = getEnv();
+      const bootstrapNodes = (env.SEA_BOOTSTRAP || defaultBootstrap)
         .trim()
         .split(/\s+/);
-    
-      console.log("bootstrap nodes:", bootstrap_nodes);
-    
-      const assert = is_nodejs
+      const assert = isNodejs
         ? require("assert")
-        : (ok, msg) => {
-            if (!ok) throw new Error("assert: " + msg);
-          };
+        : (ok, msg) => ok || throwError(msg);
+      let startSignalling;
+      let receiveSignalling;
     
-## Network
+# Utility Functions
+
+      function throwError(msg) {
+        throw new Error(msg);
+      }
+      function tryFn(f, alt) {
+        try {
+          return f();
+        } catch (e) {
+          return typeof alt === "function" ? alt(e) : alt;
+        }
+      }
+      function pairsToObject(keyvals) {
+        const result = {};
+        for (const [key, val] of keyvals) {
+          result[key] = val;
+        }
+        return result;
+      }
+      function getEnv() {
+        if (isNodejs) return process.env;
+        return tryFn(
+          pairsToObject(
+            location.hash
+              .slice(1)
+              .split("&")
+              .map(s => s.split("=").map(decodeURIComponent))
+          ),
+          {}
+        );
+      }
+
+# Network Implementation
 
 - connection:
     - onmessage `{data: ...}`
     - send
     - onclose
     - close
-- `start_signalling(signalling_connection)`
-- `receive_signalling(signalling_connection)`
+- `startSignalling(signalling_connection)`
+- `receiveSignalling(signalling_connection)`
 - callback `connected(connection)`
     
       function connected(con) {
         con.onmessage = msg => console.log("msg", msg);
         con.onclose = () => console.log("close", con);
-        con.send(`hello ${is_nodejs}`);
+        con.send(`hello ${isNodejs}`);
       }
-      let start_signalling;
-      let receive_signalling;
     
       setTimeout(() => {
         const o = { close: () => {} };
-        let con = receive_signalling(o);
+        let con = receiveSignalling(o);
         o.onmessage({
-          data: JSON.stringify({ websocket: bootstrap_nodes[0] })
+          data: JSON.stringify({ websocket: bootstrapNodes[0] })
         });
       }, 1000 * Math.random());
     
-### NodeJS
+## NodeJS
 
-      if (is_nodejs) {
+      if (isNodejs) {
         const WebSocket = require("ws");
     
         const port = process.env.SEA_PORT;
@@ -91,38 +111,38 @@ TODO: should be an `env` derrived from process.env or parsed location.hash
           );
           ws.on("close", () => con.onclose && con.onclose());
         });
-        receive_signalling = o => {
+        receiveSignalling = o => {
           o.onmessage = () => {};
           return {};
         };
       }
     
-### Browser
+## Browser
 
-      if (!is_nodejs) {
-        receive_signalling = signal_connection => {
-          signal_connection.onmessage = signal_message => {
-            signal_message = JSON.parse(signal_message.data);
-            if (signal_message.websocket) {
+      if (!isNodejs) {
+        receiveSignalling = signalConnection => {
+          signalConnection.onmessage = signalMessage => {
+            signalMessage = JSON.parse(signalMessage.data);
+            if (signalMessage.websocket) {
               const con = {};
-              const ws = new WebSocket(signal_message.websocket);
+              const ws = new WebSocket(signalMessage.websocket);
               con.send = msg => ws.send(msg);
               con.close = () => ws.close();
               ws.onmessage = msg => con.onmessage && con.onmessage(msg);
               ws.onerror = err => {
                 con.onclose && con.onclose();
-                signal_connection.close();
+                signalConnection.close();
               };
               ws.onclose = () => con.onclose && con.onclose();
               ws.onopen = () => {
                 connected(con);
-                signal_connection.close();
+                signalConnection.close();
               };
             } else {
-              signal_connection.close();
+              signalConnection.close();
               throw "WebRTC not implemented yet";
             }
           };
         };
       }
-    })();
+    })(typeof exports !== "undefined" ? exports : (window.p2pweb = {}));

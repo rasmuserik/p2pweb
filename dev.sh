@@ -27,12 +27,15 @@ do
   SEA_PORT=3500 \
   node p2pweb.js &
   echo $! > .pid
-  sleep 1;
 
   SEA_URL=ws://localhost:3501 \
   SEA_BOOTSTRAP=ws:localhost:3500 \
   SEA_PORT=3501 \
   node p2pweb.js &
   echo $! >> .pid
-  sleep 1
+
+  SEA_URL=ws://localhost:3502 \
+  SEA_BOOTSTRAP=ws://localhost:3500 \
+  SEA_PORT=3502 \
+  RUN_TESTS=true node p2pweb.js
 done

@@ -1,92 +1,146 @@
-// # PeerSea
+// # P2P Web
+//
+// This is a library for building peer-to-peer web applications.
+//
+// **Under development**
 //
 // (literate source code below)
 //
 (function(p2pweb) {
   "use strict";
   //
-// # Main
+  // # Environment
   //
-  // # Platform Abstraction
-  //
-  const defaultBootstrap = 'wss://sea.solsort.com/';
-
-  const isNodejs =
-    typeof process !== "undefined" &&
-    process.versions &&
-    !!process.versions.node;
-  const window = isNodejs ? process.global : self;
-
-  // TODO: should be an `env` derrived from process.env or parsed location.hash
-  //
+  const defaultBootstrap = "wss://sea.solsort.com/";
+  const isNodeJs = getIsNodeJs();
+  const window = isNodeJs ? process.global : self;
   const env = getEnv();
-  const bootstrapNodes = (env.SEA_BOOTSTRAP || defaultBootstrap).trim().split(/\s+/);
-  const assert = isNodejs
-    ? require("assert")
-    : (ok, msg) => ok || throwError(msg);
-  let startSignalling;
-  let receiveSignalling;
-
+  const bootstrapNodes = (env.SEA_BOOTSTRAP || defaultBootstrap)
+    .trim()
+    .split(/\s+/);
+  const assert = isNodeJs ? require("assert") : assertImpl;
+  const networkAbstraction = {
+    startSignalling: () => throwError('startSignalling missing'),
+    receiveSignalling: () => throwError('receiveSignalling missing'),
+    connection: () => throwError('connection missing')
+  }
+  //
   // # Utility Functions
   //
+  function getIsNodeJs() {
+    return typeof process !== "undefined" &&
+    process.versions &&
+    !!process.versions.node;
+  }
+  function assertImpl(e, msg) {
+    e || throwError(msg);
+  }
+  assertImpl.equal = (a,b,msg) => 
+    a === b || throwError(`${msg || 'assert.equal error:'}\n${String(a)} !== ${String(b)}`);
+
   function throwError(msg) {
     throw new Error(msg);
   }
   function tryFn(f, alt) {
     try {
       return f();
-    } catch(e) {
-      return typeof alt === 'function' ? alt(e) : alt;
+    } catch (e) {
+      return typeof alt === "function" ? alt(e) : alt;
     }
+  }
+  test(() => {
+    assert.equal(tryFn(() => 'asdf'), 'asdf');
+    assert.equal(tryFn(() => throwError('asdf')), undefined);
+    assert.equal(tryFn(() => throwError('asdf'), 123), 123);
+  });
+
+  function sleep(n) {
+    return new Promise((resolve) => setTimeout(resolve, n));
   }
   function pairsToObject(keyvals) {
     const result = {};
-    for(const [key, val] of keyvals) {
+    for (const [key, val] of keyvals) {
       result[key] = val;
     }
     return result;
   }
   function getEnv() {
-    if(isNodejs) return process.env;
-    return tryFn(
-      pairsToObject(location.hash.slice(1).split("&").map(s => s.split("=").map(decodeURIComponent))),
-      {});
+    if (isNodeJs) return process.env;
+    try {
+      return pairsToObject(
+        location.hash
+          .slice(1)
+          .split("&")
+          .map(s => s.split("=").map(decodeURIComponent))
+      )
+    } catch(e) {
+      console.log(e);
+      return {};
+    }
   }
   //
-  // # Network Implementation
+  // ## Testing
   //
-  // - connection:
-  //     - onmessage `{data: ...}`
-  //     - send
-  //     - onclose
-  //     - close
-  // - `startSignalling(signalling_connection)`
-  // - `receiveSignalling(signalling_connection)`
-  // - callback `connected(connection)`
+  function test(msg, f) {
+    if(typeof msg === 'function') {
+      f = msg;
+      msg = '';
+    }
+    p2pweb._tests = p2pweb._tests || [];
+    p2pweb._tests.push({f, msg});
+  }
+  async function runTests() {
+    const testTimeout = 3000;
 
-  function connected(con) {
+    console.log('Running tests...');
+    let errors = 0;
+    for(const test of p2pweb._tests) {
+      try {
+        await Promise.race([
+          async () => (await sleep(testTimeout), throwError('timeout')),
+          Promise.resolve(test.f())]);
+      } catch(e) {
+        console.log(test.f)
+        console.log(`error from "${test.msg}"`);
+        throw e;
+      }
+    }
+    console.log('All tests ok :)');
+    typeof process !== 'undefined' && process.exit(0);
+  }
+  if(env.RUN_TESTS) {
+    setTimeout(runTests, 0);
+  }
+
+  // #
+
+  networkAbstraction.connected = (con) => {
     con.onmessage = msg => console.log("msg", msg);
     con.onclose = () => console.log("close", con);
-    con.send(`hello ${isNodejs}`);
+    con.send(`hello ${isNodeJs}`);
   }
 
   setTimeout(() => {
     const o = { close: () => {} };
-    let con = receiveSignalling(o);
+    let con = networkAbstraction.receiveSignalling(o);
     o.onmessage({
       data: JSON.stringify({ websocket: bootstrapNodes[0] })
     });
   }, 1000 * Math.random());
 
+  //
+  // # Network Abstraction Implementation
+  //
+
   // ## NodeJS
   //
-  if (isNodejs) {
+  if (isNodeJs) {
     const WebSocket = require("ws");
 
-    const port = process.env.SEA_PORT;
+    const port = env.SEA_PORT;
     assert(port);
 
-    const url = process.env.SEA_URL;
+    const url = env.SEA_URL;
     assert(url);
 
     const wss = new WebSocket.Server({ port: port });
@@ -96,23 +150,22 @@
         send: msg => ws.send(msg),
         close: () => ws.close()
       };
-      connected(con);
+      networkAbstraction.connected(con);
       ws.on(
         "message",
         msg => con.onmessage && con.onmessage({ data: msg })
       );
       ws.on("close", () => con.onclose && con.onclose());
     });
-    receiveSignalling = o => {
+    networkAbstraction.receiveSignalling = o => {
       o.onmessage = () => {};
       return {};
     };
-  }
-
-  // ## Browser
+  } else { 
   //
-  if (!isNodejs) {
-    receiveSignalling = signalConnection => {
+  // ## Browser or WebWorker (!isNodeJs)
+  //
+    networkAbstraction.receiveSignalling = signalConnection => {
       signalConnection.onmessage = signalMessage => {
         signalMessage = JSON.parse(signalMessage.data);
         if (signalMessage.websocket) {
@@ -127,7 +180,7 @@
           };
           ws.onclose = () => con.onclose && con.onclose();
           ws.onopen = () => {
-            connected(con);
+            networkAbstraction.connected(con);
             signalConnection.close();
           };
         } else {
@@ -137,4 +190,5 @@
       };
     };
   }
-})(typeof exports !== 'undefined' ? exports : (window.p2pweb = {}));
+  // # END OF FILE
+})(typeof exports !== "undefined" ? exports : (window.p2pweb = {}));

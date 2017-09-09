@@ -20,23 +20,28 @@
     .split(/\s+/);
   const assert = isNodeJs ? require("assert") : assertImpl;
   const networkAbstraction = {
-    startSignalling: () => throwError('startSignalling missing'),
-    receiveSignalling: () => throwError('receiveSignalling missing'),
-    connection: () => throwError('connection missing')
-  }
+    startSignalling: () => throwError("startSignalling missing"),
+    receiveSignalling: () => throwError("receiveSignalling missing"),
+    connection: () => throwError("connection missing")
+  };
   //
   // # Utility Functions
   //
   function getIsNodeJs() {
-    return typeof process !== "undefined" &&
-    process.versions &&
-    !!process.versions.node;
+    return (
+      typeof process !== "undefined" &&
+      process.versions &&
+      !!process.versions.node
+    );
   }
   function assertImpl(e, msg) {
     e || throwError(msg);
   }
-  assertImpl.equal = (a,b,msg) => 
-    a === b || throwError(`${msg || 'assert.equal error:'}\n${String(a)} !== ${String(b)}`);
+  assertImpl.equal = (a, b, msg) =>
+    a === b ||
+    throwError(
+      `${msg || "assert.equal error:"}\n${String(a)} !== ${String(b)}`
+    );
 
   function throwError(msg) {
     throw new Error(msg);
@@ -49,13 +54,13 @@
     }
   }
   test(() => {
-    assert.equal(tryFn(() => 'asdf'), 'asdf');
-    assert.equal(tryFn(() => throwError('asdf')), undefined);
-    assert.equal(tryFn(() => throwError('asdf'), 123), 123);
+    assert.equal(tryFn(() => "asdf"), "asdf");
+    assert.equal(tryFn(() => throwError("asdf")), undefined);
+    assert.equal(tryFn(() => throwError("asdf"), 123), 123);
   });
 
   function sleep(n) {
-    return new Promise((resolve) => setTimeout(resolve, n));
+    return new Promise(resolve => setTimeout(resolve, n));
   }
   function pairsToObject(keyvals) {
     const result = {};
@@ -72,8 +77,8 @@
           .slice(1)
           .split("&")
           .map(s => s.split("=").map(decodeURIComponent))
-      )
-    } catch(e) {
+      );
+    } catch (e) {
       console.log(e);
       return {};
     }
@@ -82,43 +87,44 @@
   // ## Testing
   //
   function test(msg, f) {
-    if(typeof msg === 'function') {
+    if (typeof msg === "function") {
       f = msg;
-      msg = '';
+      msg = "";
     }
     p2pweb._tests = p2pweb._tests || [];
-    p2pweb._tests.push({f, msg});
+    p2pweb._tests.push({ f, msg });
   }
   async function runTests() {
     const testTimeout = 3000;
 
-    console.log('Running tests...');
+    console.log("Running tests...");
     let errors = 0;
-    for(const test of p2pweb._tests) {
+    for (const test of p2pweb._tests) {
       try {
         await Promise.race([
-          async () => (await sleep(testTimeout), throwError('timeout')),
-          Promise.resolve(test.f())]);
-      } catch(e) {
-        console.log(test.f)
+          async () => (await sleep(testTimeout), throwError("timeout")),
+          Promise.resolve(test.f())
+        ]);
+      } catch (e) {
+        console.log(test.f);
         console.log(`error from "${test.msg}"`);
         throw e;
       }
     }
-    console.log('All tests ok :)');
-    typeof process !== 'undefined' && process.exit(0);
+    console.log("All tests ok :)");
+    typeof process !== "undefined" && process.exit(0);
   }
-  if(env.RUN_TESTS) {
+  if (env.RUN_TESTS) {
     setTimeout(runTests, 0);
   }
 
   // #
 
-  networkAbstraction.connected = (con) => {
+  networkAbstraction.connected = con => {
     con.onmessage = msg => console.log("msg", msg);
     con.onclose = () => console.log("close", con);
     con.send(`hello ${isNodeJs}`);
-  }
+  };
 
   setTimeout(() => {
     const o = { close: () => {} };
@@ -161,10 +167,10 @@
       o.onmessage = () => {};
       return {};
     };
-  } else { 
-  //
-  // ## Browser or WebWorker (!isNodeJs)
-  //
+  } else {
+    //
+    // ## Browser or WebWorker (!isNodeJs)
+    //
     networkAbstraction.receiveSignalling = signalConnection => {
       signalConnection.onmessage = signalMessage => {
         signalMessage = JSON.parse(signalMessage.data);

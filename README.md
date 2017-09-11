@@ -8,8 +8,8 @@
 
 # P2P Web
 
-This is a library for building peer-to-peer web applications.
+This is a library (**under development**) for building peer-to-peer web applications.
 
 - Introduction/readme on <https://p2pweb.solsort.com>
-- Code documentation on <https://p2pweb.solsort.com/code-doc>
+- Code documentation on <https://p2pweb.solsort.com/jsdoc>
 - Source code on <https://github.com/solsort/p2pweb>

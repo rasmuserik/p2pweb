@@ -35,12 +35,23 @@
   const platform = {};
   platform.startSignalling = undefined;
   platform.receiveSignalling = undefined;
-  platform.connected = undefined;
+  platform.onconnection = undefined;
 
   // # Node
 
+  let nodes = [];
   class Node {
-    constructor() {}
+    constructor() {
+      this.connections = [];
+      nodes.push(this);
+    }
+    async printConnections() {
+      print(
+        this.connections.length,
+        "cons:",
+        this.connections.map(o => o.addr.slice(0, 4)).join(" ")
+      );
+    }
     async address() {
       if (this.myAddress instanceof HashAddress) {
         return this.myAddress;
@@ -52,19 +63,53 @@
       return await this.myAddress;
     }
     async name() {
-      return (await this.address()).toHex().slice(0, 4);
+      return (await this.address()).toString().slice(0, 4);
+    }
+    async addConnection(con) {
+      let name = "";
+      con.onmessage = msg => {
+        //print('connect', msg.addr.slice(0,4), msg.cons.map(o => o.slice(0,4).join(',')));
+        print(
+          "connect",
+          msg.addr.slice(0, 4),
+          msg.cons.map(s => s.slice(0, 4))
+        );
+        if (this.connections.find(o => o.addr === msg.addr)) {
+          print("already connected to", msg.addr.slice(0, 4));
+          setTimeout(() => con.close(), 0);
+        }
+        this.connections.push({
+          addr: msg.addr,
+          con: con
+        });
+        this.printConnections();
+      };
+      con.onclose = () => {
+        const o = this.connections.find(o => o.con === con) || {
+          addr: "????"
+        };
+        print("close", o.addr.slice(0, 4));
+        this.connections = this.connections.filter(o => o.con !== con);
+        this.printConnections();
+      };
+      con.send({
+        addr: (await this.address()).toString(),
+        cons: this.connections.map(o => o.addr),
+        isNodeJs: isNodeJs
+      });
+      print("addconnection");
     }
   }
   // # Main
 
-  /* istanbul ignore else */
-  if (env.RUN_TESTS) {
-    setTimeout(runTests, 0);
-  } else {
-    platform.connected = con => {
-      con.onmessage = msg => print("msg", msg);
-      con.onclose = () => print("close", con);
-      con.send(`hello ${isNodeJs}`);
+  /* istanbul ignore next */
+  async function main() {
+    if (env.RUN_TESTS) {
+      return runTests();
+    }
+    const node = new Node();
+    platform.onconnection = con => {
+      node.addConnection(con);
     };
 
     setTimeout(() => {
@@ -73,6 +118,7 @@
       o.onmessage({ websocket: bootstrapNodes[0] });
     }, 1000 * Math.random());
   }
+  setTimeout(main, 0);
 
   //
   // # Hash Address
@@ -323,7 +369,9 @@
   async function print() {
     console.log.apply(
       console,
-      [await myName()].concat(Array.from(arguments))
+      [nodes.length === 1 ? await nodes[0].name() : "????"].concat(
+        Array.from(arguments)
+      )
     );
   }
 
@@ -479,9 +527,12 @@
     wss.on("connection", function connection(ws) {
       const con = {
         send: msg => ws.send(JSON.stringify(msg)),
-        close: () => ws.close()
+        close: () => {
+          ws.close();
+          ws.emit("close");
+        }
       };
-      platform.connected(con);
+      platform.onconnection(con);
       ws.on(
         "message",
         msg => con.onmessage && con.onmessage(JSON.parse(msg))
@@ -495,13 +546,16 @@
           const ws = new WebSocket(msg.websocket);
           const con = {
             send: msg => ws.send(JSON.stringify(msg)),
-            close: () => wc.close()
+            close: () => ws.close()
           };
-          ws.on("open", () => platform.connected(con));
+          ws.on("open", () => platform.onconnection(con));
           ws.on(
             "message",
             msg => con.onmessage && con.onmessage(JSON.parse(msg))
           );
+          ws.on("error", () => {
+            print("could not connect to " + msg.websocket);
+          });
         } else {
           o.send({ websocket: url });
         }
@@ -513,13 +567,25 @@
       o.send({ websocket: url });
     };
 
+    process.on("exit", () => wss.close());
+
     // ### Crypto shim
+    //
+    window.atob = str => new Buffer(str, "base64").toString("binary");
+    window.btoa = str => new Buffer(str, "binary").toString("base64");
+
     window.crypto = { subtle: {} };
     crypto.subtle.digest = async function(cipher, data) {
       assert.equal(cipher, "SHA-256");
-      return require("crypto")
-        .createHash("sha256")
-        .update(data);
+      if (typeof data !== "string") {
+        data = new Buffer(data);
+      }
+      return hex2buf(
+        require("crypto")
+          .createHash("sha256")
+          .update(new Buffer(data))
+          .digest("hex")
+      );
     };
 
     crypto.getRandomValues = dst =>
@@ -545,15 +611,16 @@
           const ws = new WebSocket(signalMessage.websocket);
           con.send = msg => ws.send(JSON.stringify(msg));
           con.close = () => ws.close();
-          ws.onmessage = msg =>
+          ws.onmessage = msg => {
             con.onmessage && con.onmessage(JSON.parse(msg.data));
+          };
           ws.onerror = err => {
             con.onclose && con.onclose();
             signalConnection.close();
           };
           ws.onclose = () => con.onclose && con.onclose();
           ws.onopen = () => {
-            platform.connected(con);
+            platform.onconnection(con);
             signalConnection.close();
           };
         } else {

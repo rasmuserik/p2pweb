@@ -71,6 +71,17 @@ TODO generate through DSA-key here later (bad random for the moment).
           })();
         }
     
+        allPeers() {
+          let peers = Object.keys(
+            pairsToObject(
+              [].concat
+                .apply([], this.connections.map(o => o.peers))
+                .map(s => [s, true])
+            )
+          ).filter(o => o !== this.address().toString());
+          return peers;
+        }
+    
         bootstrap() {
           if (!this.bootstrapping && this.connections.length === 0) {
             this.bootstrapping = true;
@@ -91,20 +102,18 @@ TODO generate through DSA-key here later (bad random for the moment).
             });
           }
         }
+    
         send(addr, msg) {
-          const c = this.connections.find(o => o.addr === addr);
+          const c = this.findConnection(addr);
           if (c) {
             c.con.send(msg);
           } else if (this.address().toString() === addr) {
-            if (msg.rpc && rpc[msg.rpc]) {
-              rpc[msg.rpc](msg);
-            } else {
-              print("no such method", msg);
-            }
+            this.local(msg);
           } else {
             print("no connection to " + addr.toString().slice(0, 4), msg);
           }
         }
+    
         local(msg) {
           if (this.rpc[msg.data.rpc]) {
             this.rpc[msg.data.rpc](msg);
@@ -112,14 +121,21 @@ TODO generate through DSA-key here later (bad random for the moment).
             throwError("no such endpoint " + JSON.stringify(msg));
           }
         }
+    
+        findConnection(addr) {
+          return this.connections.find(o => o.addr === addr);
+        }
+    
         address() {
           return this.myAddress;
         }
+    
         name() {
           return this.address()
             .toString()
             .slice(0, 4);
         }
+    
         addConnection(con) {
           let name = "";
     
@@ -147,7 +163,7 @@ TODO generate through DSA-key here later (bad random for the moment).
             weigh: 1 + Math.random(),
             rpc: "connect",
             addr: this.address().toString(),
-            cons: this.connections.map(o => o.addr),
+            peers: this.connections.map(o => o.addr),
             isNodeJs: isNodeJs
           });
           print("addconnection");
@@ -159,7 +175,7 @@ TODO generate through DSA-key here later (bad random for the moment).
         print(
           "connect",
           msg.addr.slice(0, 4),
-          msg.cons.map(s => s.slice(0, 4))
+          msg.peers.map(s => s.slice(0, 4))
         );
     
         con.t2 += msg.time;
@@ -167,15 +183,15 @@ TODO generate through DSA-key here later (bad random for the moment).
         const peer = con;
         peer.addr = msg.addr;
         peer.con = con;
-        peer.peers = [];
+        peer.peers = msg.peers;
     
-        if (this.connections.find(o => o.addr === msg.addr)) {
+        if (this.findConnection(msg.addr)) {
           print("already connected to", msg.addr.slice(0, 4));
           print(
             "timestamps for consitent cleanup (not implemented yet)",
             con.t2,
             msg.time,
-            this.connections.find(o => o.addr === msg.addr).con.t2
+            this.findConnection(msg.addr).con.t2
           );
 
 TODO: cleanup duplicate connections made at the same time
@@ -191,13 +207,27 @@ TODO: cleanup duplicate connections made at the same time
             this.send(peer, { rpc: "newPeer", addr: msg.addr });
           }
         }
+    
+TODO: remove this
+
+        setTimeout(() => {
+          const allPeers = this.allPeers();
+          const randomPeer =
+            allPeers[(Math.random() * allPeers.length) | 0];
+          print("randomPeer:", randomPeer);
+          print("this.allPeers()", this.allPeers());
+        }, 2000);
       };
+    
       rpc.lostPeer = function(msg) {
 msg.con.peers.filter(o => o.addr !== msg.data.addr);
         print(
           "lostPeer",
           msg.con.addr.slice(0, 4),
           msg.data.addr.slice(0, 4)
+        );
+        this.findConnection(msg.con.addr).peers.filter(
+          o => o.addr !== msg.data.addr
         );
 print(msg.con.peers);
       };
@@ -208,6 +238,7 @@ msg.con.peers.push({addr: msg.data.addr});
           msg.con.addr.slice(0, 4),
           msg.data.addr.slice(0, 4)
         );
+        this.findConnection(msg.con.addr).peers.push(msg.data.addr);
 print(msg.con.peers);
       };
       rpc.relay = function(msg) {

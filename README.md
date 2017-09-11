@@ -51,7 +51,11 @@ This is a library for building peer-to-peer web applications.
 # Node
     
       let nodes = [];
+      /**
+      */
       class Node {
+        /**
+        */
         constructor({ bootstrapNodes }) {
           nodes.push(this);
     
@@ -71,17 +75,24 @@ TODO generate through DSA-key here later (bad random for the moment).
           })();
         }
     
+        /**
+         * List of all known peers (one hop from current node)
+         */
         allPeers() {
           let peers = Object.keys(
             pairsToObject(
-              [].concat
-                .apply([], this.connections.map(o => o.peers))
+              this.connections
+                .map(o => o.addr)
+                .concat.apply([], this.connections.map(o => o.peers))
                 .map(s => [s, true])
             )
           ).filter(o => o !== this.address().toString());
           return peers;
         }
     
+        /**
+         * @private
+        */
         bootstrap() {
           if (!this.bootstrapping && this.connections.length === 0) {
             this.bootstrapping = true;
@@ -103,6 +114,8 @@ TODO generate through DSA-key here later (bad random for the moment).
           }
         }
     
+        /**
+        */
         send(addr, msg) {
           const c = this.findConnection(addr);
           if (c) {
@@ -123,6 +136,8 @@ TODO generate through DSA-key here later (bad random for the moment).
           }
         }
     
+        /**
+        */
         local(msg) {
           if (this.rpc[msg.data.rpc]) {
             this.rpc[msg.data.rpc](msg);
@@ -131,20 +146,28 @@ TODO generate through DSA-key here later (bad random for the moment).
           }
         }
     
+        /**
+        */
         findConnection(addr) {
           return this.connections.find(o => o.addr === addr);
         }
     
+        /**
+        */
         address() {
           return this.myAddress;
         }
     
+        /**
+        */
         name() {
           return this.address()
             .toString()
             .slice(0, 4);
         }
     
+        /**
+        */
         addConnection(con) {
           let name = "";
     
@@ -294,6 +317,8 @@ print(msg.con.peers);
           }
         }
     
+        /**
+        */
         static async generate(src /*ArrayBuffer | String*/) {
           if (typeof src === "string") {
             src = ascii2buf(src);
@@ -304,6 +329,8 @@ print(msg.con.peers);
           return new HashAddress(new Uint8Array(hash));
         }
     
+        /**
+        */
         equals(addr) {
           for (let i = 0; i < 32; ++i) {
             if (this.data[i] !== addr.data[i]) {
@@ -313,6 +340,8 @@ print(msg.con.peers);
           return true;
         }
     
+        /**
+        */
         static async TEST_constructor_generate_equals() {
           let a = await HashAddress.generate("hello world");
           let b = await HashAddress.generate("hello world");
@@ -321,30 +350,44 @@ print(msg.con.peers);
           !a.equals(c) || throwError("equals2");
         }
     
+        /**
+        */
         static fromUint8Array(buf) {
           return new HashAddress(buf.slice());
         }
     
+        /**
+        */
         static fromArrayBuffer(buf) {
           return HashAddress.fromUint8Array(new Uint8Array(buf));
         }
     
+        /**
+        */
         static fromString(str) {
           return HashAddress.fromArrayBuffer(ascii2buf(atob(str)));
         }
     
+        /**
+        */
         static fromHex(str) {
           return HashAddress.fromArrayBuffer(hex2buf(str));
         }
     
+        /**
+        */
         toArrayBuffer() {
           return this.data.slice().buffer;
         }
     
+        /**
+        */
         toString() {
           return btoa(buf2ascii(this.toArrayBuffer()));
         }
     
+        /**
+        */
         toHex() {
           return buf2hex(this.toArrayBuffer());
         }
@@ -478,6 +521,8 @@ print(msg.con.peers);
     
 # Utility Functions
 ## Binary Data
+      /**
+        */
       function hex2buf(str) {
         let a = new Uint8Array(str.length / 2);
         for (let i = 0; i < str.length; i += 2) {
@@ -486,6 +531,8 @@ print(msg.con.peers);
         return a.buffer;
       }
     
+      /**
+        */
       function buf2hex(buf) {
         let a = new Uint8Array(buf);
         let str = "";
@@ -495,6 +542,8 @@ print(msg.con.peers);
         return str;
       }
     
+      /**
+        */
       function ascii2buf(str) {
         const result = new Uint8Array(str.length);
         for (let i = 0; i < str.length; ++i) {
@@ -511,6 +560,8 @@ print(msg.con.peers);
         ]);
       });
     
+      /**
+        */
       function buf2ascii(buf) {
         return Array.prototype.map
           .call(new Uint8Array(buf), i => String.fromCharCode(i))
@@ -526,6 +577,8 @@ print(msg.con.peers);
 ## Misc
     
       const printLines = [];
+      /**
+        */
       function print() {
         const line = [nodes.length === 1 ? nodes[0].name() : "????"].concat(
           Array.from(arguments)
@@ -553,10 +606,14 @@ print(msg.con.peers);
         );
       }
     
+      /**
+        */
       function throwError(msg) {
         throw new Error(msg);
       }
     
+      /**
+        */
       function tryFn(f, alt) {
         try {
           return f();
@@ -570,7 +627,9 @@ print(msg.con.peers);
         assert.equal(tryFn(() => throwError("asdf"), 123), 123);
       });
     
-      function sleep(n) {
+      /**
+        */
+      function sleep(n = 0) {
         return new Promise((resolve, reject) => setTimeout(resolve, n));
       }
       test(async () => {
@@ -581,6 +640,8 @@ print(msg.con.peers);
         assert(t < 110, t);
       });
     
+      /**
+        */
       function pairsToObject(keyvals) {
         const result = {};
         for (const [key, val] of keyvals) {
@@ -595,6 +656,8 @@ print(msg.con.peers);
         })
       );
     
+      /**
+        */
       function getEnv() {
         /* istanbul ignore else */
         if (isNodeJs) {
@@ -651,10 +714,14 @@ print(msg.con.peers);
     
 ## Testing
     
+      /**
+        */
       function test(f) {
         p2pweb._tests = p2pweb._tests || [];
         p2pweb._tests.push({ f });
       }
+      /**
+        */
       async function runTests() {
         const testTimeout = 3000;
     

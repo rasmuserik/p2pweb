@@ -2,10 +2,80 @@
 
 ### Table of Contents
 
+-   [Node](#node)
+    -   [allPeers](#allpeers)
+    -   [send](#send)
+    -   [local](#local)
+    -   [findConnection](#findconnection)
+    -   [address](#address)
+    -   [name](#name)
+    -   [addConnection](#addconnection)
 -   [HashAddress](#hashaddress)
+    -   [equals](#equals)
+    -   [toArrayBuffer](#toarraybuffer)
+    -   [toString](#tostring)
+    -   [toHex](#tohex)
     -   [dist](#dist)
     -   [distBit](#distbit)
     -   [flipBitRandomise](#flipbitrandomise)
+    -   [generate](#generate)
+    -   [TEST_constructor_generate_equals](#test_constructor_generate_equals)
+    -   [fromUint8Array](#fromuint8array)
+    -   [fromArrayBuffer](#fromarraybuffer)
+    -   [fromString](#fromstring)
+    -   [fromHex](#fromhex)
+-   [hex2buf](#hex2buf)
+-   [buf2hex](#buf2hex)
+-   [ascii2buf](#ascii2buf)
+-   [buf2ascii](#buf2ascii)
+-   [print](#print)
+-   [throwError](#throwerror)
+-   [tryFn](#tryfn)
+-   [sleep](#sleep)
+-   [pairsToObject](#pairstoobject)
+-   [getEnv](#getenv)
+-   [test](#test)
+-   [runTests](#runtests)
+
+## Node
+
+**Parameters**
+
+-   `$0` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+    -   `$0.bootstrapNodes`  
+
+### allPeers
+
+List of all known peers (one hop from current node)
+
+### send
+
+**Parameters**
+
+-   `addr`  
+-   `msg`  
+
+### local
+
+**Parameters**
+
+-   `msg`  
+
+### findConnection
+
+**Parameters**
+
+-   `addr`  
+
+### address
+
+### name
+
+### addConnection
+
+**Parameters**
+
+-   `con`  
 
 ## HashAddress
 
@@ -14,6 +84,18 @@ Hashes as addresses, and utility functions for Kademlia-like routing.
 **Parameters**
 
 -   `o`  
+
+### equals
+
+**Parameters**
+
+-   `addr`  
+
+### toArrayBuffer
+
+### toString
+
+### toHex
 
 ### dist
 
@@ -43,3 +125,96 @@ Flip the bit at pos, and randomise every bit after that
 **Parameters**
 
 -   `pos`  
+
+### generate
+
+**Parameters**
+
+-   `src`  
+
+### TEST_constructor_generate_equals
+
+### fromUint8Array
+
+**Parameters**
+
+-   `buf`  
+
+### fromArrayBuffer
+
+**Parameters**
+
+-   `buf`  
+
+### fromString
+
+**Parameters**
+
+-   `str`  
+
+### fromHex
+
+**Parameters**
+
+-   `str`  
+
+## hex2buf
+
+**Parameters**
+
+-   `str`  
+
+## buf2hex
+
+**Parameters**
+
+-   `buf`  
+
+## ascii2buf
+
+**Parameters**
+
+-   `str`  
+
+## buf2ascii
+
+**Parameters**
+
+-   `buf`  
+
+## print
+
+## throwError
+
+**Parameters**
+
+-   `msg`  
+
+## tryFn
+
+**Parameters**
+
+-   `f`  
+-   `alt`  
+
+## sleep
+
+**Parameters**
+
+-   `n`   (optional, default `0`)
+
+## pairsToObject
+
+**Parameters**
+
+-   `keyvals`  
+
+## getEnv
+
+## test
+
+**Parameters**
+
+-   `f`  
+
+## runTests

@@ -41,7 +41,11 @@
   // # Node
 
   let nodes = [];
+  /**
+  */
   class Node {
+    /**
+    */
     constructor({ bootstrapNodes }) {
       nodes.push(this);
 
@@ -61,17 +65,24 @@
       })();
     }
 
+    /**
+     * List of all known peers (one hop from current node)
+     */
     allPeers() {
       let peers = Object.keys(
         pairsToObject(
-          [].concat
-            .apply([], this.connections.map(o => o.peers))
+          this.connections
+            .map(o => o.addr)
+            .concat.apply([], this.connections.map(o => o.peers))
             .map(s => [s, true])
         )
       ).filter(o => o !== this.address().toString());
       return peers;
     }
 
+    /**
+     * @private
+    */
     bootstrap() {
       if (!this.bootstrapping && this.connections.length === 0) {
         this.bootstrapping = true;
@@ -93,6 +104,8 @@
       }
     }
 
+    /**
+    */
     send(addr, msg) {
       const c = this.findConnection(addr);
       if (c) {
@@ -113,6 +126,8 @@
       }
     }
 
+    /**
+    */
     local(msg) {
       if (this.rpc[msg.data.rpc]) {
         this.rpc[msg.data.rpc](msg);
@@ -121,20 +136,28 @@
       }
     }
 
+    /**
+    */
     findConnection(addr) {
       return this.connections.find(o => o.addr === addr);
     }
 
+    /**
+    */
     address() {
       return this.myAddress;
     }
 
+    /**
+    */
     name() {
       return this.address()
         .toString()
         .slice(0, 4);
     }
 
+    /**
+    */
     addConnection(con) {
       let name = "";
 
@@ -284,6 +307,8 @@
       }
     }
 
+    /**
+    */
     static async generate(src /*ArrayBuffer | String*/) {
       if (typeof src === "string") {
         src = ascii2buf(src);
@@ -294,6 +319,8 @@
       return new HashAddress(new Uint8Array(hash));
     }
 
+    /**
+    */
     equals(addr) {
       for (let i = 0; i < 32; ++i) {
         if (this.data[i] !== addr.data[i]) {
@@ -303,6 +330,8 @@
       return true;
     }
 
+    /**
+    */
     static async TEST_constructor_generate_equals() {
       let a = await HashAddress.generate("hello world");
       let b = await HashAddress.generate("hello world");
@@ -311,30 +340,44 @@
       !a.equals(c) || throwError("equals2");
     }
 
+    /**
+    */
     static fromUint8Array(buf) {
       return new HashAddress(buf.slice());
     }
 
+    /**
+    */
     static fromArrayBuffer(buf) {
       return HashAddress.fromUint8Array(new Uint8Array(buf));
     }
 
+    /**
+    */
     static fromString(str) {
       return HashAddress.fromArrayBuffer(ascii2buf(atob(str)));
     }
 
+    /**
+    */
     static fromHex(str) {
       return HashAddress.fromArrayBuffer(hex2buf(str));
     }
 
+    /**
+    */
     toArrayBuffer() {
       return this.data.slice().buffer;
     }
 
+    /**
+    */
     toString() {
       return btoa(buf2ascii(this.toArrayBuffer()));
     }
 
+    /**
+    */
     toHex() {
       return buf2hex(this.toArrayBuffer());
     }
@@ -468,6 +511,8 @@
 
   // # Utility Functions
   // ## Binary Data
+  /**
+    */
   function hex2buf(str) {
     let a = new Uint8Array(str.length / 2);
     for (let i = 0; i < str.length; i += 2) {
@@ -476,6 +521,8 @@
     return a.buffer;
   }
 
+  /**
+    */
   function buf2hex(buf) {
     let a = new Uint8Array(buf);
     let str = "";
@@ -485,6 +532,8 @@
     return str;
   }
 
+  /**
+    */
   function ascii2buf(str) {
     const result = new Uint8Array(str.length);
     for (let i = 0; i < str.length; ++i) {
@@ -501,6 +550,8 @@
     ]);
   });
 
+  /**
+    */
   function buf2ascii(buf) {
     return Array.prototype.map
       .call(new Uint8Array(buf), i => String.fromCharCode(i))
@@ -516,6 +567,8 @@
   // ## Misc
 
   const printLines = [];
+  /**
+    */
   function print() {
     const line = [nodes.length === 1 ? nodes[0].name() : "????"].concat(
       Array.from(arguments)
@@ -543,10 +596,14 @@
     );
   }
 
+  /**
+    */
   function throwError(msg) {
     throw new Error(msg);
   }
 
+  /**
+    */
   function tryFn(f, alt) {
     try {
       return f();
@@ -560,7 +617,9 @@
     assert.equal(tryFn(() => throwError("asdf"), 123), 123);
   });
 
-  function sleep(n) {
+  /**
+    */
+  function sleep(n = 0) {
     return new Promise((resolve, reject) => setTimeout(resolve, n));
   }
   test(async () => {
@@ -571,6 +630,8 @@
     assert(t < 110, t);
   });
 
+  /**
+    */
   function pairsToObject(keyvals) {
     const result = {};
     for (const [key, val] of keyvals) {
@@ -585,6 +646,8 @@
     })
   );
 
+  /**
+    */
   function getEnv() {
     /* istanbul ignore else */
     if (isNodeJs) {
@@ -641,10 +704,14 @@
 
   // ## Testing
 
+  /**
+    */
   function test(f) {
     p2pweb._tests = p2pweb._tests || [];
     p2pweb._tests.push({ f });
   }
+  /**
+    */
   async function runTests() {
     const testTimeout = 3000;
 

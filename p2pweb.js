@@ -236,6 +236,9 @@
       const allPeers = this.allPeers();
       const randomPeer =
         allPeers[(Math.random() * allPeers.length) | 0];
+      if (!randomPeer) {
+        return print("no peers");
+      }
       print("randomPeer:", randomPeer.slice(0, 4));
       if (!this.findConnection(randomPeer)) {
         print("connecting to randomPeer");

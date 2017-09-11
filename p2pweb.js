@@ -118,11 +118,16 @@
       con.onmessage = msg => this.local(msg);
 
       con.onclose = () => {
-        const o = this.connections.find(o => o.con === con) || {
-          addr: "????"
-        };
-        print("close", o.addr.slice(0, 4));
+        const addr = (this.connections.find(o => o.con === con) || {})
+          .addr;
         this.connections = this.connections.filter(o => o.con !== con);
+        print("close", (addr || "????").slice(0, 4));
+
+        if (addr) {
+          for (const peer of this.connections.map(o => o.addr)) {
+            this.send(peer, { rpc: "lostPeer", addr: addr });
+          }
+        }
       };
 
       con.send({
@@ -146,13 +151,36 @@
     if (this.connections.find(o => o.addr === msg.addr)) {
       await print("already connected to", msg.addr.slice(0, 4));
       setTimeout(() => con.close(), 0);
+      return;
     }
 
-    this.connections.push({
-      addr: msg.addr,
-      con: con
-    });
+    for (const peer of this.connections.map(o => o.addr)) {
+      this.send(peer, { rpc: "newPeer", addr: msg.addr });
+    }
+
+    con.addr = msg.addr;
+    con.con = con;
+    con.peers = [];
+    this.connections.push(con);
     this.send(msg.addr, { rpc: "print", from: await this.name() });
+  };
+  rpc.lostPeer = function(msg) {
+    //msg.con.peers.filter(o => o.addr !== msg.data.addr);
+    print(
+      "lostPeer",
+      msg.con.addr.slice(0, 4),
+      msg.data.addr.slice(0, 4)
+    );
+    //print(msg.con.peers);
+  };
+  rpc.newPeer = function(msg) {
+    //msg.con.peers.push({addr: msg.data.addr});
+    print(
+      "newPeer",
+      msg.con.addr.slice(0, 4),
+      msg.data.addr.slice(0, 4)
+    );
+    //print(msg.con.peers);
   };
   rpc.relay = function(msg) {
     this.send(msg.dst, msg.data);
@@ -665,27 +693,31 @@
     //
     // ## Browser or WebWorker (!isNodeJs)
     //
+    function connectWebSocket(url) {
+      const con = {};
+      const ws = new WebSocket(url);
+      con.send = msg => ws.send(JSON.stringify(msg));
+      con.close = () => ws.close();
+      ws.onmessage = msg => {
+        con.onmessage &&
+          con.onmessage({ data: JSON.parse(msg.data), con: con });
+      };
+      ws.onerror = err => {
+        con.onclose && con.onclose();
+        signalConnection.close();
+      };
+      ws.onclose = () => con.onclose && con.onclose();
+      ws.onopen = () => {
+        platform.onconnection(con);
+        signalConnection.close();
+      };
+    }
+
     platform.receiveSignalling = signalConnection => {
       signalConnection.onmessage = signalMessage => {
         signalMessage = signalMessage.data;
         if (signalMessage.websocket) {
-          const con = {};
-          const ws = new WebSocket(signalMessage.websocket);
-          con.send = msg => ws.send(JSON.stringify(msg));
-          con.close = () => ws.close();
-          ws.onmessage = msg => {
-            con.onmessage &&
-              con.onmessage({ data: JSON.parse(msg.data), con: con });
-          };
-          ws.onerror = err => {
-            con.onclose && con.onclose();
-            signalConnection.close();
-          };
-          ws.onclose = () => con.onclose && con.onclose();
-          ws.onopen = () => {
-            platform.onconnection(con);
-            signalConnection.close();
-          };
+          connectWebSocket(signalMessage.websocket);
         } else {
           signalConnection.close();
           throw "WebRTC not implemented yet";

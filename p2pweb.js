@@ -272,7 +272,7 @@
   //
   // # Hash Address
 
-  /*
+  /**
  * Hashes as addresses, and utility functions for Kademlia-like routing.
  */
   class HashAddress {
@@ -351,7 +351,7 @@
       x80.toHex().startsWith("800") || throwError();
     }
 
-    /*
+    /**
    * xor-distance between two addresses, - with 24 significant bits, 
    * and with an offset such that the distance between `0x000..` 
    * and `0x800...` is `2 ** 123`, and distance `0b1111..` and 
@@ -376,7 +376,7 @@
       return 0;
     }
 
-    /* 
+    /**
    * index of first bit in addr that is different. 
    */
     distBit(addr) {

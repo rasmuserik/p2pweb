@@ -99,8 +99,17 @@
         c.con.send(msg);
       } else if (this.address().toString() === addr) {
         this.local(msg);
+      } else if (this.allPeers().includes(addr)) {
+        for (const peer of this.connections) {
+          if (peer.peers.includes(addr)) {
+            peer.con.send({ rpc: "relay", dst: addr, data: msg });
+            break;
+          }
+        }
       } else {
-        print("no connection to " + addr.toString().slice(0, 4), msg);
+        print("no connection to " + String(addr).slice(0, 4), msg);
+        print(this.allPeers().map(s => s.slice(0, 4)));
+        throw new Error();
       }
     }
 
@@ -204,8 +213,16 @@
       const allPeers = this.allPeers();
       const randomPeer =
         allPeers[(Math.random() * allPeers.length) | 0];
-      print("randomPeer:", randomPeer);
-      print("this.allPeers()", this.allPeers());
+      print("randomPeer:", randomPeer.slice(0, 4));
+      if (!this.findConnection(randomPeer)) {
+        print("connecting to randomPeer");
+        this.send(randomPeer, {
+          rpc: "print",
+          data: "hello from " + this.name()
+        });
+      } else {
+        print("already connected to randomPeer");
+      }
     }, 2000);
   };
 
@@ -232,10 +249,10 @@
     //print(msg.con.peers);
   };
   rpc.relay = function(msg) {
-    this.send(msg.dst, msg.data);
+    this.send(msg.data.dst, msg.data.data);
   };
   rpc.print = function(msg) {
-    print("print", msg.data);
+    print("print", JSON.stringify(msg.data));
   };
   // # Main
 
@@ -498,13 +515,24 @@
 
   // ## Misc
 
+  const printLines = [];
   function print() {
-    console.log.apply(
-      console,
-      [nodes.length === 1 ? nodes[0].name() : "????"].concat(
-        Array.from(arguments)
-      )
+    const line = [nodes.length === 1 ? nodes[0].name() : "????"].concat(
+      Array.from(arguments)
     );
+    if (
+      window.document &&
+      window.document.getElementById("p2pweb-log")
+    ) {
+      if (printLines.length > 20) {
+        printLines.shift(1);
+      }
+      printLines.push(line.map(String).join(" "));
+      window.document.getElementById("p2pweb-log").innerHTML = `
+        <pre>${printLines.join("\n")}</pre>
+      `;
+    }
+    console.log.apply(console, line);
   }
 
   function getIsNodeJs() {

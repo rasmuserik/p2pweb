@@ -52,12 +52,37 @@ This is a library for building peer-to-peer web applications.
     
       let nodes = [];
       class Node {
-        constructor() {
-          this.connections = [];
+        constructor({ bootstrapNodes }) {
           nodes.push(this);
+    
+          this.bootstrapNodes = bootstrapNodes;
+          this.connections = [];
           this.rpc = {};
           for (const method in rpc) {
             this.rpc[method] = rpc[method].bind(this);
+          }
+    
+          this.bootstrap();
+        }
+    
+        bootstrap() {
+          if (!this.bootstrapping && this.connections.length === 0) {
+            this.bootstrapping = true;
+            setTimeout(() => {
+              this.bootstrapping = false;
+              this.bootstrap();
+            }, 1000);
+    
+            const o = { close: () => {} };
+            platform.receiveSignalling(o);
+            o.onmessage({
+              data: {
+                websocket:
+                  bootstrapNodes[
+                    (Math.random() * bootstrapNodes.length) | 0
+                  ]
+              }
+            });
           }
         }
         async send(addr, msg) {
@@ -86,7 +111,9 @@ This is a library for building peer-to-peer web applications.
           if (this.myAddress instanceof HashAddress) {
             return this.myAddress;
           }
+    
 TODO generate through DSA-key here later (bad random for the moment).
+    
           if (this.myAddress === undefined) {
             this.myAddress = HashAddress.generate(String(Math.random()));
           }
@@ -145,21 +172,16 @@ TODO generate through DSA-key here later (bad random for the moment).
       };
 # Main
     
-      /* istanbul ignore next */
       async function main() {
+        /* istanbul ignore else */
         if (env.RUN_TESTS) {
           return runTests();
+        } else {
+          const node = new Node({ bootstrapNodes });
+          platform.onconnection = con => {
+            node.addConnection(con);
+          };
         }
-        const node = new Node();
-        platform.onconnection = con => {
-          node.addConnection(con);
-        };
-    
-        setTimeout(() => {
-          const o = { close: () => {} };
-          let con = platform.receiveSignalling(o);
-          o.onmessage({ data: { websocket: bootstrapNodes[0] } });
-        }, 1000 * Math.random());
       }
       setTimeout(main, 0);
     
@@ -479,6 +501,7 @@ TODO generate through DSA-key here later (bad random for the moment).
                 .slice(1)
                 .split("&")
                 .map(s => s.split("=").map(decodeURIComponent))
+                .map(([k, v]) => tryFn(() => [k, JSON.parse(v)], [k, v]))
             );
           } catch (e) {
             print(e);

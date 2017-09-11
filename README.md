@@ -47,23 +47,25 @@ This is a library for building peer-to-peer web applications.
       platform.receiveSignalling = undefined;
       platform.connected = undefined;
     
-# Main
+# Node
     
-      let _myAddress;
-      async function myAddress() {
-        if (_myAddress instanceof HashAddress) {
-          return _myAddress;
-        }
-        if (_myAddress instanceof Promise) {
-          return await _myAddress;
-        }
+      class Node {
+        constructor() {}
+        async address() {
+          if (this.myAddress instanceof HashAddress) {
+            return this.myAddress;
+          }
 TODO generate through DSA-key here later (bad random for the moment).
-        _myAddress = await HashAddress.generate(String(Math.random()));
-        return _myAddress;
+          if (this.myAddress === undefined) {
+            this.myAddress = HashAddress.generate(String(Math.random()));
+          }
+          return await this.myAddress;
+        }
+        async name() {
+          return (await this.address()).toHex().slice(0, 4);
+        }
       }
-      async function myName() {
-        return (await myAddress()).toHex().slice(0, 4);
-      }
+# Main
     
       /* istanbul ignore else */
       if (env.RUN_TESTS) {

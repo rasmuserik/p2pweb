@@ -31,7 +31,7 @@ do
 
   sleep 0.5
   P2PWEB_URL=ws://localhost:3501 \
-  P2PWEB_BOOTSTRAP=ws:localhost:3500 \
+  P2PWEB_BOOTSTRAP=ws://localhost:3500 \
   P2PWEB_PORT=3501 \
   node p2pweb.js &
   echo $! >> .pid

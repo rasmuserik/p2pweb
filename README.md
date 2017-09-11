@@ -45,10 +45,45 @@ This is a library for building peer-to-peer web applications.
       const platform = {};
       platform.startSignalling = undefined;
       platform.receiveSignalling = undefined;
-      platform.connection = undefined;
+      platform.connected = undefined;
     
-# Utility Functions
-## Hash Address
+# Main
+    
+      let _myAddress;
+      async function myAddress() {
+        if (_myAddress instanceof HashAddress) {
+          return _myAddress;
+        }
+        if (_myAddress instanceof Promise) {
+          return await _myAddress;
+        }
+TODO generate through DSA-key here later (bad random for the moment).
+        _myAddress = await HashAddress.generate(String(Math.random()));
+        return _myAddress;
+      }
+      async function myName() {
+        return (await myAddress()).toHex().slice(0, 4);
+      }
+    
+      /* istanbul ignore else */
+      if (env.RUN_TESTS) {
+        setTimeout(runTests, 0);
+      } else {
+        platform.connected = con => {
+          con.onmessage = msg => print("msg", msg);
+          con.onclose = () => print("close", con);
+          con.send(`hello ${isNodeJs}`);
+        };
+    
+        setTimeout(() => {
+          const o = { close: () => {} };
+          let con = platform.receiveSignalling(o);
+          o.onmessage({ websocket: bootstrapNodes[0] });
+        }, 1000 * Math.random());
+      }
+    
+
+# Hash Address
     
       /*
      * Hashes as addresses, and utility functions for Kademlia-like routing.
@@ -65,6 +100,8 @@ This is a library for building peer-to-peer web applications.
         static async generate(src /*ArrayBuffer | String*/) {
           if (typeof src === "string") {
             src = ascii2buf(src);
+          } else {
+            assert(src instanceof ArrayBuffer);
           }
           let hash = await crypto.subtle.digest("SHA-256", src);
           return new HashAddress(new Uint8Array(hash));
@@ -242,6 +279,7 @@ This is a library for building peer-to-peer web applications.
     
       window.HA = HashAddress;
     
+# Utility Functions
 ## Binary Data
       function hex2buf(str) {
         let a = new Uint8Array(str.length / 2);
@@ -289,6 +327,13 @@ This is a library for building peer-to-peer web applications.
       });
     
 ## Misc
+    
+      async function print() {
+        console.log.apply(
+          console,
+          [await myName()].concat(Array.from(arguments))
+        );
+      }
     
       function getIsNodeJs() {
         return (
@@ -353,7 +398,7 @@ This is a library for building peer-to-peer web applications.
                 .map(s => s.split("=").map(decodeURIComponent))
             );
           } catch (e) {
-            console.log(e);
+            print(e);
             return {};
           }
         }
@@ -402,7 +447,7 @@ This is a library for building peer-to-peer web applications.
       async function runTests() {
         const testTimeout = 3000;
     
-        console.log("Running tests...");
+        print("Running tests...");
         let errors = 0;
         for (const test of p2pweb._tests) {
           try {
@@ -415,38 +460,16 @@ This is a library for building peer-to-peer web applications.
               Promise.resolve(test.f())
             ]);
           } catch (e) {
-            console.log(test.f);
-            console.log(e);
+            print(test.f);
+            print(e);
             typeof process !== "undefined" && process.exit(1);
             throw e;
           }
         }
-        console.log("All tests ok :)");
+        print("All tests ok :)");
         typeof process !== "undefined" && process.exit(0);
       }
     
-# Main
-    
-      /* istanbul ignore else */
-      if (env.RUN_TESTS) {
-        setTimeout(runTests, 0);
-      } else {
-        platform.connected = con => {
-          con.onmessage = msg => console.log("msg", msg);
-          con.onclose = () => console.log("close", con);
-          con.send(`hello ${isNodeJs}`);
-        };
-    
-        setTimeout(() => {
-          const o = { close: () => {} };
-          let con = platform.receiveSignalling(o);
-          o.onmessage({
-            data: JSON.stringify({ websocket: bootstrapNodes[0] })
-          });
-        }, 1000 * Math.random());
-      }
-    
-
 # Platform specific code
 
     
@@ -463,24 +486,39 @@ This is a library for building peer-to-peer web applications.
         const wss = new WebSocket.Server({ port: port });
         wss.on("connection", function connection(ws) {
           const con = {
-            send: msg => ws.send(msg),
+            send: msg => ws.send(JSON.stringify(msg)),
             close: () => ws.close()
           };
           platform.connected(con);
           ws.on(
             "message",
-            msg => con.onmessage && con.onmessage({ data: msg })
+            msg => con.onmessage && con.onmessage(JSON.parse(msg))
           );
           ws.on("close", () => con.onclose && con.onclose());
         });
     
         platform.receiveSignalling = o => {
-          o.onmessage = () => {};
+          o.onmessage = msg => {
+            if (msg.websocket) {
+              const ws = new WebSocket(msg.websocket);
+              const con = {
+                send: msg => ws.send(JSON.stringify(msg)),
+                close: () => wc.close()
+              };
+              ws.on("open", () => platform.connected(con));
+              ws.on(
+                "message",
+                msg => con.onmessage && con.onmessage(JSON.parse(msg))
+              );
+            } else {
+              o.send({ websocket: url });
+            }
+          };
           return {};
         };
     
         platform.startSignalling = o => {
-          o.send({ ws: url });
+          o.send({ websocket: url });
         };
     
 ### Crypto shim
@@ -510,13 +548,13 @@ This is a library for building peer-to-peer web applications.
 
         platform.receiveSignalling = signalConnection => {
           signalConnection.onmessage = signalMessage => {
-            signalMessage = JSON.parse(signalMessage.data);
             if (signalMessage.websocket) {
               const con = {};
               const ws = new WebSocket(signalMessage.websocket);
-              con.send = msg => ws.send(msg);
+              con.send = msg => ws.send(JSON.stringify(msg));
               con.close = () => ws.close();
-              ws.onmessage = msg => con.onmessage && con.onmessage(msg);
+              ws.onmessage = msg =>
+                con.onmessage && con.onmessage(JSON.parse(msg.data));
               ws.onerror = err => {
                 con.onclose && con.onclose();
                 signalConnection.close();

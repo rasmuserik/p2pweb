@@ -36,6 +36,7 @@
   platform.startSignalling = undefined;
   platform.receiveSignalling = undefined;
   platform.onconnection = undefined;
+  const rpc = {};
 
   // # Node
 
@@ -44,6 +45,21 @@
     constructor() {
       this.connections = [];
       nodes.push(this);
+    }
+    async send(addr, msg) {
+      const c = this.connections.find(o => (o.addr = addr));
+      print("send", msg, !!c);
+      if (c) {
+        c.con.send(msg);
+      } else if ((await this.address()).toString() === addr) {
+        if (msg.rpc && rpc[msg.rpc]) {
+          rpc[msg.rpc](msg);
+        } else {
+          print("no such method", msg);
+        }
+      } else {
+        print("no connection to " + addr.toString().slice(0, 4), msg);
+      }
     }
     async printConnections() {
       print(
@@ -67,23 +83,9 @@
     }
     async addConnection(con) {
       let name = "";
-      con.onmessage = msg => {
-        //print('connect', msg.addr.slice(0,4), msg.cons.map(o => o.slice(0,4).join(',')));
-        print(
-          "connect",
-          msg.addr.slice(0, 4),
-          msg.cons.map(s => s.slice(0, 4))
-        );
-        if (this.connections.find(o => o.addr === msg.addr)) {
-          print("already connected to", msg.addr.slice(0, 4));
-          setTimeout(() => con.close(), 0);
-        }
-        this.connections.push({
-          addr: msg.addr,
-          con: con
-        });
-        this.printConnections();
-      };
+
+      con.onmessage = rpc.connect.bind(this, con);
+
       con.onclose = () => {
         const o = this.connections.find(o => o.con === con) || {
           addr: "????"
@@ -92,7 +94,9 @@
         this.connections = this.connections.filter(o => o.con !== con);
         this.printConnections();
       };
+
       con.send({
+        rpc: "connect",
         addr: (await this.address()).toString(),
         cons: this.connections.map(o => o.addr),
         isNodeJs: isNodeJs
@@ -100,6 +104,34 @@
       print("addconnection");
     }
   }
+  // # RPC
+  rpc.connect = function(con, msg) {
+    console.log(msg);
+    print("xxx", msg);
+    print(
+      "connect",
+      msg.addr.slice(0, 4),
+      msg.cons.map(s => s.slice(0, 4))
+    );
+
+    if (this.connections.find(o => o.addr === msg.addr)) {
+      print("already connected to", msg.addr.slice(0, 4));
+      setTimeout(() => con.close(), 0);
+    }
+    this.connections.push({
+      addr: msg.addr,
+      con: con
+    });
+    this.printConnections();
+
+    //this.send (msg.addr, {rpc: 'print'});
+  };
+  rpc.relay = function(msg) {
+    this.send(msg.dst, msg.data);
+  };
+  rpc.print = function(msg) {
+    print("print", msg);
+  };
   // # Main
 
   /* istanbul ignore next */

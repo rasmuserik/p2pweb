@@ -52,7 +52,13 @@
         this.rpc[method] = rpc[method].bind(this);
       }
 
-      this.bootstrap();
+      (async () => {
+        // TODO generate through DSA-key here later (bad random for the moment).
+        this.myAddress = await HashAddress.generate(
+          String(Math.random())
+        );
+        this.bootstrap();
+      })();
     }
 
     bootstrap() {
@@ -75,12 +81,11 @@
         });
       }
     }
-    async send(addr, msg) {
+    send(addr, msg) {
       const c = this.connections.find(o => o.addr === addr);
-      print("send", msg, !!c);
       if (c) {
         c.con.send(msg);
-      } else if ((await this.address()).toString() === addr) {
+      } else if (this.address().toString() === addr) {
         if (msg.rpc && rpc[msg.rpc]) {
           rpc[msg.rpc](msg);
         } else {
@@ -90,38 +95,34 @@
         print("no connection to " + addr.toString().slice(0, 4), msg);
       }
     }
-    async local(msg) {
+    local(msg) {
       if (this.rpc[msg.data.rpc]) {
-        await this.rpc[msg.data.rpc](msg);
+        this.rpc[msg.data.rpc](msg);
       } else {
         throwError("no such endpoint " + JSON.stringify(msg));
       }
     }
-    async address() {
-      if (this.myAddress instanceof HashAddress) {
-        return this.myAddress;
-      }
-
-      // TODO generate through DSA-key here later (bad random for the moment).
-
-      if (this.myAddress === undefined) {
-        this.myAddress = HashAddress.generate(String(Math.random()));
-      }
-      return await this.myAddress;
+    address() {
+      return this.myAddress;
     }
-    async name() {
-      return (await this.address()).toString().slice(0, 4);
+    name() {
+      return this.address()
+        .toString()
+        .slice(0, 4);
     }
-    async addConnection(con) {
+    addConnection(con) {
       let name = "";
 
-      con.onmessage = msg => this.local(msg);
+      const peer = { con };
+      peer.con.onmessage = msg => this.local(msg);
 
-      con.onclose = () => {
-        const addr = (this.connections.find(o => o.con === con) || {})
-          .addr;
-        this.connections = this.connections.filter(o => o.con !== con);
-        print("close", (addr || "????").slice(0, 4));
+      peer.con.onclose = () => {
+        const addr = (this.connections.find(o => o.con === peer.con) ||
+          {}).addr;
+        this.connections = this.connections.filter(
+          o => o.con !== peer.con
+        );
+        print("close", (con.addr || "????").slice(0, 4));
 
         if (addr) {
           for (const peer of this.connections.map(o => o.addr)) {
@@ -130,9 +131,12 @@
         }
       };
 
-      con.send({
+      peer.con.t2 = Date.now() + Math.random();
+      peer.con.send({
+        time: peer.con.t2,
+        weigh: 1 + Math.random(),
         rpc: "connect",
-        addr: (await this.address()).toString(),
+        addr: this.address().toString(),
         cons: this.connections.map(o => o.addr),
         isNodeJs: isNodeJs
       });
@@ -140,7 +144,7 @@
     }
   }
   // # RPC
-  rpc.connect = async function({ con, data }) {
+  rpc.connect = function({ con, data }) {
     const msg = data;
     print(
       "connect",
@@ -148,21 +152,35 @@
       msg.cons.map(s => s.slice(0, 4))
     );
 
+    con.t2 += msg.time;
+
+    const peer = con;
+    peer.addr = msg.addr;
+    peer.con = con;
+    peer.peers = [];
+
     if (this.connections.find(o => o.addr === msg.addr)) {
-      await print("already connected to", msg.addr.slice(0, 4));
-      setTimeout(() => con.close(), 0);
+      print("already connected to", msg.addr.slice(0, 4));
+      print(
+        "timestamps for consitent cleanup (not implemented yet)",
+        con.t2,
+        msg.time,
+        this.connections.find(o => o.addr === msg.addr).con.t2
+      );
+      //
+      // TODO: cleanup duplicate connections made at the same time
+      //
+      this.connections.push(con);
       return;
     }
+    this.connections.push(con);
+    this.send(msg.addr, { rpc: "print", from: this.name() });
 
     for (const peer of this.connections.map(o => o.addr)) {
-      this.send(peer, { rpc: "newPeer", addr: msg.addr });
+      if (peer !== con.addr) {
+        this.send(peer, { rpc: "newPeer", addr: msg.addr });
+      }
     }
-
-    con.addr = msg.addr;
-    con.con = con;
-    con.peers = [];
-    this.connections.push(con);
-    this.send(msg.addr, { rpc: "print", from: await this.name() });
   };
   rpc.lostPeer = function(msg) {
     //msg.con.peers.filter(o => o.addr !== msg.data.addr);
@@ -190,7 +208,7 @@
   };
   // # Main
 
-  async function main() {
+  function main() {
     /* istanbul ignore else */
     if (env.RUN_TESTS) {
       return runTests();
@@ -452,7 +470,7 @@
   async function print() {
     console.log.apply(
       console,
-      [nodes.length === 1 ? await nodes[0].name() : "????"].concat(
+      [nodes.length === 1 ? nodes[0].name() : "????"].concat(
         Array.from(arguments)
       )
     );
@@ -632,10 +650,16 @@
         if (msg.websocket) {
           const ws = new WebSocket(msg.websocket);
           const con = {
-            send: msg => ws.send(JSON.stringify(msg)),
+            outgoing: [],
+            send: msg => con.outgoing.push(msg),
             close: () => ws.close()
           };
-          ws.on("open", () => platform.onconnection(con));
+          ws.on("open", () => {
+            (con.send = msg => ws.send(JSON.stringify(msg))),
+              con.outgoing.forEach(con.send);
+            delete con.outgoing;
+            platform.onconnection(con);
+          });
           ws.on(
             "message",
             msg =>

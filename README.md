@@ -55,9 +55,13 @@ This is a library for building peer-to-peer web applications.
         constructor() {
           this.connections = [];
           nodes.push(this);
+          this.rpc = {};
+          for (const method in rpc) {
+            this.rpc[method] = rpc[method].bind(this);
+          }
         }
         async send(addr, msg) {
-          const c = this.connections.find(o => (o.addr = addr));
+          const c = this.connections.find(o => o.addr === addr);
           print("send", msg, !!c);
           if (c) {
             c.con.send(msg);
@@ -71,12 +75,12 @@ This is a library for building peer-to-peer web applications.
             print("no connection to " + addr.toString().slice(0, 4), msg);
           }
         }
-        async printConnections() {
-          print(
-            this.connections.length,
-            "cons:",
-            this.connections.map(o => o.addr.slice(0, 4)).join(" ")
-          );
+        async local(msg) {
+          if (this.rpc[msg.data.rpc]) {
+            await this.rpc[msg.data.rpc](msg);
+          } else {
+            throwError("no such endpoint " + JSON.stringify(msg));
+          }
         }
         async address() {
           if (this.myAddress instanceof HashAddress) {
@@ -94,7 +98,7 @@ TODO generate through DSA-key here later (bad random for the moment).
         async addConnection(con) {
           let name = "";
     
-          con.onmessage = rpc.connect.bind(this, con);
+          con.onmessage = msg => this.local(msg);
     
           con.onclose = () => {
             const o = this.connections.find(o => o.con === con) || {
@@ -102,7 +106,6 @@ TODO generate through DSA-key here later (bad random for the moment).
             };
             print("close", o.addr.slice(0, 4));
             this.connections = this.connections.filter(o => o.con !== con);
-            this.printConnections();
           };
     
           con.send({
@@ -115,9 +118,8 @@ TODO generate through DSA-key here later (bad random for the moment).
         }
       }
 # RPC
-      rpc.connect = function(con, msg) {
-        console.log(msg);
-        print("xxx", msg);
+      rpc.connect = async function({ con, data }) {
+        const msg = data;
         print(
           "connect",
           msg.addr.slice(0, 4),
@@ -125,22 +127,21 @@ TODO generate through DSA-key here later (bad random for the moment).
         );
     
         if (this.connections.find(o => o.addr === msg.addr)) {
-          print("already connected to", msg.addr.slice(0, 4));
+          await print("already connected to", msg.addr.slice(0, 4));
           setTimeout(() => con.close(), 0);
         }
+    
         this.connections.push({
           addr: msg.addr,
           con: con
         });
-        this.printConnections();
-    
-this.send (msg.addr, {rpc: 'print'});
+        this.send(msg.addr, { rpc: "print", from: await this.name() });
       };
       rpc.relay = function(msg) {
         this.send(msg.dst, msg.data);
       };
       rpc.print = function(msg) {
-        print("print", msg);
+        print("print", msg.data);
       };
 # Main
     
@@ -157,7 +158,7 @@ this.send (msg.addr, {rpc: 'print'});
         setTimeout(() => {
           const o = { close: () => {} };
           let con = platform.receiveSignalling(o);
-          o.onmessage({ websocket: bootstrapNodes[0] });
+          o.onmessage({ data: { websocket: bootstrapNodes[0] } });
         }, 1000 * Math.random());
       }
       setTimeout(main, 0);
@@ -577,13 +578,16 @@ this.send (msg.addr, {rpc: 'print'});
           platform.onconnection(con);
           ws.on(
             "message",
-            msg => con.onmessage && con.onmessage(JSON.parse(msg))
+            msg =>
+              con.onmessage &&
+              con.onmessage({ data: JSON.parse(msg), con: con })
           );
           ws.on("close", () => con.onclose && con.onclose());
         });
     
         platform.receiveSignalling = o => {
           o.onmessage = msg => {
+            msg = msg.data;
             if (msg.websocket) {
               const ws = new WebSocket(msg.websocket);
               const con = {
@@ -593,7 +597,9 @@ this.send (msg.addr, {rpc: 'print'});
               ws.on("open", () => platform.onconnection(con));
               ws.on(
                 "message",
-                msg => con.onmessage && con.onmessage(JSON.parse(msg))
+                msg =>
+                  con.onmessage &&
+                  con.onmessage({ data: JSON.parse(msg), con })
               );
               ws.on("error", () => {
                 print("could not connect to " + msg.websocket);
@@ -648,13 +654,15 @@ this.send (msg.addr, {rpc: 'print'});
 
         platform.receiveSignalling = signalConnection => {
           signalConnection.onmessage = signalMessage => {
+            signalMessage = signalMessage.data;
             if (signalMessage.websocket) {
               const con = {};
               const ws = new WebSocket(signalMessage.websocket);
               con.send = msg => ws.send(JSON.stringify(msg));
               con.close = () => ws.close();
               ws.onmessage = msg => {
-                con.onmessage && con.onmessage(JSON.parse(msg.data));
+                con.onmessage &&
+                  con.onmessage({ data: JSON.parse(msg.data), con: con });
               };
               ws.onerror = err => {
                 con.onclose && con.onclose();

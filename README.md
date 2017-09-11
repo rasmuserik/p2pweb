@@ -477,7 +477,7 @@ print(msg.con.peers);
     
 ## Misc
     
-      async function print() {
+      function print() {
         console.log.apply(
           console,
           [nodes.length === 1 ? nodes[0].name() : "????"].concat(

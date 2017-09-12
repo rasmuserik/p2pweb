@@ -1,9 +1,13 @@
-all: docs
+all: .prettiered docs
 
 docs: docs/notes.pdf docs/index.html docs/jsdoc/index.html
 
 clean:
 	rm -rf docs/*.pdf docs/index.html docs/jsdoc
+
+.prettiered: p2pweb.js
+	./node_modules/.bin/prettier --write p2pweb.js --print-width 72 && git add p2pweb.js \
+		&& date > .prettiered
 
 live-server:
 	kill `cat .pid-liveserver`; sleep 0.1
@@ -25,3 +29,5 @@ docs/notes.pdf: notes.md pandoc/*.html pandoc/*.yml pandoc/*.bib
 docs/index.html: README.md pandoc/*.html pandoc/*.yml
 	pandoc pandoc/README.yml pandoc/template.yml README.md --template=pandoc/template.html -s -o docs/index.html
 
+coverage/lcov.info: p2pweb.js
+	P2PWEB_URL=ws://localhost:3535 RUN_TESTS=true ./node_modules/.bin/istanbul cover p2pweb.js

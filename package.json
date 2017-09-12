@@ -4,17 +4,17 @@
   "description": "",
   "main": "p2pweb.js",
   "scripts": {
-    "prettier": "prettier --write p2pweb.js --print-width 72 && git add p2pweb.js",
     "dev": "./dev.sh",
+    "build": "make",
     "docs": "make docs; git add docs",
-    "test": "P2PWEB_URL=ws://localhost:3535 RUN_TESTS=true istanbul cover p2pweb.js",
+    "test": "make ./coverage/lcov.info",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
-    "git-add": "git add README.md p2pweb.js"
+    "git-add": "git add README.md p2pweb.js docs"
   },
   "pre-commit": [
-    "prettier",
+    "build",
     "test",
-    "docs"
+    "git-add"
   ],
   "repository": {
     "type": "git",

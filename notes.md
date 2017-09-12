@@ -1,4 +1,4 @@
-# Presentation notes
+# General notes
 
 Purpose:
 
@@ -92,12 +92,33 @@ Design criteria
 - connect to arbitrary host
 - foundation for other p2p applications
 
-# Brainstorm around potential articles
+# Roadmap
 
-Possibly relevant conferences or journals
+TODO: describe here
+
+# notes
 
 
-# Relevant Litterature
+Ideas of places for publications:
+
+- Open Access Journals (NB: <https://doaj.org>)
+    - [Ledger Journal](http://ledgerjournal.org) 
+    - [EAI Transactions on Scalable Information Systems](http://eai.eu/transaction/scalable-information-systems)
+    - [Computer Science (AGH)](https://journals.agh.edu.pl/csci)
+- ACM/IEEE (pay for open access)
+    - [IEEE Transactions on Parallel and Distributed Systems]()
+    - [ACM Transactions on Computer Systems (TOCS)]()
+- Conferences (in Europe)
+    - 2017-10-30 2018-02-26/28 [IFIP NTMS 1st International Workshop on Blockchains and Smart Contracts (BSC)](http://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=67425&copyownerid=102766)
+    - ~~2018-02-05 2018-06-20/22 [DCAI 2018 : 15th International Conference on Distributed Computing and Artificial Intelligence](http://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=66780&copyownerid=95447)~~
+- Central non-conference sources (based on related articles)
+    - "The Computing Research Repository" (not a Journal, but arXiv, indexed in dblp etc.)
+    - [Peer-to-Peer Networking and Applications](http://www.springer.com/engineering/signals/journal/12083) (Springer)
+    - ~~Computer Networks (avoid Elsevier)~~
+
+# Literature
+
+Various articles etc. that I should take a look add (and possibly add notes here eventually)
 
 - [@delegate-verify-public-verifiable-computing-2012]
 - [@embracing-peer-next-door-kademlia-2008]

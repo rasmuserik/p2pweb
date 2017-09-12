@@ -77,26 +77,6 @@ body {
 <li>WebRTC bootstrapping options (decentralised signalling server vs. actual node)</li>
 <li>Infrastructure deployment - bootstrap-code + load signed version of code from network, - partly test within network before full deploy.</li>
 </ul>
-<p>Articles:</p>
-<ul>
-<li>delegate-verify-public-verifiable-computing-2012</li>
-<li>embracing-peer-next-door-kademlia-2008</li>
-<li>ethereum-yellowpaper-2014</li>
-<li>golem-whitepaper-2016</li>
-<li>handling-churn-dht-2004</li>
-<li>improving-lookup-kademlia-2010</li>
-<li>ipfs-2014</li>
-<li>kademlia-2002</li>
-<li>noninteractive-verifiable-computing-2010</li>
-<li>performance-chord-kademlia-churn-2014</li>
-<li>performance-evaluation-kademlia-2010</li>
-<li>pinoccchio-nearly-practical-verifiable-computing-2013</li>
-<li>s-kademlia-2007</li>
-<li>subsecond-lookup-kademlia-2011</li>
-<li>survey-simulators-overlay-networks-2017</li>
-<li>trustless-computing-what-not-how-2016</li>
-<li>webassembly-2017</li>
-</ul>
 <p>Description of algorithm:</p>
 <ul>
 <li>nodes connected in kademlia-like structure</li>
@@ -152,7 +132,7 @@ body {
 <li>balance is updated</li>
 </ul></li>
 </ul>
-<h1 id="design-criteria">Design criteria</h1>
+<p>Design criteria</p>
 <ul>
 <li>low bandwidth</li>
 <li>low memory footprint (useful for large simulation, as well as embeded systems)</li>
@@ -161,93 +141,30 @@ body {
 <li>connect to arbitrary host</li>
 <li>foundation for other p2p applications</li>
 </ul>
-<h1 id="parts">Parts</h1>
-<h1 id="rough-roadmap">Rough Roadmap:</h1>
-<p>start with simulator in C.</p>
+<h1 id="brainstorm-around-potential-articles">Brainstorm around potential articles</h1>
+<p>Possibly relevant conferences or journals</p>
+<h1 id="relevant-litterature">Relevant Litterature</h1>
 <ul>
-<li>network-abstraction dummy-implementation</li>
-<li>wasm C example communicate with network-abstraction</li>
-<li>simulate</li>
-<li>network abstraction websocket-only - localhost - node</li>
-<li>wasm-</li>
-<li>end-to-end test network abstraction api</li>
-<li>spin up nodes</li>
-<li>simple in-complete overlay network</li>
-<li>add webrtc-network-abstraction+websocket-client</li>
+<li><span class="citation">(Parno, Raykova, and Vaikuntanathan 2012)</span></li>
+<li><span class="citation">(Kaune et al. 2008)</span></li>
+<li><span class="citation">(Wood 2014)</span></li>
+<li><span class="citation">(20ADa)</span></li>
+<li><span class="citation">(20ADb)</span></li>
+<li><span class="citation">(20ADc)</span></li>
+<li><span class="citation">(20ADd)</span></li>
+<li><span class="citation">(20ADe)</span></li>
+<li><span class="citation">(20ADf)</span></li>
+<li><span class="citation">(20ADg)</span></li>
+<li><span class="citation">(20ADh)</span></li>
+<li><span class="citation">(20ADi)</span></li>
+<li><span class="citation">(20ADj)</span></li>
+<li><span class="citation">(20ADk)</span></li>
+<li><span class="citation">(20ADl)</span></li>
+<li><span class="citation">(20ADm)</span></li>
+<li><span class="citation">(Ben L. Titzer Michael Holman Dan Gohman Luke Wagner Alon Zakai JF Bastien 2017)</span></li>
 </ul>
-<h2 id="old-notes">Old notes</h2>
-<ul>
-<li>webrtc+wss connection abstraction</li>
-<li>kademlie-like network (webrtc+wss)</li>
-<li>network simulator (for tests etc.)</li>
-<li><p>deterministic addresses</p></li>
-<li>overlay network - ability to connect to any</li>
-<li>rough design notes</li>
-<li>simple signalling server (in node and php)</li>
-<li>call signalling-server and webrtc from asm.js</li>
-<li>implement kademlia-like algorithm on top of signalling server</li>
-<li>authentification</li>
-<li>addresses are hash of public-key</li>
-<li>possible to generate public key from passphrase</li>
-<li>&quot;blockchain&quot; clock</li>
-<li>list of peers &quot;clock&quot;</li>
-<li>per node ledger</li>
-<li><p>computational tasks in &quot;blockchain&quot;</p></li>
-</ul>
-<h2 id="network-abstraction">network abstraction</h2>
-<h3 id="api">API</h3>
-<p>Connection id is a 16 bit unsigned integer.</p>
-<p>Calls from network to overlay</p>
-<ul>
-<li><code>connected(connection_id)</code></li>
-<li><code>disconnected(connection_id)</code></li>
-<li><code>message(connection_id, data)</code></li>
-</ul>
-<p>Calls from overlay to network</p>
-<ul>
-<li><code>send(connection_id, data)</code></li>
-<li><code>begin_signalling(connection_id)</code></li>
-<li><code>receive_signalling(connection_id)</code></li>
-<li><code>disconnect(connection_id)</code></li>
-<li>(<code>topology(connection_id) -&gt; uint64</code>)</li>
-</ul>
-<p>(data is written to a shared buffer)</p>
-<p>Connection types:</p>
-<ul>
-<li>public websocket https endpoint (or http-localhost during local testing)</li>
-<li>webrtc p2p</li>
-</ul>
-<h2 id="simulator">simulator</h2>
-<h2 id="address">address</h2>
-<p>initially implemented unsecure</p>
-<ul>
-<li><code>typedef address uint256</code></li>
-<li><code>distance(a, b) -&gt; float 32</code></li>
-<li><code>generateAddress(uint256 entropy_source, securityLevel) -&gt; address</code></li>
-<li>later === <code>sha256(public_key(generat_dsa_keypair(scrypt_or_similar_hardening(entropy_source, num_rounds))))</code></li>
-<li><code>randomRandomAddress() -&gt; uint256</code></li>
-<li>... verify address</li>
-</ul>
-<p>The address should actually be the hash of a dsa public key derrived from the entropy source.</p>
-<p>mochable with fast version during simulation</p>
-<h2 id="overlay-network">overlay-network</h2>
-<p>knowledge self:</p>
-<ul>
-<li>list of addresses of active connections</li>
-<li>tags per connection</li>
-<li>path-bits per connection per own-tag</li>
-<li>own tags</li>
-</ul>
-<p>Path: nearest addresses with one bit <span class="math inline"><em>b</em><sub><em>i</em></sub></span> flipped.</p>
-<h1 id="version-0.1-base-infrastructure">Version 0.1 base infrastructure</h1>
-<ul>
-<li>network abstraction (make-connection)</li>
-<li>browser</li>
-<li>node.js wss server</li>
-<li>load wasm-core over network</li>
-<li>docker image for wss-server + caddy</li>
-</ul>
-<h1 id="notes">Notes</h1>
+<p><a href="https://allquantor.at/blockchainbib/bibtex.html" class="uri">https://allquantor.at/blockchainbib/bibtex.html</a></p>
+<h1 id="notes-for-later-optimised-version">Notes for later / optimised version</h1>
 <ul>
 <li>page size</li>
 <li>typically 4K (getpagesize() is 4K on my linux, and that looks like common size via <a href="https://en.wikipedia.org/wiki/Page_%28computer_memory%29">https://en.wikipedia.org/wiki/Page_%28computer_memory%29</a>)</li>
@@ -255,6 +172,60 @@ body {
 <li>minimise memory usage (for ability to run large simulations).</li>
 <li>i.e. 64K per nodes =&gt; 100K nodes in memory simulation ~ 6G memory</li>
 </ul>
+<h1 id="bibliography" class="unnumbered">Bibliography</h1>
+<div id="refs" class="references">
+<div id="ref-webassembly-2017">
+<p>Ben L. Titzer Michael Holman Dan Gohman Luke Wagner Alon Zakai JF Bastien, Andreas Haas Andreas Rossberg Derek L. Schuff ∗. 2017. “Bringing the Web up to Speed with Webassembly.”</p>
+</div>
+<div id="ref-embracing-peer-next-door-kademlia-2008">
+<p>Kaune, S., T. Lauinger, A. Kovacevic, and K. Pussep. 2008. “Embracing the Peer Next Door: Proximity in Kademlia.” In <em>2008 Eighth International Conference on Peer-to-Peer Computing</em>, 343–50. doi:<a href="https://doi.org/10.1109/P2P.2008.36">10.1109/P2P.2008.36</a>.</p>
+</div>
+<div id="ref-delegate-verify-public-verifiable-computing-2012">
+<p>Parno, Bryan, Mariana Raykova, and Vinod Vaikuntanathan. 2012. “How to Delegate and Verify in Public: Verifiable Computation from Attribute-Based Encryption.” In <em>Theory of Cryptography: 9th Theory of Cryptography Conference, Tcc 2012, Taormina, Sicily, Italy, March 19-21, 2012. Proceedings</em>, edited by Ronald Cramer, 422–39. Berlin, Heidelberg: Springer Berlin Heidelberg. doi:<a href="https://doi.org/10.1007/978-3-642-28914-9_24">10.1007/978-3-642-28914-9_24</a>.</p>
+</div>
+<div id="ref-ethereum-yellowpaper-2014">
+<p>Wood, Gavin. 2014. “Ethereum: A Secure Decentralised Generalised Transaction Ledger.” <em>Ethereum Project Yellow Paper</em>. <a href="http://bitcoinaffiliatelist.com/wp-content/uploads/ethereum.pdf" class="uri">http://bitcoinaffiliatelist.com/wp-content/uploads/ethereum.pdf</a>. <a href="http://bitcoinaffiliatelist.com/wp-content/uploads/ethereum.pdf" class="uri">http://bitcoinaffiliatelist.com/wp-content/uploads/ethereum.pdf</a>.</p>
+</div>
+<div id="ref-golem-whitepaper-2016">
+<p>20ADa.</p>
+</div>
+<div id="ref-handling-churn-dht-2004">
+<p>20ADb.</p>
+</div>
+<div id="ref-improving-lookup-kademlia-2010">
+<p>20ADc.</p>
+</div>
+<div id="ref-ipfs-2014">
+<p>20ADd.</p>
+</div>
+<div id="ref-kademlia-2002">
+<p>20ADe.</p>
+</div>
+<div id="ref-noninteractive-verifiable-computing-2010">
+<p>20ADf.</p>
+</div>
+<div id="ref-performance-chord-kademlia-churn-2014">
+<p>20ADg.</p>
+</div>
+<div id="ref-performance-evaluation-kademlia-2010">
+<p>20ADh.</p>
+</div>
+<div id="ref-pinoccchio-nearly-practical-verifiable-computing-2013">
+<p>20ADi.</p>
+</div>
+<div id="ref-s-kademlia-2007">
+<p>20ADj.</p>
+</div>
+<div id="ref-subsecond-lookup-kademlia-2011">
+<p>20ADk.</p>
+</div>
+<div id="ref-survey-simulators-overlay-networks-2017">
+<p>20ADl.</p>
+</div>
+<div id="ref-trustless-computing-what-not-how-2016">
+<p>20ADm.</p>
+</div>
+</div>
           </div>
   </body>
 </html>

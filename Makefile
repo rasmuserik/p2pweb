@@ -18,9 +18,9 @@ watch-docs:
 docs/jsdoc/index.html: p2pweb.js
 	./node_modules/.bin/documentation build p2pweb.js -f html -o docs/jsdoc; git add docs/jsdoc
 
-docs/notes.pdf: notes.md pandoc/*.html pandoc/*.yml
-	pandoc --toc pandoc/notes.yml pandoc/template.yml notes.md --template=pandoc/template.html -s -o docs/notes.html
-	pandoc --toc pandoc/notes.yml pandoc/template.yml notes.md --latex-engine=xelatex -o docs/notes.pdf
+docs/notes.pdf: notes.md pandoc/*.html pandoc/*.yml pandoc/*.bib
+	pandoc --toc pandoc/notes.yml pandoc/template.yml --bibliography=pandoc/bibliography.bib notes.md --template=pandoc/template.html -s -o docs/notes.html
+	pandoc --toc pandoc/notes.yml pandoc/template.yml --bibliography=pandoc/bibliography.bib notes.md --latex-engine=xelatex -o docs/notes.pdf
 
 docs/index.html: README.md pandoc/*.html pandoc/*.yml
 	pandoc pandoc/README.yml pandoc/template.yml README.md --template=pandoc/template.html -s -o docs/index.html

@@ -44,26 +44,6 @@ Explore/ideas:
 - WebRTC bootstrapping options (decentralised signalling server vs. actual node)
 - Infrastructure deployment - bootstrap-code + load signed version of code from network, - partly test within network before full deploy.
 
-Articles:
-
-- delegate-verify-public-verifiable-computing-2012
-- embracing-peer-next-door-kademlia-2008
-- ethereum-yellowpaper-2014
-- golem-whitepaper-2016
-- handling-churn-dht-2004
-- improving-lookup-kademlia-2010
-- ipfs-2014
-- kademlia-2002
-- noninteractive-verifiable-computing-2010
-- performance-chord-kademlia-churn-2014
-- performance-evaluation-kademlia-2010
-- pinoccchio-nearly-practical-verifiable-computing-2013
-- s-kademlia-2007
-- subsecond-lookup-kademlia-2011
-- survey-simulators-overlay-networks-2017
-- trustless-computing-what-not-how-2016
-- webassembly-2017
-
 Description of algorithm:
 
 - nodes connected in kademlia-like structure
@@ -103,10 +83,7 @@ Description of algorithm:
     - result+proof-of-work get validated + signed into blockchain
     - balance is updated
 
-
-
-
-# Design criteria
+Design criteria
 
 - low bandwidth
 - low memory footprint (useful for large simulation, as well as embeded systems)
@@ -115,107 +92,34 @@ Description of algorithm:
 - connect to arbitrary host
 - foundation for other p2p applications
 
-# Parts
-# Rough Roadmap:
+# Brainstorm around potential articles
 
-start with simulator in C.
-
-- network-abstraction dummy-implementation
-- wasm C example communicate with network-abstraction
-- simulate 
-- network abstraction websocket-only - localhost - node
-- wasm-
-- end-to-end test network abstraction api
-  - spin up nodes
-  - simple in-complete overlay network
-- add webrtc-network-abstraction+websocket-client
+Possibly relevant conferences or journals
 
 
-## Old notes
+# Relevant Litterature
 
-- webrtc+wss connection abstraction
-- kademlie-like network (webrtc+wss)
-- network simulator (for tests etc.)
-- deterministic addresses
+- [@delegate-verify-public-verifiable-computing-2012]
+- [@embracing-peer-next-door-kademlia-2008]
+- [@ethereum-yellowpaper-2014]
+- [@golem-whitepaper-2016]
+- [@handling-churn-dht-2004]
+- [@improving-lookup-kademlia-2010]
+- [@ipfs-2014]
+- [@kademlia-2002]
+- [@noninteractive-verifiable-computing-2010]
+- [@performance-chord-kademlia-churn-2014]
+- [@performance-evaluation-kademlia-2010]
+- [@pinoccchio-nearly-practical-verifiable-computing-2013]
+- [@s-kademlia-2007]
+- [@subsecond-lookup-kademlia-2011]
+- [@survey-simulators-overlay-networks-2017]
+- [@trustless-computing-what-not-how-2016]
+- [@webassembly-2017]
 
-- overlay network - ability to connect to any
-  - rough design notes
-  - simple signalling server (in node and php)
-  - call signalling-server and webrtc from asm.js
-  - implement kademlia-like algorithm on top of signalling server
-- authentification
-  - addresses are hash of public-key
-  - possible to generate public key from passphrase
-- "blockchain" clock
-  - list of peers "clock"
-  - per node ledger
-- computational tasks in "blockchain"
+<https://allquantor.at/blockchainbib/bibtex.html>
 
-
-## network abstraction
-
-### API
-
-Connection id is a 16 bit unsigned integer.
-
-Calls from network to overlay
-
-- `connected(connection_id)`
-- `disconnected(connection_id)`
-- `message(connection_id, data)`
-
-Calls from overlay to network
-
-- `send(connection_id, data)`
-- `begin_signalling(connection_id)`
-- `receive_signalling(connection_id)`
-- `disconnect(connection_id)`
-- (`topology(connection_id) -> uint64`)
-
-(data is written to a shared buffer)
-
-Connection types:
-
-- public websocket https endpoint (or http-localhost during local testing)
-- webrtc p2p
-
-## simulator
-
-## address
-
-initially implemented unsecure
-
-- `typedef address uint256`
-- `distance(a, b) -> float 32`
-- `generateAddress(uint256 entropy_source, securityLevel) -> address`
-  - later === `sha256(public_key(generat_dsa_keypair(scrypt_or_similar_hardening(entropy_source, num_rounds))))`
-- `randomRandomAddress() -> uint256`
-- ... verify address
-
-The address should actually be the hash of a dsa public key derrived from the entropy source.
-
-mochable with fast version during simulation
-
-## overlay-network
-
-knowledge self:
-
-- list of addresses of active connections
-- tags per connection
-- path-bits per connection per own-tag
-- own tags
-
-Path: nearest addresses with one bit $b_i$ flipped.
-
-# Version 0.1 base infrastructure
-
-- network abstraction (make-connection)
-  - browser
-  - node.js wss server
-- load wasm-core over network
-- docker image for wss-server + caddy
-
-# Notes
+# Notes for later / optimised version
 
 - page size
   - typically 4K (getpagesize() is 4K on my linux, and that looks like common size via <https://en.wikipedia.org/wiki/Page_%28computer_memory%29>)
@@ -223,3 +127,4 @@ Path: nearest addresses with one bit $b_i$ flipped.
 - minimise memory usage (for ability to run large simulations).
   - i.e. 64K per nodes => 100K nodes in memory simulation ~ 6G memory
 
+# Bibliography

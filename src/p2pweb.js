@@ -1,13 +1,3 @@
-// #
-//
-// <img src=https://p2pweb.solsort.com/icon.png width=96 height=96 align=right>
-//
-// [![website](https://img.shields.io/badge/website-p2pweb.solsort.com-blue.svg)](https://p2pweb.solsort.com/)
-// [![github](https://img.shields.io/badge/github-solsort/p2pweb-blue.svg)](https://github.com/solsort/p2pweb)
-// [![travis](https://img.shields.io/travis/solsort/p2pweb.svg)](https://travis-ci.org/solsort/p2pweb)
-// [![coveralls](https://img.shields.io/coveralls/solsort/p2pweb.svg)](https://coveralls.io/r/solsort/p2pweb?branch=master)
-// [![npm](https://img.shields.io/npm/v/p2pweb.svg)](https://www.npmjs.com/package/p2pweb)
-//
 // # P2P Web
 //
 //
@@ -52,6 +42,7 @@
       this.bootstrapNodes = bootstrapNodes;
       this.connections = [];
       this.rpc = {};
+
       for (const method in rpc) {
         this.rpc[method] = rpc[method].bind(this);
       }
@@ -132,7 +123,7 @@
       if (this.rpc[msg.data.rpc]) {
         this.rpc[msg.data.rpc](msg);
       } else {
-        throwError("no such endpoint " + JSON.stringify(msg));
+        print("no such endpoint " + JSON.stringify(msg.data));
       }
     }
 
@@ -230,7 +221,8 @@
       }
     }
 
-    // TODO: remove this
+    // experiment
+    // TODO: remove this later
     //
     setTimeout(() => {
       const allPeers = this.allPeers();
@@ -246,10 +238,50 @@
           rpc: "print",
           data: "hello from " + this.name()
         });
+
+        const peer = randomPeer;
+        const rpcEndpoint =
+          "signal" +
+          Math.random()
+            .toString()
+            .slice(2);
+        const handleMessage = msg =>
+          console.log("handleMessage", msg.data);
+        this.send(peer, {
+          rpc: "initiateConnection",
+          endpoint: rpcEndpoint,
+          peer: this.address().toString()
+        });
+
+        const signalChannel = {
+          close: () => delete this.rpc[rpcEndpoint],
+          send: data =>
+            this.send(peer, { rpc: rpcEndpoint, data: data }),
+          onmessage: msg => console.log("signalChannel start msg", msg)
+        };
+        this.rpc[rpcEndpoint] = msg => signalChannel.onmessage(msg);
+
+        signalChannel.send("hello");
       } else {
         print("already connected to randomPeer");
       }
     }, 2000);
+  };
+
+  rpc.initiateConnection = function(msg) {
+    const peer = msg.data.peer;
+    const rpcEndpoint = msg.data.endpoint;
+    assert(rpcEndpoint.startsWith("signal"));
+
+    print("initiate connection", msg.data);
+
+    const signalChannel = {
+      close: () => delete this.rpc[rpcEndpoint],
+      send: data => this.send(peer, { rpc: rpcEndpoint, data: data }),
+      onmessage: msg => console.log("signalChannel receive msg", msg)
+    };
+    this.rpc[rpcEndpoint] = msg => signalChannel.onmessage(msg);
+    signalChannel.send("hi");
   };
 
   rpc.lostPeer = function(msg) {
@@ -784,8 +816,8 @@
             close: () => ws.close()
           };
           ws.on("open", () => {
-            (con.send = msg => ws.send(JSON.stringify(msg))),
-              con.outgoing.forEach(con.send);
+            con.send = msg => ws.send(JSON.stringify(msg));
+            con.outgoing.forEach(con.send);
             delete con.outgoing;
             platform.onconnection(con);
           });

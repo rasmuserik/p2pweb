@@ -2,14 +2,14 @@
   "name": "p2pweb",
   "version": "0.0.4",
   "description": "",
-  "main": "p2pweb.js",
+  "main": "src/p2pweb.js",
   "scripts": {
     "dev": "./dev.sh",
     "build": "make",
     "docs": "make docs; git add docs",
     "test": "make ./coverage/lcov.info",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
-    "git-add": "git add README.md p2pweb.js docs"
+    "git-add": "git add README.md src/p2pweb.js docs"
   },
   "pre-commit": [
     "build",

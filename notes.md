@@ -45,6 +45,7 @@ Explore/ideas:
 - Infrastructure deployment - bootstrap-code + load signed version of code from network, - partly test within network before full deploy.
 
 Articles:
+
 - delegate-verify-public-verifiable-computing-2012
 - embracing-peer-next-door-kademlia-2008
 - ethereum-yellowpaper-2014
@@ -62,9 +63,6 @@ Articles:
 - survey-simulators-overlay-networks-2017
 - trustless-computing-what-not-how-2016
 - webassembly-2017
-
-
-
 
 Description of algorithm:
 

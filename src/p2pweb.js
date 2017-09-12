@@ -248,7 +248,7 @@
         const handleMessage = msg =>
           console.log("handleMessage", msg.data);
         this.send(peer, {
-          rpc: "initiateConnection",
+          rpc: "handleSignalConnection",
           endpoint: rpcEndpoint,
           peer: this.address().toString()
         });
@@ -257,7 +257,10 @@
           close: () => delete this.rpc[rpcEndpoint],
           send: data =>
             this.send(peer, { rpc: rpcEndpoint, data: data }),
-          onmessage: msg => console.log("signalChannel start msg", msg)
+          onmessage: msg => {
+            msg.con = signalChannel;
+            console.log("signalChannel start msg", msg.data);
+          }
         };
         this.rpc[rpcEndpoint] = msg => signalChannel.onmessage(msg);
 
@@ -268,17 +271,21 @@
     }, 2000);
   };
 
-  rpc.initiateConnection = function(msg) {
+  rpc.handleSignalConnection = function(msg) {
     const peer = msg.data.peer;
     const rpcEndpoint = msg.data.endpoint;
     assert(rpcEndpoint.startsWith("signal"));
 
-    print("initiate connection", msg.data);
+    print("handleSignalConnection", msg.data.data);
 
     const signalChannel = {
       close: () => delete this.rpc[rpcEndpoint],
       send: data => this.send(peer, { rpc: rpcEndpoint, data: data }),
-      onmessage: msg => console.log("signalChannel receive msg", msg)
+      onmessage: msg => {
+        msg.con = signalChannel;
+        console.log("signalChannel receive msg", msg.data);
+        msg.con.send("hello2");
+      }
     };
     this.rpc[rpcEndpoint] = msg => signalChannel.onmessage(msg);
     signalChannel.send("hi");

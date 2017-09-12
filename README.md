@@ -10,6 +10,7 @@
 
 This is a library (**under development**) for building peer-to-peer web applications.
 
-- Introduction/readme on <https://p2pweb.solsort.com>
-- Code documentation on <https://p2pweb.solsort.com/jsdoc>
-- Source code on <https://github.com/solsort/p2pweb>
+- [Introduction/readme](https://p2pweb.solsort.com)
+- [Code documentation](https://p2pweb.solsort.com/jsdoc)
+- [Source code on github](https://github.com/solsort/p2pweb)
+- [Notes](https://p2pweb.solsort.com/notes) ([pdf](https://p2pweb.solsort.com/notes.pdf))

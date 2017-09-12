@@ -1,3 +1,7 @@
+# WORK IN PROGRESS
+
+These are preliminary notes, for own use.
+
 # General notes
 
 Purpose:
@@ -94,24 +98,42 @@ Design criteria
 
 # Roadmap
 
-- Implement kademlia-like overlay network on WebRTC+WebSocket
-- Implement distributed "state"
-- Implement computations on top of state
+Implementation strategy:
 
-# Things to write
+- Mode of development
+    1. Make prototype/proof-of-concept
+    2. Measure performance (actual + simulated) + experiment with protocols
+    3. Implement optimised version
+- Levels of functionality. (subject to change)
+    1. Simple p2p overlay network on top of webtechnology
+    2. "Tagging" in overlay network (connections/DHT)
+    3. Network state / map, - state blockchain updated divide-and-conquer.
+    4. Tasks enqueued/executed in state
+    5. Credit-balance in network, through proof of work
+    6. Computing units, pubkey units, autonomous units/calculations.
+    7. Add stake to computations for stronger security
+- Auxiliary tasks:
+    - Bootstrap gateway in php
+    - Generate DSA from user-supplied entropy source.
+    - Deployment system for new versions
+    - (maybe paper Benchmark performance and limitations of WebRTC)
+    - (maybe paper Review Kademlia optimisations from the viewpoint of webrtc networking model)
+    - (maybe paper describing aspects of overall vision and architecture)
+- Later
+    - Optimisations for efficient p2p shared state (partial addresses, cached/multi-data hash proofs (quad instead of binary - same amount of data, but bette caching))
 
-## Bottom-up
+Writeups:
 
-- Overlay network with taggable nodes
-- Kademlia for the Web Platform (Kademlia originally designed for IP/UDP, which have different performance characteristics than what is available on WebPlatform(WebRTC). Survey extensions / optimisations of Kademlie, and evaluate how they matches).
-- Performance characteristics of p2p data on the web platform. (measure cost of initiating connection, limits / performance with many connection or data). Across the different platforms.
+- Bottom-up
+    - Algorithm for overlay network with taggable nodes
+    - Kademlia for the Web Platform (Kademlia originally designed for IP/UDP, which have different performance characteristics than what is available on WebPlatform(WebRTC). Survey extensions / optimisations of Kademlie, and evaluate how they matches).
+    - Performance characteristics of p2p data on the web platform. (measure cost of initiating connection, limits / performance with many connection or data). Across the different platforms.
+-  Top-down
+    - Design / execution model of a computational blockchain
+    - Proveable tasks for for trustless computing
+    - Definitions and concepts for reasoning about a p2p computing model
 
-## Top-down
-
-- Overview of the computational blockchain
-    - define / show different proveable tasks
-
-## Possible publication targets
+# Possible publication targets
 
 Ideas of places for publications:
 
@@ -125,6 +147,7 @@ Ideas of places for publications:
 - Conferences (in Europe)
     - 2017-10-30 2018-02-26/28 [IFIP NTMS 1st International Workshop on Blockchains and Smart Contracts (BSC)](http://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=67425&copyownerid=102766)
     - ~~2018-02-05 2018-06-20/22 [DCAI 2018 : 15th International Conference on Distributed Computing and Artificial Intelligence](http://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=66780&copyownerid=95447)~~
+    - (2018-02-11 2018-07-23/27 [ACM Symposium on Principles of Distributed Computing](https://www.podc.org/))
 - Central non-conference sources (based on related articles)
     - "The Computing Research Repository" (not a Journal, but arXiv, indexed in dblp etc.)
     - [Peer-to-Peer Networking and Applications](http://www.springer.com/engineering/signals/journal/12083) (Springer)
@@ -150,6 +173,7 @@ Various articles etc. that I should take a look add (and possibly add notes here
 - [@subsecond-lookup-kademlia-2011]
 - [@survey-simulators-overlay-networks-2017]
 - [@trustless-computing-what-not-how-2016]
+- [@stefan-phd-2008]
 - [@webassembly-2017]
 
 <https://allquantor.at/blockchainbib/bibtex.html>

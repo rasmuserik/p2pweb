@@ -30,9 +30,11 @@ body {
                         <p class="author">Rasmus Erik Voel Jensen</p>
                         <p class="date">2017</p>
                         <h2>Abstract</h2>
-        <p class="abstract"><p>Random ramblings and notes during the P2P Web.</p></p>
+        <p class="abstract"><p>Random ramblings and notes during the development of P2P Web.</p></p>
               </header>
-                  <h1 id="general-notes">General notes</h1>
+                  <h1 id="work-in-progress">WORK IN PROGRESS</h1>
+<p>These are preliminary notes, for own use.</p>
+<h1 id="general-notes">General notes</h1>
 <p>Purpose:</p>
 <ul>
 <li>Infrastructure for no-server HTML5 apps =&gt; a decentralized trustless computer for the web</li>
@@ -142,26 +144,54 @@ body {
 <li>foundation for other p2p applications</li>
 </ul>
 <h1 id="roadmap">Roadmap</h1>
+<p>Implementation strategy:</p>
 <ul>
-<li>Implement kademlia-like overlay network on WebRTC+WebSocket</li>
-<li>Implement distributed &quot;state&quot;</li>
-<li>Implement computations on top of state</li>
-</ul>
-<h1 id="things-to-write">Things to write</h1>
-<h2 id="bottom-up">Bottom-up</h2>
+<li>Mode of development
+<ol style="list-style-type: decimal">
+<li>Make prototype/proof-of-concept</li>
+<li>Measure performance (actual + simulated) + experiment with protocols</li>
+<li>Implement optimised version</li>
+</ol></li>
+<li>Levels of functionality. (subject to change)
+<ol style="list-style-type: decimal">
+<li>Simple p2p overlay network on top of webtechnology</li>
+<li>&quot;Tagging&quot; in overlay network (connections/DHT)</li>
+<li>Network state / map, - state blockchain updated divide-and-conquer.</li>
+<li>Tasks enqueued/executed in state</li>
+<li>Credit-balance in network, through proof of work</li>
+<li>Computing units, pubkey units, autonomous units/calculations.</li>
+<li>Add stake to computations for stronger security</li>
+</ol></li>
+<li>Auxiliary tasks:
 <ul>
-<li>Overlay network with taggable nodes</li>
-<li>Kademlia for the Web Platform (Kademlia originally designed for IP/UDP, which have different performance characteristics than what is available on WebPlatform(WebRTC). Survey extensions / optimisations of Kademlie, and evaluate how they matches).</li>
-<li>Performance characteristics of p2p data on the web platform. (measure cost of initiating connection, limits / performance with many connection or data). Across the different platforms.</li>
-</ul>
-<h2 id="top-down">Top-down</h2>
+<li>Bootstrap gateway in php</li>
+<li>Generate DSA from user-supplied entropy source.</li>
+<li>Deployment system for new versions</li>
+<li>(maybe paper Benchmark performance and limitations of WebRTC)</li>
+<li>(maybe paper Review Kademlia optimisations from the viewpoint of webrtc networking model)</li>
+<li>(maybe paper describing aspects of overall vision and architecture)</li>
+</ul></li>
+<li>Later
 <ul>
-<li>Overview of the computational blockchain
-<ul>
-<li>define / show different proveable tasks</li>
+<li>Optimisations for efficient p2p shared state (partial addresses, cached/multi-data hash proofs (quad instead of binary - same amount of data, but bette caching))</li>
 </ul></li>
 </ul>
-<h2 id="possible-publication-targets">Possible publication targets</h2>
+<p>Writeups:</p>
+<ul>
+<li>Bottom-up
+<ul>
+<li>Algorithm for overlay network with taggable nodes</li>
+<li>Kademlia for the Web Platform (Kademlia originally designed for IP/UDP, which have different performance characteristics than what is available on WebPlatform(WebRTC). Survey extensions / optimisations of Kademlie, and evaluate how they matches).</li>
+<li>Performance characteristics of p2p data on the web platform. (measure cost of initiating connection, limits / performance with many connection or data). Across the different platforms.</li>
+</ul></li>
+<li>Top-down
+<ul>
+<li>Design / execution model of a computational blockchain</li>
+<li>Proveable tasks for for trustless computing</li>
+<li>Definitions and concepts for reasoning about a p2p computing model</li>
+</ul></li>
+</ul>
+<h1 id="possible-publication-targets">Possible publication targets</h1>
 <p>Ideas of places for publications:</p>
 <ul>
 <li>Open Access Journals (NB: <a href="https://doaj.org" class="uri">https://doaj.org</a>)
@@ -179,6 +209,7 @@ body {
 <ul>
 <li>2017-10-30 2018-02-26/28 <a href="http://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=67425&amp;copyownerid=102766">IFIP NTMS 1st International Workshop on Blockchains and Smart Contracts (BSC)</a></li>
 <li><del>2018-02-05 2018-06-20/22 <a href="http://www.wikicfp.com/cfp/servlet/event.showcfp?eventid=66780&amp;copyownerid=95447">DCAI 2018 : 15th International Conference on Distributed Computing and Artificial Intelligence</a></del></li>
+<li>(2018-02-11 2018-07-23/27 <a href="https://www.podc.org/">ACM Symposium on Principles of Distributed Computing</a>)</li>
 </ul></li>
 <li>Central non-conference sources (based on related articles)
 <ul>
@@ -206,6 +237,7 @@ body {
 <li><span class="citation">(Jiménez, Osmani, and Knutsson 2011)</span></li>
 <li><span class="citation">(Surati, Jinwala, and Garg 2017)</span></li>
 <li><span class="citation">(Wood and Steiner 2016)</span></li>
+<li><span class="citation">(Schmid 2008)</span></li>
 <li><span class="citation">(Haas et al. 2017)</span></li>
 </ul>
 <p><a href="https://allquantor.at/blockchainbib/bibtex.html" class="uri">https://allquantor.at/blockchainbib/bibtex.html</a></p>
@@ -257,6 +289,9 @@ body {
 </div>
 <div id="ref-handling-churn-dht-2004">
 <p>Rhea, Sean C., Dennis Geels, Timothy Roscoe, and John Kubiatowicz. 2004. “Handling Churn in a DHT.” In <em>Proceedings of the General Track: 2004 USENIX Annual Technical Conference, June 27 - July 2, 2004, Boston Marriott Copley Place, Boston, Ma, USA</em>, 127–40. <a href="http://www.usenix.org/publications/library/proceedings/usenix04/tech/general/rhea.html" class="uri">http://www.usenix.org/publications/library/proceedings/usenix04/tech/general/rhea.html</a>.</p>
+</div>
+<div id="ref-stefan-phd-2008">
+<p>Schmid, Stefan. 2008. “Dynamics and Cooperation: Algorithmic Challenges in Peer to Peer Computing.” PhD thesis, ETH Zurich. <a href="https://www.net.t-labs.tu-berlin.de/~stefan/PhDStefan.pdf" class="uri">https://www.net.t-labs.tu-berlin.de/~stefan/PhDStefan.pdf</a>.</p>
 </div>
 <div id="ref-survey-simulators-overlay-networks-2017">
 <p>Surati, Shivangi, Devesh C. Jinwala, and Sanjay Garg. 2017. “A Survey of Simulators for P2p Overlay Networks with a Case Study of the P2p Tree Overlay Using an Event-Driven Simulator.” <em>Engineering Science and Technology, an International Journal</em> 20 (2): 705–20. doi:<a href="https://doi.org/http://dx.doi.org/10.1016/j.jestch.2016.12.010">http://dx.doi.org/10.1016/j.jestch.2016.12.010</a>.</p>

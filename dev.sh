@@ -2,7 +2,7 @@
 (
 kill `cat .pid-liveserver`
 sleep 0.1 
-./node_modules/.bin/live-server --no-browser src/ &
+./node_modules/.bin/webpack-dev-server --content-base dist/ &
 echo $! > .pid-liveserver
 sleep 1;
 google-chrome \

@@ -1,6 +1,12 @@
-all: .prettiered docs
+all: .prettiered docs dist/p2pweb.min.js
 
 docs: docs/notes.pdf docs/index.html docs/jsdoc/index.html
+
+dist/p2pweb.min.js: dist/p2pweb.js
+	./node_modules/.bin/uglifyjs dist/p2pweb.js > dist/p2pweb.min.js
+
+dist/p2pweb.js: src/*
+	./node_modules/.bin/webpack
 
 clean:
 	rm -rf docs/*.pdf docs/index.html docs/jsdoc

@@ -6,8 +6,7 @@
   "scripts": {
     "prettier": "prettier --write p2pweb.js --print-width 72 && git add p2pweb.js",
     "dev": "./dev.sh",
-    "docs/jsdoc": "documentation build p2pweb.js -f html -o docs/jsdoc; git add docs/jsdoc",
-    "pandoc-readme": "pandoc pandoc/README.yml pandoc/template.yml README.md --template=pandoc/template.html -s -o docs/index.html",
+    "docs": "make docs; git add docs",
     "test": "P2PWEB_URL=ws://localhost:3535 RUN_TESTS=true istanbul cover p2pweb.js",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "git-add": "git add README.md p2pweb.js"
@@ -15,8 +14,7 @@
   "pre-commit": [
     "prettier",
     "test",
-    "pandoc-readme",
-    "docs/jsdoc"
+    "docs"
   ],
   "repository": {
     "type": "git",

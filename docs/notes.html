@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?..."></script>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="author" content="Rasmus Erik Voel Jensen">
+  <meta name="dcterms.date" content="2017-01-01">
+  <title>Notes (in progress) about P2P Web</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">Notes (in progress) about P2P Web</h1>
+<p class="author">Rasmus Erik Voel Jensen</p>
+<p class="date">2017</p>
+<h2>Abstract</h2>
+<p class="abstract"><p>Random ramblings and notes during the P2P Web.</p></p>
+</header>
+<h1 id="presentation-notes">Presentation notes</h1>
+<p>Purpose:</p>
+<ul>
+<li>Infrastructure for no-server HTML5 apps =&gt; a decentralized trustless computer for the web</li>
+</ul>
+<p>In short:</p>
+<ul>
+<li>Network topology: kademlia like, - address = hash of pubkey</li>
+<li>State/storage: each node stores a neighbourhood around its own address, saved in blockchain merkeltree</li>
+<li>Operations: changes to state are verifiable, and verified by nodes in neighbourhood</li>
+<li>Balance: nodes gets paid for doing tasks for the network, and can use this to buy tasks in the network. Also pay/payout for state blockchain.</li>
+<li>Tasks: stored, nodes assigned to tasks in deterministic random part of storage, proof-of-result stored, result stored, verification/value, balance updated.</li>
+</ul>
+<p>Additional notes:</p>
+<ul>
+<li>WebPlatform: computations in webassembly. WebRTC as transport (thus modified kademlia). Crypto-algorithms from crypto.subtle.</li>
+<li>Neighbourhood size and amount of state per node - determined by node density (global minimum density / local density). Fixed amount of memory per node.</li>
+<li>Mutable references in blockchain (using balance to keep alive)</li>
+<li>Autonomous processes (using balance to keep alive)</li>
+<li>Not entire blockchain stored, only parts needed by the node</li>
+<li>Stake in computation tasks</li>
+<li>Balance/trade between processes</li>
+<li>Introduced 'errors' in blockchain, and bounties for finding/proving them.</li>
+<li>Binary/Quad merkel tree for proofs</li>
+<li>Pub/private-key derived from entropy source</li>
+<li>Task types: computation, storage, storage-transfer, find node with certain data</li>
+<li>Node trust / reliability proof via blockchain</li>
+<li>Block-tree rather than chain</li>
+<li>Computational task level of validation</li>
+<li>Result safety: added to state by any node in neighbourhood by proof of distance of computing-node to task.</li>
+<li>Computational task: computing time bound, and cost calculation.</li>
+<li>consensus algorithm: CRDT, additional data in timeinterval: after last block, before timed signature from other deterministic random node</li>
+<li>Tagged overlay network - opt-in part of infrastructure for tunable bandwidth requirements</li>
+<li>Network simulation (core optimised for low memory)</li>
+<li>Bandwidth optimised, - number of significant bits per node-id, stream compression, only send diffs etc.</li>
+</ul>
+<p>Explore/ideas:</p>
+<ul>
+<li>Performance characteristics of current WebRTC implementations</li>
+<li>Performance effects of design choices for Kademlia-like algorithm on top of WebRTC (instead of UDP)</li>
+<li>Verifiable &quot;computational&quot; tasks, and economy based &quot;computation&quot;.</li>
+<li>(Survey p2p overlay networks)</li>
+<li>WebRTC bootstrapping options (decentralised signalling server vs. actual node)</li>
+<li>Infrastructure deployment - bootstrap-code + load signed version of code from network, - partly test within network before full deploy.</li>
+</ul>
+<p>Articles: - delegate-verify-public-verifiable-computing-2012 - embracing-peer-next-door-kademlia-2008 - ethereum-yellowpaper-2014 - golem-whitepaper-2016 - handling-churn-dht-2004 - improving-lookup-kademlia-2010 - ipfs-2014 - kademlia-2002 - noninteractive-verifiable-computing-2010 - performance-chord-kademlia-churn-2014 - performance-evaluation-kademlia-2010 - pinoccchio-nearly-practical-verifiable-computing-2013 - s-kademlia-2007 - subsecond-lookup-kademlia-2011 - survey-simulators-overlay-networks-2017 - trustless-computing-what-not-how-2016 - webassembly-2017</p>
+<p>Description of algorithm:</p>
+<ul>
+<li>nodes connected in kademlia-like structure</li>
+<li>regular state snapshot (blockchain merkel-dag)
+<ul>
+<li>divide-and-conqueor consensus algorithm, verifying credit updates in neighbourhood.</li>
+<li>each node stores the state of a neighbourhood around its own address, as well as the path to the root. The neighbourhood size is fixed for all, ensuring good redundancy of data for</li>
+</ul></li>
+<li>content of state
+<ul>
+<li>list of entities(nodes)
+<ul>
+<li>id</li>
+<li>balance/credits (updated by work, tasks, cost of staying in blockchain, and transfers)</li>
+<li>state (+ proof)</li>
+<li>tasks - scheduled for execution - wager</li>
+<li>result of previous scheduled task</li>
+<li>work
+<ul>
+<li>stake</li>
+<li>result</li>
+<li>proof-of-work</li>
+</ul></li>
+<li>state</li>
+</ul></li>
+</ul></li>
+<li>verifiable tasks</li>
+<li>task types
+<ul>
+<li>computation</li>
+<li>storage
+<ul>
+<li>data</li>
+<li>key/value</li>
+</ul></li>
+<li>random verifications (of proof-of-stake tasks)</li>
+<li>blockchain verification</li>
+</ul></li>
+<li>entities
+<ul>
+<li>nodes</li>
+<li>nodes with stake</li>
+<li>accounts (pub-key)</li>
+<li>autonomous</li>
+</ul></li>
+<li>computational process
+<ul>
+<li>task gets stored in blockchain</li>
+<li>task gets assigned to a number of bcrandom nodes</li>
+<li>task gets done, and proof-of-work gets stored in the blockchain</li>
+<li>task result gets released</li>
+<li>result+proof-of-work get validated + signed into blockchain</li>
+<li>balance is updated</li>
+</ul></li>
+</ul>
+<h1 id="design-criteria">Design criteria</h1>
+<ul>
+<li>low bandwidth</li>
+<li>low memory footprint (useful for large simulation, as well as embeded systems)</li>
+<li>low code footprint</li>
+<li>tagging of hosts</li>
+<li>connect to arbitrary host</li>
+<li>foundation for other p2p applications</li>
+</ul>
+<h1 id="parts">Parts</h1>
+<h1 id="rough-roadmap">Rough Roadmap:</h1>
+<p>start with simulator in C.</p>
+<ul>
+<li>network-abstraction dummy-implementation</li>
+<li>wasm C example communicate with network-abstraction</li>
+<li>simulate</li>
+<li>network abstraction websocket-only - localhost - node</li>
+<li>wasm-</li>
+<li>end-to-end test network abstraction api</li>
+<li>spin up nodes</li>
+<li>simple in-complete overlay network</li>
+<li>add webrtc-network-abstraction+websocket-client</li>
+</ul>
+<h2 id="old-notes">Old notes</h2>
+<ul>
+<li>webrtc+wss connection abstraction</li>
+<li>kademlie-like network (webrtc+wss)</li>
+<li>network simulator (for tests etc.)</li>
+<li><p>deterministic addresses</p></li>
+<li>overlay network - ability to connect to any</li>
+<li>rough design notes</li>
+<li>simple signalling server (in node and php)</li>
+<li>call signalling-server and webrtc from asm.js</li>
+<li>implement kademlia-like algorithm on top of signalling server</li>
+<li>authentification</li>
+<li>addresses are hash of public-key</li>
+<li>possible to generate public key from passphrase</li>
+<li>&quot;blockchain&quot; clock</li>
+<li>list of peers &quot;clock&quot;</li>
+<li>per node ledger</li>
+<li><p>computational tasks in &quot;blockchain&quot;</p></li>
+</ul>
+<h2 id="network-abstraction">network abstraction</h2>
+<h3 id="api">API</h3>
+<p>Connection id is a 16 bit unsigned integer.</p>
+<p>Calls from network to overlay</p>
+<ul>
+<li><code>connected(connection_id)</code></li>
+<li><code>disconnected(connection_id)</code></li>
+<li><code>message(connection_id, data)</code></li>
+</ul>
+<p>Calls from overlay to network</p>
+<ul>
+<li><code>send(connection_id, data)</code></li>
+<li><code>begin_signalling(connection_id)</code></li>
+<li><code>receive_signalling(connection_id)</code></li>
+<li><code>disconnect(connection_id)</code></li>
+<li>(<code>topology(connection_id) -&gt; uint64</code>)</li>
+</ul>
+<p>(data is written to a shared buffer)</p>
+<p>Connection types:</p>
+<ul>
+<li>public websocket https endpoint (or http-localhost during local testing)</li>
+<li>webrtc p2p</li>
+</ul>
+<h2 id="simulator">simulator</h2>
+<h2 id="address">address</h2>
+<p>initially implemented unsecure</p>
+<ul>
+<li><code>typedef address uint256</code></li>
+<li><code>distance(a, b) -&gt; float 32</code></li>
+<li><code>generateAddress(uint256 entropy_source, securityLevel) -&gt; address</code></li>
+<li>later === <code>sha256(public_key(generat_dsa_keypair(scrypt_or_similar_hardening(entropy_source, num_rounds))))</code></li>
+<li><code>randomRandomAddress() -&gt; uint256</code></li>
+<li>... verify address</li>
+</ul>
+<p>The address should actually be the hash of a dsa public key derrived from the entropy source.</p>
+<p>mochable with fast version during simulation</p>
+<h2 id="overlay-network">overlay-network</h2>
+<p>knowledge self:</p>
+<ul>
+<li>list of addresses of active connections</li>
+<li>tags per connection</li>
+<li>path-bits per connection per own-tag</li>
+<li>own tags</li>
+</ul>
+<p>Path: nearest addresses with one bit <span class="math inline"><em>b</em><sub><em>i</em></sub></span> flipped.</p>
+<h1 id="version-0.1-base-infrastructure">Version 0.1 base infrastructure</h1>
+<ul>
+<li>network abstraction (make-connection)</li>
+<li>browser</li>
+<li>node.js wss server</li>
+<li>load wasm-core over network</li>
+<li>docker image for wss-server + caddy</li>
+</ul>
+<h1 id="notes">Notes</h1>
+<ul>
+<li>page size</li>
+<li>typically 4K (getpagesize() is 4K on my linux, and that looks like common size via <a href="https://en.wikipedia.org/wiki/Page_%28computer_memory%29">https://en.wikipedia.org/wiki/Page_%28computer_memory%29</a>)</li>
+<li>webassembly 64K page size</li>
+<li>minimise memory usage (for ability to run large simulations).</li>
+<li>i.e. 64K per nodes =&gt; 100K nodes in memory simulation ~ 6G memory</li>
+</ul>
+</body>
+</html>

@@ -94,10 +94,24 @@ Design criteria
 
 # Roadmap
 
-TODO: describe here
+- Implement kademlia-like overlay network on WebRTC+WebSocket
+- Implement distributed "state"
+- Implement computations on top of state
 
-# notes
+# Things to write
 
+## Bottom-up
+
+- Overlay network with taggable nodes
+- Kademlia for the Web Platform (Kademlia originally designed for IP/UDP, which have different performance characteristics than what is available on WebPlatform(WebRTC). Survey extensions / optimisations of Kademlie, and evaluate how they matches).
+- Performance characteristics of p2p data on the web platform. (measure cost of initiating connection, limits / performance with many connection or data). Across the different platforms.
+
+## Top-down
+
+- Overview of the computational blockchain
+    - define / show different proveable tasks
+
+## Possible publication targets
 
 Ideas of places for publications:
 

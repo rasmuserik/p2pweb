@@ -1,7 +1,5 @@
-// # Hash Address
-
 const window = require('./window');
-console.log(window.crypto);
+
 /**
  * Hashes as addresses, and utility functions for Kademlia-like routing.
  */

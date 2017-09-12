@@ -27,6 +27,7 @@
   },
   "homepage": "https://p2pweb.solsort.com/",
   "dependencies": {
+    "wolfy87-eventemitter": "^5.2.2",
     "ws": "^2.2.0"
   },
   "devDependencies": {

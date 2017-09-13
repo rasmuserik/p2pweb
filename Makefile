@@ -1,6 +1,6 @@
 all: .prettiered docs dist/p2pweb.js
 
-docs: docs/notes.pdf docs/index.html docs/jsdoc/index.html
+docs: docs/notes.pdf docs/index.html docs/jsdoc/index.html docs/blockchain-computer.pdf
 
 dist/p2pweb.min.js: dist/p2pweb.js
 	./node_modules/.bin/uglifyjs dist/p2pweb.js > dist/p2pweb.min.js
@@ -32,6 +32,10 @@ docs/jsdoc/index.html: src/p2pweb.js
 docs/notes.pdf: notes.md pandoc/*.html pandoc/*.yml pandoc/*.bib
 	pandoc --toc pandoc/notes.yml pandoc/template.yml --bibliography=pandoc/bibliography.bib notes.md --template=pandoc/template.html -s -o docs/notes.html
 	pandoc --toc pandoc/notes.yml pandoc/template.yml --bibliography=pandoc/bibliography.bib notes.md --latex-engine=xelatex -o docs/notes.pdf
+
+docs/blockchain-computer.pdf: blockchain-computer.md pandoc/*.html pandoc/*.yml pandoc/*.bib
+	pandoc pandoc/template.yml --bibliography=pandoc/bibliography.bib blockchain-computer.md --template=pandoc/template.html -s -o docs/blockchain-computer.html
+	pandoc pandoc/template.yml --bibliography=pandoc/bibliography.bib blockchain-computer.md --latex-engine=xelatex -o docs/blockchain-computer.pdf
 
 docs/index.html: README.md pandoc/*.html pandoc/*.yml
 	pandoc pandoc/README.yml pandoc/template.yml README.md --template=pandoc/template.html -s -o docs/index.html

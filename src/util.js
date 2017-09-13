@@ -1,7 +1,7 @@
 /**
     */
 
-assert = require('./assert');
+assert = require("./assert");
 
 exports.hex2buf = function hex2buf(str) {
   let a = new Uint8Array(str.length / 2);
@@ -9,7 +9,7 @@ exports.hex2buf = function hex2buf(str) {
     a[i / 2] = parseInt(str.slice(i, i + 2), 16);
   }
   return a.buffer;
-}
+};
 
 /**
     */
@@ -20,7 +20,7 @@ exports.buf2hex = function buf2hex(buf) {
     str += (0x100 + a[i]).toString(16).slice(1);
   }
   return str;
-}
+};
 
 /**
     */
@@ -30,7 +30,7 @@ exports.ascii2buf = function ascii2buf(str) {
     result[i] = str.charCodeAt(i);
   }
   return result.buffer;
-}
+};
 
 /**
     */
@@ -38,7 +38,7 @@ exports.buf2ascii = function buf2ascii(buf) {
   return Array.prototype.map
     .call(new Uint8Array(buf), i => String.fromCharCode(i))
     .join("");
-}
+};
 
 // TODO
 const printLines = [];
@@ -60,7 +60,7 @@ function print() {
 
 exports.throwError = function throwError(msg) {
   throw new Error(msg);
-}
+};
 
 exports.tryFn = function tryFn(f, alt) {
   try {
@@ -68,13 +68,13 @@ exports.tryFn = function tryFn(f, alt) {
   } catch (e) {
     return typeof alt === "function" ? alt(e) : alt;
   }
-}
+};
 
 /**
 */
 exports.sleep = function sleep(n = 0) {
   return new Promise((resolve, reject) => setTimeout(resolve, n));
-}
+};
 
 /**
 */
@@ -84,21 +84,21 @@ exports.pairsToObject = function pairsToObject(keyvals) {
     result[key] = val;
   }
   return result;
-}
+};
 
 /**
     */
 exports.getEnv = function getEnv() {
-    try {
-      return pairsToObject(
-        location.hash
-          .slice(1)
-          .split("&")
-          .map(s => s.split("=").map(decodeURIComponent))
-          .map(([k, v]) => tryFn(() => [k, JSON.parse(v)], [k, v]))
-      );
-    } catch (e) {
-      print(e);
-      return {};
-    }
-}
+  try {
+    return pairsToObject(
+      location.hash
+        .slice(1)
+        .split("&")
+        .map(s => s.split("=").map(decodeURIComponent))
+        .map(([k, v]) => tryFn(() => [k, JSON.parse(v)], [k, v]))
+    );
+  } catch (e) {
+    print(e);
+    return {};
+  }
+};

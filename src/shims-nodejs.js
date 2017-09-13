@@ -1,12 +1,12 @@
-const window = require('./window');
-const util = require('./util');
+const window = require("./window");
+const util = require("./util");
 
-if(!window.atob) {
+if (!window.atob) {
   window.atob = str => new Buffer(str, "base64").toString("binary");
   window.btoa = str => new Buffer(str, "binary").toString("base64");
 }
 
-if(!window.crypto) {
+if (!window.crypto) {
   window.crypto = { subtle: {} };
   window.crypto.subtle.digest = async function(cipher, data) {
     assert.equal(cipher, "SHA-256");

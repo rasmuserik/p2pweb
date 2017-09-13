@@ -32,6 +32,6 @@ networkAbstraction.receiveSignalling = signalConnection => {
   };
 };
 
-networkAbstraction.startSignalling = () => {} // TODO
+networkAbstraction.startSignalling = () => {}; // TODO
 
-require('./main')(networkAbstraction);
+require("./main")(networkAbstraction);

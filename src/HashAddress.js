@@ -1,4 +1,4 @@
-const window = require('./window');
+const window = require("./window");
 
 /**
  * Hashes as addresses, and utility functions for Kademlia-like routing.
@@ -202,4 +202,4 @@ module.exports = class HashAddress {
       .toHex()
       .startsWith("0001") || throwError();
   }
-}
+};

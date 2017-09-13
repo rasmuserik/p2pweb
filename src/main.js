@@ -1,4 +1,4 @@
-assert = require('./assert');
-module.exports = (networkAbstraction) => {
+assert = require("./assert");
+module.exports = networkAbstraction => {
   assert(networkAbstraction);
-}
+};

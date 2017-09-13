@@ -1,12 +1,12 @@
-require('./shims-nodejs');
-const assert = require('./assert');
+require("./shims-nodejs");
+const assert = require("./assert");
 
 const networkAbstraction = {};
 
 const WebSocket = require("ws");
 
 const port = env.P2PWEB_PORT || 3535;
-const url = env.P2PWEB_URL || 'ws://localhost:3535'; // TODO no default
+const url = env.P2PWEB_URL || "ws://localhost:3535"; // TODO no default
 assert(url, "Missing P2PWEB_URL in environment");
 const wss = new WebSocket.Server({ port: port });
 wss.on("connection", function connection(ws) {
@@ -21,8 +21,8 @@ wss.on("connection", function connection(ws) {
   ws.on(
     "message",
     msg =>
-    con.onmessage &&
-    con.onmessage({ data: JSON.parse(msg), con: con })
+      con.onmessage &&
+      con.onmessage({ data: JSON.parse(msg), con: con })
   );
   ws.on("close", () => con.onclose && con.onclose());
 });
@@ -46,8 +46,7 @@ networkAbstraction.receiveSignalling = o => {
       ws.on(
         "message",
         msg =>
-        con.onmessage &&
-        con.onmessage({ data: JSON.parse(msg), con })
+          con.onmessage && con.onmessage({ data: JSON.parse(msg), con })
       );
       ws.on("error", () => {
         print("could not connect to " + msg.websocket);
@@ -65,4 +64,4 @@ networkAbstraction.startSignalling = o => {
 
 process.on("exit", () => wss.close());
 
-require('./main')(networkAbstraction);
+require("./main")(networkAbstraction);

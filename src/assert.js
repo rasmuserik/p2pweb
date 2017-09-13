@@ -1,10 +1,10 @@
-  function assert(e, msg) {
-    if(!e) {
-      throw new Error(msg);
-    }
+function assert(e, msg) {
+  if (!e) {
+    throw new Error(msg);
   }
+}
 
-  /*
+/*
   assert.equal = (a, b, msg) => {
     assert(!msg);
     if (a !== b) {
@@ -27,4 +27,4 @@
   };
   */
 
-  module.exports = assert;
+module.exports = assert;

@@ -1,5 +1,5 @@
 // # Node
-HashAddress = require('./HashAddress');
+HashAddress = require("./HashAddress");
 
 let nodes = [];
 /**
@@ -150,4 +150,4 @@ this.exports = class Node {
     });
     print("addconnection");
   }
-}
+};

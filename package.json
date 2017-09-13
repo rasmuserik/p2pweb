@@ -9,7 +9,7 @@
     "docs": "make docs; git add docs",
     "test": "nyc mocha",
     "testX": "make ./coverage/lcov.info",
-    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "git-add": "git add README.md src/p2pweb.js docs"
   },
   "pre-commit": [
@@ -34,7 +34,6 @@
   "devDependencies": {
     "coveralls": "^2.13.1",
     "documentation": "^5.3.1",
-    "istanbul": "^1.1.0-alpha.1",
     "mocha": "^3.5.3",
     "nyc": "^11.2.1",
     "pre-commit": "^1.2.2",

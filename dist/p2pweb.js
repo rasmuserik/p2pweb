@@ -118,7 +118,7 @@ networkAbstraction.receiveSignalling = signalConnection => {
   };
 };
 
-networkAbstraction.startSignalling = () => {} // TODO
+networkAbstraction.startSignalling = () => {}; // TODO
 
 __webpack_require__(2)(networkAbstraction);
 
@@ -128,22 +128,22 @@ __webpack_require__(2)(networkAbstraction);
 /***/ (function(module, exports, __webpack_require__) {
 
 assert = __webpack_require__(3);
-module.exports = (networkAbstraction) => {
+module.exports = networkAbstraction => {
   assert(networkAbstraction);
-}
+};
 
 
 /***/ }),
 /* 3 */
 /***/ (function(module, exports) {
 
-  function assert(e, msg) {
-    if(!e) {
-      throw new Error(msg);
-    }
+function assert(e, msg) {
+  if (!e) {
+    throw new Error(msg);
   }
+}
 
-  /*
+/*
   assert.equal = (a, b, msg) => {
     assert(!msg);
     if (a !== b) {
@@ -166,7 +166,7 @@ module.exports = (networkAbstraction) => {
   };
   */
 
-  module.exports = assert;
+module.exports = assert;
 
 
 /***/ })

@@ -7,8 +7,9 @@
     "dev": "webpack-dev-server --content-base dist/",
     "build": "make",
     "docs": "make docs; git add docs",
-    "test": "make ./coverage/lcov.info",
-    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
+    "test": "nyc mocha",
+    "testX": "make ./coverage/lcov.info",
+    "coverallsX": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "git-add": "git add README.md src/p2pweb.js docs"
   },
   "pre-commit": [
@@ -34,6 +35,8 @@
     "coveralls": "^2.13.1",
     "documentation": "^5.3.1",
     "istanbul": "^1.1.0-alpha.1",
+    "mocha": "^3.5.3",
+    "nyc": "^11.2.1",
     "pre-commit": "^1.2.2",
     "prettier": "^1.6.1",
     "uglify-es": "github:mishoo/UglifyJS2#harmony",

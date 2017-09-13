@@ -260,10 +260,8 @@ this.exports = class Node {
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// # Hash Address
-
 const window = __webpack_require__(0);
-console.log(window.crypto);
+
 /**
  * Hashes as addresses, and utility functions for Kademlia-like routing.
  */

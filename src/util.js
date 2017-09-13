@@ -1,8 +1,8 @@
-// # Utility Functions
-// ## Binary Data
 /**
     */
+
 assert = require('./assert');
+
 exports.hex2buf = function hex2buf(str) {
   let a = new Uint8Array(str.length / 2);
   for (let i = 0; i < str.length; i += 2) {
@@ -31,14 +31,6 @@ exports.ascii2buf = function ascii2buf(str) {
   }
   return result.buffer;
 }
-test(() => {
-  assert.deepEqual(Array.from(new Uint8Array(ascii2buf("abcæ"))), [
-    97,
-    98,
-    99,
-    230
-  ]);
-});
 
 /**
     */
@@ -47,18 +39,9 @@ exports.buf2ascii = function buf2ascii(buf) {
     .call(new Uint8Array(buf), i => String.fromCharCode(i))
     .join("");
 }
-test(() => {
-  assert.deepEqual(
-    "abcæ",
-    buf2ascii(Uint8Array.from([97, 98, 99, 230]).buffer)
-  );
-});
 
-// ## Misc
-
+// TODO
 const printLines = [];
-/**
-    */
 function print() {
   const line = [nodes.length === 1 ? nodes[0].name() : "????"].concat(
     Array.from(arguments)
@@ -75,59 +58,37 @@ function print() {
   console.log.apply(console, line);
 }
 
-/**
-    */
-function throwError(msg) {
+exports.throwError = function throwError(msg) {
   throw new Error(msg);
 }
 
-/**
-    */
-function tryFn(f, alt) {
+exports.tryFn = function tryFn(f, alt) {
   try {
     return f();
   } catch (e) {
     return typeof alt === "function" ? alt(e) : alt;
   }
 }
-test(() => {
-  assert.equal(tryFn(() => "asdf"), "asdf");
-  assert.equal(tryFn(() => throwError("asdf")), undefined);
-  assert.equal(tryFn(() => throwError("asdf"), 123), 123);
-});
 
 /**
-    */
-function sleep(n = 0) {
+*/
+exports.sleep = function sleep(n = 0) {
   return new Promise((resolve, reject) => setTimeout(resolve, n));
 }
-test(async () => {
-  const t0 = Date.now();
-  await sleep(100);
-  const t = Date.now() - t0;
-  assert(90 < t, t);
-  assert(t < 110, t);
-});
 
 /**
-    */
-function pairsToObject(keyvals) {
+*/
+exports.pairsToObject = function pairsToObject(keyvals) {
   const result = {};
   for (const [key, val] of keyvals) {
     result[key] = val;
   }
   return result;
 }
-test(() =>
-  assert.deepEqual(pairsToObject([["a", 1], [2, "b"]]), {
-    a: 1,
-    "2": "b"
-  })
-);
 
 /**
     */
-function getEnv() {
+exports.getEnv = function getEnv() {
     try {
       return pairsToObject(
         location.hash

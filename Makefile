@@ -1,4 +1,4 @@
-all: .prettiered docs dist/p2pweb.min.js
+all: .prettiered docs dist/p2pweb.js
 
 docs: docs/notes.pdf docs/index.html docs/jsdoc/index.html
 

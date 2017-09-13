@@ -1,4 +1,5 @@
 require("../src/shims-nodejs");
+const window = require("../src/window");
 const assert = require("assert");
 const {
   hex2buf,
@@ -47,4 +48,13 @@ describe("util", () => {
       a: 1,
       "2": "b"
     }));
+
+  it("parses location.hash", () => {
+    const t = window.location.hash;
+    window.location.hash = "#foo=bar&baz=%20";
+    const env = getEnv();
+    assert.equal(Object.keys(env).length, 2);
+    assert.equal(env.baz, " ");
+    window.location.hash = t;
+  });
 });

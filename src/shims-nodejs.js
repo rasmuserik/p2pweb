@@ -34,3 +34,16 @@ if (!window.crypto) {
       });
     });
 }
+
+if (!window.location) {
+  const env = process.env;
+  window.location = {
+    hash:
+      "#" +
+      Object.keys(env)
+        .map(
+          k => encodeURIComponent(k) + "=" + encodeURIComponent(env[k])
+        )
+        .join("&")
+  };
+}

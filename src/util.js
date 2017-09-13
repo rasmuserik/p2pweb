@@ -2,6 +2,7 @@
     */
 
 assert = require("./assert");
+window = require("./window");
 
 exports.hex2buf = function hex2buf(str) {
   let a = new Uint8Array(str.length / 2);
@@ -90,15 +91,17 @@ exports.pairsToObject = function pairsToObject(keyvals) {
     */
 exports.getEnv = function getEnv() {
   try {
-    return pairsToObject(
-      location.hash
+    return exports.pairsToObject(
+      window.location.hash
         .slice(1)
         .split("&")
         .map(s => s.split("=").map(decodeURIComponent))
-        .map(([k, v]) => tryFn(() => [k, JSON.parse(v)], [k, v]))
+        .map(([k, v]) =>
+          exports.tryFn(() => [k, JSON.parse(v)], [k, v])
+        )
     );
   } catch (e) {
-    print(e);
-    return {};
+    console.log(e);
+    throw e;
   }
 };

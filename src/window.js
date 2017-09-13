@@ -1,2 +1,6 @@
-const window = typeof self === "undefined" ? {} : self;
-module.exports = window;
+/* istanbul ignore else */
+if (typeof self === "undefined") {
+  module.exports = {};
+} else {
+  module.exports = self;
+}

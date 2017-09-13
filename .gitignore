@@ -5,3 +5,4 @@ coverage
 .prettiered
 .nyc_output
 dist/p2pweb.js.map
+package-lock.json

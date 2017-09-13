@@ -11,8 +11,9 @@ dist/p2pweb.js: src/*
 clean:
 	rm -rf docs/*.pdf docs/index.html docs/jsdoc
 
-.prettiered: src/*.js
-	./node_modules/.bin/prettier --write src/*.js --print-width 72 && git add src/*.js \
+.prettiered: src/* test/*
+	./node_modules/.bin/prettier --write src/*.js test/*.js --print-width 72 \
+		&& git add src/*.js test/*.js \
 		&& date > .prettiered
 
 live-server:

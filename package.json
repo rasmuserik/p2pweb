@@ -9,7 +9,7 @@
     "docs": "make docs; git add docs",
     "test": "nyc mocha",
     "testX": "make ./coverage/lcov.info",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "coverage": "ls ./node_modules/.bin; nyc report --reporter=text-lcov | ./node_modules/.bin/coveralls",
     "git-add": "git add README.md src/p2pweb.js docs"
   },
   "pre-commit": [

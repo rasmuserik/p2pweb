@@ -12,7 +12,7 @@ clean:
 	rm -rf docs/*.pdf docs/index.html docs/jsdoc
 
 .prettiered: src/p2pweb.js
-	./node_modules/.bin/prettier --write src/p2pweb.js --print-width 72 && git add src/p2pweb.js \
+	./node_modules/.bin/prettier --write src/*.js --print-width 72 && git add src/*.js \
 		&& date > .prettiered
 
 live-server:

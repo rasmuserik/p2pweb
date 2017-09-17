@@ -1,5 +1,5 @@
 ---
-title: A Blockchain Computer
+title: A Blockchain Computer [DRAFT/NOTES]
 author: Rasmus Erik Voel Jensen
 date: 2017
 abstract: |
@@ -25,3 +25,55 @@ Outline:
 - Future work
     - Actual implementation (in progress)
     - Stakes in addition to proof of work for better security
+
+# Background
+
+Use case
+
+Concrete use case: Web Applications without backend.
+
+## Related Work
+
+TODO: explore these in more details, and document differences to our approach
+
+**Ethereum** ...
+
+**Golem** ...
+
+**Computes.io**
+<https://blog.computes.io/distributed-computed-centralized-vs-decentralized-c1d21202bde8>
+
+**TrueBit**
+<https://people.cs.uchicago.edu/~teutsch/papers/truebit.pdf>
+
+**iEx.co** ??
+
+# Architecture
+
+## State
+
+stored in blockchain, for proofs and scheduling
+
+## Computational tasks
+
+provable results
+
+- task definition (and max amount of work )
+- scheduling and computation
+- proof of work done, without revealing value
+- reveal result (and amount of work)
+- update of ledger
+
+## Distributed ledger
+
+The currency is bound to the value of computational work, and not based on artificial scarcity. Upper bound on value: solving a computational task gives the node currency corresponding to amount of computing power used. Lower bound on value: the currency is used to 
+
+# Conclusion
+
+## Future work
+
+Finishing the actual implementation.
+
+Generalise computational tasks to storage, bandwidth, etc.
+
+Adding stake, in addition to proof of work for better security.

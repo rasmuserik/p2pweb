@@ -1,5 +1,6 @@
 const window = require("./window");
-const util = require("./util");
+const { hex2buf } = require("./util");
+const assert = require("assert");
 
 if (!window.atob) {
   window.atob = str => new Buffer(str, "base64").toString("binary");

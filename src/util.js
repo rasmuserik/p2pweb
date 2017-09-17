@@ -1,8 +1,8 @@
 /**
     */
 
-assert = require("./assert");
-window = require("./window");
+assert = require('./assert');
+window = require('./window');
 
 exports.hex2buf = function hex2buf(str) {
   let a = new Uint8Array(str.length / 2);
@@ -16,7 +16,7 @@ exports.hex2buf = function hex2buf(str) {
     */
 exports.buf2hex = function buf2hex(buf) {
   let a = new Uint8Array(buf);
-  let str = "";
+  let str = '';
   for (var i = 0; i < a.length; ++i) {
     str += (0x100 + a[i]).toString(16).slice(1);
   }
@@ -38,22 +38,22 @@ exports.ascii2buf = function ascii2buf(str) {
 exports.buf2ascii = function buf2ascii(buf) {
   return Array.prototype.map
     .call(new Uint8Array(buf), i => String.fromCharCode(i))
-    .join("");
+    .join('');
 };
 
 // TODO
 const printLines = [];
 function print() {
-  const line = [nodes.length === 1 ? nodes[0].name() : "????"].concat(
+  const line = [nodes.length === 1 ? nodes[0].name() : '????'].concat(
     Array.from(arguments)
   );
-  if (window.document && window.document.getElementById("p2pweb-log")) {
+  if (window.document && window.document.getElementById('p2pweb-log')) {
     if (printLines.length > 20) {
       printLines.shift(1);
     }
-    printLines.push(line.map(String).join(" "));
-    window.document.getElementById("p2pweb-log").innerHTML = `
-        <pre>${printLines.join("\n")}</pre>
+    printLines.push(line.map(String).join(' '));
+    window.document.getElementById('p2pweb-log').innerHTML = `
+        <pre>${printLines.join('\n')}</pre>
       `;
   }
   console.log.apply(console, line);
@@ -67,7 +67,7 @@ exports.tryFn = function tryFn(f, alt) {
   try {
     return f();
   } catch (e) {
-    return typeof alt === "function" ? alt(e) : alt;
+    return typeof alt === 'function' ? alt(e) : alt;
   }
 };
 
@@ -94,8 +94,8 @@ exports.getEnv = function getEnv() {
     return exports.pairsToObject(
       window.location.hash
         .slice(1)
-        .split("&")
-        .map(s => s.split("=").map(decodeURIComponent))
+        .split('&')
+        .map(s => s.split('=').map(decodeURIComponent))
         .map(([k, v]) =>
           exports.tryFn(() => [k, JSON.parse(v)], [k, v])
         )

@@ -1,10 +1,5 @@
-const window = require("./window");
-const {
-  ascii2buf,
-  buf2ascii,
-  hex2buf,
-  buf2hex
-} = require("../src/util");
+const window = require('./window');
+const {ascii2buf, buf2ascii, hex2buf, buf2hex} = require('../src/util');
 
 /**
  * Hashes as addresses, and utility functions for Kademlia-like routing.
@@ -21,12 +16,12 @@ module.exports = class HashAddress {
   /**
     */
   static async generate(src /*ArrayBuffer | String*/) {
-    if (typeof src === "string") {
+    if (typeof src === 'string') {
       src = ascii2buf(src);
     } else {
       assert(src instanceof ArrayBuffer);
     }
-    let hash = await window.crypto.subtle.digest("SHA-256", src);
+    let hash = await window.crypto.subtle.digest('SHA-256', src);
     return new HashAddress(new Uint8Array(hash));
   }
 

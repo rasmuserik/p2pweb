@@ -1,6 +1,6 @@
-require("../src/shims-nodejs");
-const window = require("../src/window");
-const assert = require("assert");
+require('../src/shims-nodejs');
+const window = require('../src/window');
+const assert = require('assert');
 const {
   hex2buf,
   buf2hex,
@@ -12,30 +12,30 @@ const {
   sleep,
   pairsToObject,
   getEnv
-} = require("../src/util");
+} = require('../src/util');
 
-describe("util", () => {
-  it("converts ascii to/from ArrayBuffer", () => {
-    assert.deepEqual(Array.from(new Uint8Array(ascii2buf("abcæ"))), [
+describe('util', () => {
+  it('converts ascii to/from ArrayBuffer', () => {
+    assert.deepEqual(Array.from(new Uint8Array(ascii2buf('abcæ'))), [
       97,
       98,
       99,
       230
     ]);
     assert.deepEqual(
-      "abcæ",
+      'abcæ',
       buf2ascii(Uint8Array.from([97, 98, 99, 230]).buffer)
     );
   });
 
-  it("supports throw/catch in expressions", () => {
-    assert.throws(() => throwError("asfg"));
-    assert.equal(tryFn(() => "asdf"), "asdf");
-    assert.equal(tryFn(() => throwError("asdf")), undefined);
-    assert.equal(tryFn(() => throwError("asdf"), 123), 123);
+  it('supports throw/catch in expressions', () => {
+    assert.throws(() => throwError('asfg'));
+    assert.equal(tryFn(() => 'asdf'), 'asdf');
+    assert.equal(tryFn(() => throwError('asdf')), undefined);
+    assert.equal(tryFn(() => throwError('asdf'), 123), 123);
   });
 
-  it("sleeps", async () => {
+  it('sleeps', async () => {
     const t0 = Date.now();
     await sleep(20);
     const t = Date.now() - t0;
@@ -43,18 +43,18 @@ describe("util", () => {
     assert(t < 25, t);
   });
 
-  it("convert pairs to object", () =>
-    assert.deepEqual(pairsToObject([["a", 1], [2, "b"]]), {
+  it('convert pairs to object', () =>
+    assert.deepEqual(pairsToObject([['a', 1], [2, 'b']]), {
       a: 1,
-      "2": "b"
+      '2': 'b'
     }));
 
-  it("parses location.hash", () => {
+  it('parses location.hash', () => {
     const t = window.location.hash;
-    window.location.hash = "#foo=bar&baz=%20";
+    window.location.hash = '#foo=bar&baz=%20';
     const env = getEnv();
     assert.equal(Object.keys(env).length, 2);
-    assert.equal(env.baz, " ");
+    assert.equal(env.baz, ' ');
     window.location.hash = t;
   });
 });

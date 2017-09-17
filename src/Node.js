@@ -1,16 +1,18 @@
 // # Node
-HashAddress = require("./HashAddress");
+const HashAddress = require('./HashAddress');
+const rpc = require('./rpc');
 
 let nodes = [];
 /**
   */
-this.exports = class Node {
+module.exports = class Node {
   /**
     */
-  constructor({ bootstrapNodes }) {
+  constructor({bootstrapNodes, networkAbstraction}) {
     nodes.push(this);
 
     this.bootstrapNodes = bootstrapNodes;
+    this.networkAbstraction = networkAbstraction;
     this.connections = [];
     this.rpc = {};
 
@@ -53,12 +55,13 @@ this.exports = class Node {
         this.bootstrap();
       }, 1000);
 
-      const o = { close: () => {} };
-      platform.receiveSignalling(o);
+      const o = {close: () => {}};
+      this.networkAbstraction.receiveSignalling(o);
       o.onmessage({
         data: {
-          websocket:
-            bootstrapNodes[(Math.random() * bootstrapNodes.length) | 0]
+          websocket: this.bootstrapNodes[
+            (Math.random() * this.bootstrapNodes.length) | 0
+          ]
         }
       });
     }
@@ -75,13 +78,13 @@ this.exports = class Node {
     } else if (this.allPeers().includes(addr)) {
       for (const peer of this.connections) {
         if (peer.peers.includes(addr)) {
-          peer.con.send({ rpc: "relay", dst: addr, data: msg });
+          peer.con.send({rpc: 'relay', dst: addr, data: msg});
           break;
         }
       }
     } else {
-      print("no connection to " + String(addr).slice(0, 4), msg);
-      print(this.allPeers().map(s => s.slice(0, 4)));
+      this.log('no connection to ' + String(addr).slice(0, 4), msg);
+      this.log(this.allPeers().map(s => s.slice(0, 4)));
       throw new Error();
     }
   }
@@ -92,7 +95,7 @@ this.exports = class Node {
     if (this.rpc[msg.data.rpc]) {
       this.rpc[msg.data.rpc](msg);
     } else {
-      print("no such endpoint " + JSON.stringify(msg.data));
+      this.log('no such endpoint ' + JSON.stringify(msg.data));
     }
   }
 
@@ -119,9 +122,9 @@ this.exports = class Node {
   /**
     */
   addConnection(con) {
-    let name = "";
+    let name = '';
 
-    const peer = { con };
+    const peer = {con};
     peer.con.onmessage = msg => this.local(msg);
 
     peer.con.onclose = () => {
@@ -130,11 +133,11 @@ this.exports = class Node {
       this.connections = this.connections.filter(
         o => o.con !== peer.con
       );
-      print("close", (con.addr || "????").slice(0, 4));
+      this.log('close', (con.addr || '????').slice(0, 4));
 
       if (addr) {
         for (const peer of this.connections.map(o => o.addr)) {
-          this.send(peer, { rpc: "lostPeer", addr: addr });
+          this.send(peer, {rpc: 'lostPeer', addr: addr});
         }
       }
     };
@@ -143,11 +146,28 @@ this.exports = class Node {
     peer.con.send({
       time: peer.con.t2,
       weigh: 1 + Math.random(),
-      rpc: "connect",
+      rpc: 'connect',
       addr: this.address().toString(),
       peers: this.connections.map(o => o.addr),
       isNodeJs: isNodeJs
     });
-    print("addconnection");
+    this.log('addconnection');
+  }
+
+  log() {
+    const line = this.name().concat(Array.from(arguments));
+    if (
+      window.document &&
+      window.document.getElementById('p2pweb-log')
+    ) {
+      if (printLines.length > 20) {
+        printLines.shift(1);
+      }
+      printLines.push(line.map(String).join(' '));
+      window.document.getElementById('p2pweb-log').innerHTML = `
+        <pre>${printLines.join('\n')}</pre>
+      `;
+    }
+    console.log.apply(console, line);
   }
 };

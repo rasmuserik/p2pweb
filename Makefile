@@ -12,7 +12,7 @@ clean:
 	rm -rf docs/*.pdf docs/index.html docs/jsdoc
 
 .prettiered: src/* test/*
-	./node_modules/.bin/prettier --write src/*.js test/*.js --print-width 72 \
+	./node_modules/.bin/prettier --write src/*.js test/*.js --print-width 72 --single-quote --no-bracket-spacing \
 		&& git add src/*.js test/*.js \
 		&& date > .prettiered
 

@@ -15,10 +15,10 @@ const p2pweb = module.exports;
 const isNodeJs = getIsNodeJs();
 const env = getEnv();
 const bootstrapString =
-  env.P2PWEB_BOOTSTRAP || "wss://sea.solsort.com/";
+  env.P2PWEB_BOOTSTRAP || 'wss://sea.solsort.com/';
 const bootstrapNodes = bootstrapString.trim().split(/\s+/);
 /* istanbul ignore next */
-const assert = isNodeJs ? require("assert") : assertImpl();
+const assert = isNodeJs ? require('assert') : assertImpl();
 /* istanbul ignore next */
 const window = isNodeJs ? global : self;
 const platform = {};
@@ -35,7 +35,7 @@ let nodes = [];
 class Node {
   /**
     */
-  constructor({ bootstrapNodes }) {
+  constructor({bootstrapNodes}) {
     nodes.push(this);
 
     this.bootstrapNodes = bootstrapNodes;
@@ -81,7 +81,7 @@ class Node {
         this.bootstrap();
       }, 1000);
 
-      const o = { close: () => {} };
+      const o = {close: () => {}};
       platform.receiveSignalling(o);
       o.onmessage({
         data: {
@@ -103,12 +103,12 @@ class Node {
     } else if (this.allPeers().includes(addr)) {
       for (const peer of this.connections) {
         if (peer.peers.includes(addr)) {
-          peer.con.send({ rpc: "relay", dst: addr, data: msg });
+          peer.con.send({rpc: 'relay', dst: addr, data: msg});
           break;
         }
       }
     } else {
-      print("no connection to " + String(addr).slice(0, 4), msg);
+      print('no connection to ' + String(addr).slice(0, 4), msg);
       print(this.allPeers().map(s => s.slice(0, 4)));
       throw new Error();
     }
@@ -120,7 +120,7 @@ class Node {
     if (this.rpc[msg.data.rpc]) {
       this.rpc[msg.data.rpc](msg);
     } else {
-      print("no such endpoint " + JSON.stringify(msg.data));
+      print('no such endpoint ' + JSON.stringify(msg.data));
     }
   }
 
@@ -147,9 +147,9 @@ class Node {
   /**
     */
   addConnection(con) {
-    let name = "";
+    let name = '';
 
-    const peer = { con };
+    const peer = {con};
     peer.con.onmessage = msg => this.local(msg);
 
     peer.con.onclose = () => {
@@ -158,11 +158,11 @@ class Node {
       this.connections = this.connections.filter(
         o => o.con !== peer.con
       );
-      print("close", (con.addr || "????").slice(0, 4));
+      print('close', (con.addr || '????').slice(0, 4));
 
       if (addr) {
         for (const peer of this.connections.map(o => o.addr)) {
-          this.send(peer, { rpc: "lostPeer", addr: addr });
+          this.send(peer, {rpc: 'lostPeer', addr: addr});
         }
       }
     };
@@ -171,19 +171,19 @@ class Node {
     peer.con.send({
       time: peer.con.t2,
       weigh: 1 + Math.random(),
-      rpc: "connect",
+      rpc: 'connect',
       addr: this.address().toString(),
       peers: this.connections.map(o => o.addr),
       isNodeJs: isNodeJs
     });
-    print("addconnection");
+    print('addconnection');
   }
 }
 // # RPC
-rpc.connect = function({ con, data }) {
+rpc.connect = function({con, data}) {
   const msg = data;
   print(
-    "connect",
+    'connect',
     msg.addr.slice(0, 4),
     msg.peers.map(s => s.slice(0, 4))
   );
@@ -196,9 +196,9 @@ rpc.connect = function({ con, data }) {
   peer.peers = msg.peers;
 
   if (this.findConnection(msg.addr)) {
-    print("already connected to", msg.addr.slice(0, 4));
+    print('already connected to', msg.addr.slice(0, 4));
     print(
-      "timestamps for consitent cleanup (not implemented yet)",
+      'timestamps for consitent cleanup (not implemented yet)',
       con.t2,
       msg.time,
       this.findConnection(msg.addr).con.t2
@@ -210,11 +210,11 @@ rpc.connect = function({ con, data }) {
     return;
   }
   this.connections.push(con);
-  this.send(msg.addr, { rpc: "print", from: this.name() });
+  this.send(msg.addr, {rpc: 'print', from: this.name()});
 
   for (const peer of this.connections.map(o => o.addr)) {
     if (peer !== con.addr) {
-      this.send(peer, { rpc: "newPeer", addr: msg.addr });
+      this.send(peer, {rpc: 'newPeer', addr: msg.addr});
     }
   }
 
@@ -225,43 +225,43 @@ rpc.connect = function({ con, data }) {
     const allPeers = this.allPeers();
     const randomPeer = allPeers[(Math.random() * allPeers.length) | 0];
     if (!randomPeer) {
-      return print("no peers");
+      return print('no peers');
     }
-    print("randomPeer:", randomPeer.slice(0, 4));
+    print('randomPeer:', randomPeer.slice(0, 4));
     if (!this.findConnection(randomPeer)) {
-      print("connecting to randomPeer");
+      print('connecting to randomPeer');
       this.send(randomPeer, {
-        rpc: "print",
-        data: "hello from " + this.name()
+        rpc: 'print',
+        data: 'hello from ' + this.name()
       });
 
       const peer = randomPeer;
       const rpcEndpoint =
-        "signal" +
+        'signal' +
         Math.random()
           .toString()
           .slice(2);
       const handleMessage = msg =>
-        console.log("handleMessage", msg.data);
+        console.log('handleMessage', msg.data);
       this.send(peer, {
-        rpc: "handleSignalConnection",
+        rpc: 'handleSignalConnection',
         endpoint: rpcEndpoint,
         peer: this.address().toString()
       });
 
       const signalChannel = {
         close: () => delete this.rpc[rpcEndpoint],
-        send: data => this.send(peer, { rpc: rpcEndpoint, data: data }),
+        send: data => this.send(peer, {rpc: rpcEndpoint, data: data}),
         onmessage: msg => {
           msg.con = signalChannel;
-          console.log("signalChannel start msg", msg.data);
+          console.log('signalChannel start msg', msg.data);
         }
       };
       this.rpc[rpcEndpoint] = msg => signalChannel.onmessage(msg);
 
-      signalChannel.send("hello");
+      signalChannel.send('hello');
     } else {
-      print("already connected to randomPeer");
+      print('already connected to randomPeer');
     }
   }, 2000);
 };
@@ -269,27 +269,27 @@ rpc.connect = function({ con, data }) {
 rpc.handleSignalConnection = function(msg) {
   const peer = msg.data.peer;
   const rpcEndpoint = msg.data.endpoint;
-  assert(rpcEndpoint.startsWith("signal"));
+  assert(rpcEndpoint.startsWith('signal'));
 
-  print("handleSignalConnection", msg.data.data);
+  print('handleSignalConnection', msg.data.data);
 
   const signalChannel = {
     close: () => delete this.rpc[rpcEndpoint],
-    send: data => this.send(peer, { rpc: rpcEndpoint, data: data }),
+    send: data => this.send(peer, {rpc: rpcEndpoint, data: data}),
     onmessage: msg => {
       msg.con = signalChannel;
-      console.log("signalChannel receive msg", msg.data);
-      msg.con.send("hello2");
+      console.log('signalChannel receive msg', msg.data);
+      msg.con.send('hello2');
     }
   };
   this.rpc[rpcEndpoint] = msg => signalChannel.onmessage(msg);
-  signalChannel.send("hi");
+  signalChannel.send('hi');
 };
 
 rpc.lostPeer = function(msg) {
   //msg.con.peers.filter(o => o.addr !== msg.data.addr);
   print(
-    "lostPeer",
+    'lostPeer',
     msg.con.addr.slice(0, 4),
     msg.data.addr.slice(0, 4)
   );
@@ -300,7 +300,7 @@ rpc.lostPeer = function(msg) {
 };
 rpc.newPeer = function(msg) {
   //msg.con.peers.push({addr: msg.data.addr});
-  print("newPeer", msg.con.addr.slice(0, 4), msg.data.addr.slice(0, 4));
+  print('newPeer', msg.con.addr.slice(0, 4), msg.data.addr.slice(0, 4));
   this.findConnection(msg.con.addr).peers.push(msg.data.addr);
   //print(msg.con.peers);
 };
@@ -308,7 +308,7 @@ rpc.relay = function(msg) {
   this.send(msg.data.dst, msg.data.data);
 };
 rpc.print = function(msg) {
-  print("print", JSON.stringify(msg.data));
+  print('print', JSON.stringify(msg.data));
 };
 // # Main
 
@@ -317,7 +317,7 @@ function main() {
   if (env.RUN_TESTS) {
     return runTests();
   } else {
-    const node = new Node({ bootstrapNodes });
+    const node = new Node({bootstrapNodes});
     platform.onconnection = con => {
       node.addConnection(con);
     };
@@ -343,12 +343,12 @@ class HashAddress {
   /**
     */
   static async generate(src /*ArrayBuffer | String*/) {
-    if (typeof src === "string") {
+    if (typeof src === 'string') {
       src = ascii2buf(src);
     } else {
       assert(src instanceof ArrayBuffer);
     }
-    let hash = await crypto.subtle.digest("SHA-256", src);
+    let hash = await crypto.subtle.digest('SHA-256', src);
     return new HashAddress(new Uint8Array(hash));
   }
 
@@ -366,11 +366,11 @@ class HashAddress {
   /**
     */
   static async TEST_constructor_generate_equals() {
-    let a = await HashAddress.generate("hello world");
-    let b = await HashAddress.generate("hello world");
-    let c = await HashAddress.generate("hello wørld");
-    a.equals(b) || throwError("equals1");
-    !a.equals(c) || throwError("equals2");
+    let a = await HashAddress.generate('hello world');
+    let b = await HashAddress.generate('hello world');
+    let c = await HashAddress.generate('hello wørld');
+    a.equals(b) || throwError('equals1');
+    !a.equals(c) || throwError('equals2');
   }
 
   /**
@@ -416,15 +416,15 @@ class HashAddress {
   }
 
   static async TEST_from_toArrayBuffer_toString() {
-    let a = await HashAddress.generate("hello");
+    let a = await HashAddress.generate('hello');
     let b = HashAddress.fromArrayBuffer(a.toArrayBuffer());
     let c = HashAddress.fromString(a.toString());
     let x80 = HashAddress.fromString(
-      "gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      'gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
     );
     a.equals(b) || throwError();
     a.equals(c) || throwError();
-    x80.toHex().startsWith("800") || throwError();
+    x80.toHex().startsWith('800') || throwError();
   }
 
   /**
@@ -469,28 +469,28 @@ class HashAddress {
   static TEST_dist() {
     let h;
     let zero = HashAddress.fromHex(
-      "0000000000000000000000000000000000000000000000000000000000000000"
+      '0000000000000000000000000000000000000000000000000000000000000000'
     );
 
     h = HashAddress.fromHex(
-      "0000000000000000000000000000001000000000000000000000000000000000"
+      '0000000000000000000000000000001000000000000000000000000000000000'
     );
     zero.dist(h) === 1 || throwError();
 
     h = HashAddress.fromHex(
-      "8000000000000000000000000000000000000000000000000000000000000000"
+      '8000000000000000000000000000000000000000000000000000000000000000'
     );
     zero.dist(h) === 2 ** 123 || throwError();
     zero.distBit(h) === 0 || throwError();
 
     h = HashAddress.fromHex(
-      "0000000000000000000000000000000000000000000000000000000000000001"
+      '0000000000000000000000000000000000000000000000000000000000000001'
     );
     zero.dist(h) === 2 ** -132 || throwError();
     zero.distBit(h) === 255 || throwError();
 
     h = HashAddress.fromHex(
-      "0f00000000000000000000000000000000000000000000000000000000000000"
+      '0f00000000000000000000000000000000000000000000000000000000000000'
     );
     zero.distBit(h) === 4 || throwError();
   }
@@ -514,27 +514,27 @@ class HashAddress {
 
   static TEST_flipBitRandomise() {
     let zero = HashAddress.fromHex(
-      "0000000000000000000000000000000000000000000000000000000000000000"
+      '0000000000000000000000000000000000000000000000000000000000000000'
     );
 
     zero
       .flipBitRandomise(3)
       .toHex()
-      .startsWith("1") || throwError();
+      .startsWith('1') || throwError();
     zero
       .flipBitRandomise(7)
       .toHex()
-      .startsWith("01") || throwError();
+      .startsWith('01') || throwError();
     zero
       .flipBitRandomise(7 + 8)
       .toHex()
-      .startsWith("0001") || throwError();
+      .startsWith('0001') || throwError();
   }
 }
 
 test(() => {
   for (const key of Object.getOwnPropertyNames(HashAddress)) {
-    if (key.startsWith("TEST_")) {
+    if (key.startsWith('TEST_')) {
       HashAddress[key]();
     }
   }
@@ -558,7 +558,7 @@ function hex2buf(str) {
     */
 function buf2hex(buf) {
   let a = new Uint8Array(buf);
-  let str = "";
+  let str = '';
   for (var i = 0; i < a.length; ++i) {
     str += (0x100 + a[i]).toString(16).slice(1);
   }
@@ -575,7 +575,7 @@ function ascii2buf(str) {
   return result.buffer;
 }
 test(() => {
-  assert.deepEqual(Array.from(new Uint8Array(ascii2buf("abcæ"))), [
+  assert.deepEqual(Array.from(new Uint8Array(ascii2buf('abcæ'))), [
     97,
     98,
     99,
@@ -588,11 +588,11 @@ test(() => {
 function buf2ascii(buf) {
   return Array.prototype.map
     .call(new Uint8Array(buf), i => String.fromCharCode(i))
-    .join("");
+    .join('');
 }
 test(() => {
   assert.deepEqual(
-    "abcæ",
+    'abcæ',
     buf2ascii(Uint8Array.from([97, 98, 99, 230]).buffer)
   );
 });
@@ -603,16 +603,16 @@ const printLines = [];
 /**
     */
 function print() {
-  const line = [nodes.length === 1 ? nodes[0].name() : "????"].concat(
+  const line = [nodes.length === 1 ? nodes[0].name() : '????'].concat(
     Array.from(arguments)
   );
-  if (window.document && window.document.getElementById("p2pweb-log")) {
+  if (window.document && window.document.getElementById('p2pweb-log')) {
     if (printLines.length > 20) {
       printLines.shift(1);
     }
-    printLines.push(line.map(String).join(" "));
-    window.document.getElementById("p2pweb-log").innerHTML = `
-        <pre>${printLines.join("\n")}</pre>
+    printLines.push(line.map(String).join(' '));
+    window.document.getElementById('p2pweb-log').innerHTML = `
+        <pre>${printLines.join('\n')}</pre>
       `;
   }
   console.log.apply(console, line);
@@ -620,7 +620,7 @@ function print() {
 
 function getIsNodeJs() {
   return (
-    typeof process !== "undefined" &&
+    typeof process !== 'undefined' &&
     process.versions &&
     !!process.versions.node
   );
@@ -638,13 +638,13 @@ function tryFn(f, alt) {
   try {
     return f();
   } catch (e) {
-    return typeof alt === "function" ? alt(e) : alt;
+    return typeof alt === 'function' ? alt(e) : alt;
   }
 }
 test(() => {
-  assert.equal(tryFn(() => "asdf"), "asdf");
-  assert.equal(tryFn(() => throwError("asdf")), undefined);
-  assert.equal(tryFn(() => throwError("asdf"), 123), 123);
+  assert.equal(tryFn(() => 'asdf'), 'asdf');
+  assert.equal(tryFn(() => throwError('asdf')), undefined);
+  assert.equal(tryFn(() => throwError('asdf'), 123), 123);
 });
 
 /**
@@ -670,9 +670,9 @@ function pairsToObject(keyvals) {
   return result;
 }
 test(() =>
-  assert.deepEqual(pairsToObject([["a", 1], [2, "b"]]), {
+  assert.deepEqual(pairsToObject([['a', 1], [2, 'b']]), {
     a: 1,
-    "2": "b"
+    '2': 'b'
   })
 );
 
@@ -687,8 +687,8 @@ function getEnv() {
       return pairsToObject(
         location.hash
           .slice(1)
-          .split("&")
-          .map(s => s.split("=").map(decodeURIComponent))
+          .split('&')
+          .map(s => s.split('=').map(decodeURIComponent))
           .map(([k, v]) => tryFn(() => [k, JSON.parse(v)], [k, v]))
       );
     } catch (e) {
@@ -710,7 +710,7 @@ function assertImpl() {
     assert(!msg);
     if (a !== b) {
       throwError(
-        `${msg || "assert.equal error:"}\n${String(a)} !== ${String(b)}`
+        `${msg || 'assert.equal error:'}\n${String(a)} !== ${String(b)}`
       );
     }
   };
@@ -723,7 +723,7 @@ function assertImpl() {
     assert(!check && !msg);
     try {
       f();
-      throwError("assert.throws error");
+      throwError('assert.throws error');
     } catch (e) {}
   };
 
@@ -736,14 +736,14 @@ function assertImpl() {
     */
 function test(f) {
   p2pweb._tests = p2pweb._tests || [];
-  p2pweb._tests.push({ f });
+  p2pweb._tests.push({f});
 }
 /**
     */
 async function runTests() {
   const testTimeout = 3000;
 
-  print("Running tests...");
+  print('Running tests...');
   let errors = 0;
   for (const test of p2pweb._tests) {
     try {
@@ -751,19 +751,19 @@ async function runTests() {
         (async () => {
           await sleep(testTimeout);
           /* istanbul ignore next */
-          throwError("timeout");
+          throwError('timeout');
         })(),
         Promise.resolve(test.f())
       ]);
     } catch (e) {
       print(test.f);
       print(e);
-      typeof process !== "undefined" && process.exit(1);
+      typeof process !== 'undefined' && process.exit(1);
       throw e;
     }
   }
-  print("All tests ok :)");
-  typeof process !== "undefined" && process.exit(0);
+  print('All tests ok :)');
+  typeof process !== 'undefined' && process.exit(0);
 }
 
 // # Platform specific code
@@ -773,29 +773,29 @@ async function runTests() {
 // ## NodeJS
 //
 if (isNodeJs) {
-  const WebSocket = require("ws");
+  const WebSocket = require('ws');
 
   const port = env.P2PWEB_PORT || 3535;
   const url = env.P2PWEB_URL;
-  assert(url, "Missing P2PWEB_URL in environment");
+  assert(url, 'Missing P2PWEB_URL in environment');
 
-  const wss = new WebSocket.Server({ port: port });
-  wss.on("connection", function connection(ws) {
+  const wss = new WebSocket.Server({port: port});
+  wss.on('connection', function connection(ws) {
     const con = {
       send: msg => ws.send(JSON.stringify(msg)),
       close: () => {
         ws.close();
-        ws.emit("close");
+        ws.emit('close');
       }
     };
     platform.onconnection(con);
     ws.on(
-      "message",
+      'message',
       msg =>
         con.onmessage &&
-        con.onmessage({ data: JSON.parse(msg), con: con })
+        con.onmessage({data: JSON.parse(msg), con: con})
     );
-    ws.on("close", () => con.onclose && con.onclose());
+    ws.on('close', () => con.onclose && con.onclose());
   });
 
   platform.receiveSignalling = o => {
@@ -808,57 +808,56 @@ if (isNodeJs) {
           send: msg => con.outgoing.push(msg),
           close: () => ws.close()
         };
-        ws.on("open", () => {
+        ws.on('open', () => {
           con.send = msg => ws.send(JSON.stringify(msg));
           con.outgoing.forEach(con.send);
           delete con.outgoing;
           platform.onconnection(con);
         });
         ws.on(
-          "message",
+          'message',
           msg =>
-            con.onmessage &&
-            con.onmessage({ data: JSON.parse(msg), con })
+            con.onmessage && con.onmessage({data: JSON.parse(msg), con})
         );
-        ws.on("error", () => {
-          print("could not connect to " + msg.websocket);
+        ws.on('error', () => {
+          print('could not connect to ' + msg.websocket);
         });
       } else {
-        o.send({ websocket: url });
+        o.send({websocket: url});
       }
     };
     return {};
   };
 
   platform.startSignalling = o => {
-    o.send({ websocket: url });
+    o.send({websocket: url});
   };
 
-  process.on("exit", () => wss.close());
+  process.on('exit', () => wss.close());
 
   // ### Crypto shim
   //
-  window.atob = str => new Buffer(str, "base64").toString("binary");
-  window.btoa = str => new Buffer(str, "binary").toString("base64");
+  window.atob = str => new Buffer(str, 'base64').toString('binary');
+  window.btoa = str => new Buffer(str, 'binary').toString('base64');
 
-  window.crypto = { subtle: {} };
+  window.crypto = {subtle: {}};
   crypto.subtle.digest = async function(cipher, data) {
-    assert.equal(cipher, "SHA-256");
-    if (typeof data !== "string") {
+    assert.equal(cipher, 'SHA-256');
+    if (typeof data !== 'string') {
       data = new Buffer(data);
     }
     return hex2buf(
-      require("crypto")
-        .createHash("sha256")
+      require('crypto')
+        .createHash('sha256')
         .update(new Buffer(data))
-        .digest("hex")
+        .digest('hex')
     );
   };
 
   crypto.getRandomValues = dst =>
     new Promise((resolve, reject) => {
       const arr = new Uint8Array(dst);
-      require("crypto").randomBytes(arr.length, (err, buf) => {
+      require('crypto').randomBytes(arr.length, (err, buf) => {
         if (err) {
           return reject(err);
         } else {
@@ -878,7 +877,7 @@ if (isNodeJs) {
     con.close = () => ws.close();
     ws.onmessage = msg => {
       con.onmessage &&
-        con.onmessage({ data: JSON.parse(msg.data), con: con });
+        con.onmessage({data: JSON.parse(msg.data), con: con});
     };
     ws.onerror = err => {
       con.onclose && con.onclose();
@@ -898,7 +897,7 @@ if (isNodeJs) {
         connectWebSocket(signalMessage.websocket);
       } else {
         signalConnection.close();
-        throw "WebRTC not implemented yet";
+        throw 'WebRTC not implemented yet';
       }
     };
   };

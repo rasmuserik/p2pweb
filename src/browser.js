@@ -6,7 +6,7 @@ function connectWebSocket(url) {
   con.close = () => ws.close();
   ws.onmessage = msg => {
     con.onmessage &&
-      con.onmessage({ data: JSON.parse(msg.data), con: con });
+      con.onmessage({data: JSON.parse(msg.data), con: con});
   };
   ws.onerror = err => {
     con.onclose && con.onclose();
@@ -26,7 +26,7 @@ networkAbstraction.receiveSignalling = signalConnection => {
       connectWebSocket(signalMessage.websocket);
     } else {
       signalConnection.close();
-      throw "WebRTC not implemented yet";
+      throw 'WebRTC not implemented yet';
       // TODO
     }
   };
@@ -34,4 +34,4 @@ networkAbstraction.receiveSignalling = signalConnection => {
 
 networkAbstraction.startSignalling = () => {}; // TODO
 
-require("./main")(networkAbstraction);
+require('./main')({networkAbstraction});

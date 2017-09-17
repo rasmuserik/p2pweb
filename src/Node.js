@@ -1,7 +1,7 @@
-// # Node
 const HashAddress = require('./HashAddress');
 const rpc = require('./rpc');
-const {pairsToObject} = require('./util');
+const {pairsToObject, sleep} = require('./util');
+const window = require('./window');
 
 let nodes = [];
 let printLines = [];
@@ -24,10 +24,13 @@ module.exports = class Node {
     }
 
     (async () => {
+      console.log('a');
+      await sleep(0);
       // TODO generate through DSA-key here later (bad random for the moment).
       this.myAddress = await HashAddress.generate(
         String(Math.random())
       );
+      this.log('here', networkAbstraction);
       this.bootstrap();
     })();
   }
@@ -152,11 +155,11 @@ module.exports = class Node {
       peers: this.connections.map(o => o.addr),
       agent: window.navigator.userAgent
     });
-    this.log('addconnection');
+    this.log('addconnection', this.connections);
   }
 
   log() {
-    const line = this.name().concat(Array.from(arguments));
+    const line = [this.name()].concat(Array.from(arguments));
     if (
       window.document &&
       window.document.getElementById('p2pweb-log')

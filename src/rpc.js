@@ -3,7 +3,7 @@ const assert = require('./assert');
 
 rpc.connect = function({con, data}) {
   const msg = data;
-  this.print(
+  this.log(
     'connect',
     msg.addr.slice(0, 4),
     msg.peers.map(s => s.slice(0, 4))
@@ -17,8 +17,8 @@ rpc.connect = function({con, data}) {
   peer.peers = msg.peers;
 
   if (this.findConnection(msg.addr)) {
-    this.print('already connected to', msg.addr.slice(0, 4));
-    this.print(
+    this.log('already connected to', msg.addr.slice(0, 4));
+    this.log(
       'timestamps for consitent cleanup (not implemented yet)',
       con.t2,
       msg.time,
@@ -31,7 +31,7 @@ rpc.connect = function({con, data}) {
     return;
   }
   this.connections.push(con);
-  this.send(msg.addr, {rpc: 'this.print', from: this.name()});
+  this.send(msg.addr, {rpc: 'print', from: this.name()});
 
   for (const peer of this.connections.map(o => o.addr)) {
     if (peer !== con.addr) {
@@ -46,13 +46,13 @@ rpc.connect = function({con, data}) {
     const allPeers = this.allPeers();
     const randomPeer = allPeers[(Math.random() * allPeers.length) | 0];
     if (!randomPeer) {
-      return this.print('no peers');
+      return this.log('no peers');
     }
-    this.print('randomPeer:', randomPeer.slice(0, 4));
+    this.log('randomPeer:', randomPeer.slice(0, 4));
     if (!this.findConnection(randomPeer)) {
-      this.print('connecting to randomPeer');
+      this.log('connecting to randomPeer');
       this.send(randomPeer, {
-        rpc: 'this.print',
+        rpc: 'print',
         data: 'hello from ' + this.name()
       });
 
@@ -80,7 +80,7 @@ rpc.connect = function({con, data}) {
 
       signalChannel.send('hello');
     } else {
-      this.print('already connected to randomPeer');
+      this.log('already connected to randomPeer');
     }
   }, 2000);
 };
@@ -90,7 +90,7 @@ rpc.handleSignalConnection = function(msg) {
   const rpcEndpoint = msg.data.endpoint;
   assert(rpcEndpoint.startsWith('signal'));
 
-  this.print('handleSignalConnection', msg.data.data);
+  this.log('handleSignalConnection', msg.data.data);
 
   const signalChannel = {
     close: () => delete this.rpc[rpcEndpoint],
@@ -106,7 +106,7 @@ rpc.handleSignalConnection = function(msg) {
 };
 
 rpc.lostPeer = function(msg) {
-  this.print(
+  this.log(
     'lostPeer',
     msg.con.addr.slice(0, 4),
     msg.data.addr.slice(0, 4)
@@ -117,7 +117,7 @@ rpc.lostPeer = function(msg) {
 };
 
 rpc.newPeer = function(msg) {
-  this.print(
+  this.log(
     'newPeer',
     msg.con.addr.slice(0, 4),
     msg.data.addr.slice(0, 4)
@@ -130,5 +130,5 @@ rpc.relay = function(msg) {
 };
 
 rpc.print = function(msg) {
-  this.print('this.print', JSON.stringify(msg.data));
+  this.log('this.log', JSON.stringify(msg.data));
 };

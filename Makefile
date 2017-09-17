@@ -26,8 +26,8 @@ watch-docs:
 	while inotifywait -e modify,close_write,move_self -q *.md pandoc/*; \
 		do make docs; done
 
-docs/jsdoc/index.html: src/p2pweb.js
-	./node_modules/.bin/documentation build src/p2pweb.js -f html -o docs/jsdoc; git add docs/jsdoc
+docs/jsdoc/index.html: src/*.js
+	./node_modules/.bin/documentation build src/*.js -f html -o docs/jsdoc; git add docs/jsdoc
 
 docs/notes.pdf: notes.md pandoc/*.html pandoc/*.yml pandoc/*.bib
 	pandoc --toc pandoc/notes.yml pandoc/template.yml --bibliography=pandoc/bibliography.bib notes.md --template=pandoc/template.html -s -o docs/notes.html
@@ -39,6 +39,3 @@ docs/blockchain-computer.pdf: blockchain-computer.md pandoc/*.html pandoc/*.yml 
 
 docs/index.html: README.md pandoc/*.html pandoc/*.yml
 	pandoc pandoc/README.yml pandoc/template.yml README.md --template=pandoc/template.html -s -o docs/index.html
-
-coverage/lcov.info: src/p2pweb.js
-	P2PWEB_URL=ws://localhost:3535 RUN_TESTS=true ./node_modules/.bin/istanbul cover src/p2pweb.js

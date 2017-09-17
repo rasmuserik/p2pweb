@@ -10,4 +10,7 @@ module.exports = ({networkAbstraction}) => {
   console.log('hello from main', networkAbstraction, bootstrapNodes);
   assert(networkAbstraction);
   const node = new Node({bootstrapNodes, networkAbstraction});
+  networkAbstraction.onconnection = con => {
+    node.addConnection(con);
+  };
 };

@@ -77,6 +77,18 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ (function(module, exports) {
 
+/* istanbul ignore else */
+if (typeof self === 'undefined') {
+  module.exports = {};
+} else {
+  module.exports = self;
+}
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
 function assert(e, msg) {
   if (!e) {
     throw new Error(msg);
@@ -110,13 +122,13 @@ module.exports = assert;
 
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
     */
 
-const window = __webpack_require__(2);
+const window = __webpack_require__(0);
 
 exports.hex2buf = function hex2buf(str) {
   let a = new Uint8Array(str.length / 2);
@@ -204,18 +216,6 @@ exports.getEnv = function getEnv() {
 
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-/* istanbul ignore else */
-if (typeof self === 'undefined') {
-  module.exports = {};
-} else {
-  module.exports = self;
-}
-
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -226,24 +226,23 @@ module.exports = __webpack_require__(4);
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
+const window = __webpack_require__(0);
 const networkAbstraction = {};
 function connectWebSocket(url) {
   const con = {};
-  const ws = new WebSocket(url);
+  const ws = new window.WebSocket(url);
   con.send = msg => ws.send(JSON.stringify(msg));
   con.close = () => ws.close();
   ws.onmessage = msg => {
     con.onmessage &&
       con.onmessage({data: JSON.parse(msg.data), con: con});
   };
-  ws.onerror = err => {
+  ws.onerror = e => {
     con.onclose && con.onclose();
-    signalConnection.close();
   };
   ws.onclose = () => con.onclose && con.onclose();
   ws.onopen = () => {
     networkAbstraction.onconnection(con);
-    signalConnection.close();
   };
 }
 
@@ -254,7 +253,7 @@ networkAbstraction.receiveSignalling = signalConnection => {
       connectWebSocket(signalMessage.websocket);
     } else {
       signalConnection.close();
-      throw 'WebRTC not implemented yet';
+      throw new Error('WebRTC not implemented yet');
       // TODO
     }
   };
@@ -269,9 +268,9 @@ __webpack_require__(5)({networkAbstraction});
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const assert = __webpack_require__(0);
+const assert = __webpack_require__(1);
 const Node = __webpack_require__(6);
-const {getEnv} = __webpack_require__(1);
+const {getEnv} = __webpack_require__(2);
 
 module.exports = ({networkAbstraction}) => {
   let bootstrapNodes = getEnv().P2PWEB_BOOTSTRAP;
@@ -281,6 +280,9 @@ module.exports = ({networkAbstraction}) => {
   console.log('hello from main', networkAbstraction, bootstrapNodes);
   assert(networkAbstraction);
   const node = new Node({bootstrapNodes, networkAbstraction});
+  networkAbstraction.onconnection = con => {
+    node.addConnection(con);
+  };
 };
 
 
@@ -288,10 +290,10 @@ module.exports = ({networkAbstraction}) => {
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// # Node
 const HashAddress = __webpack_require__(7);
 const rpc = __webpack_require__(8);
-const {pairsToObject} = __webpack_require__(1);
+const {pairsToObject, sleep} = __webpack_require__(2);
+const window = __webpack_require__(0);
 
 let nodes = [];
 let printLines = [];
@@ -314,10 +316,13 @@ module.exports = class Node {
     }
 
     (async () => {
+      console.log('a');
+      await sleep(0);
       // TODO generate through DSA-key here later (bad random for the moment).
       this.myAddress = await HashAddress.generate(
         String(Math.random())
       );
+      this.log('here', networkAbstraction);
       this.bootstrap();
     })();
   }
@@ -442,11 +447,11 @@ module.exports = class Node {
       peers: this.connections.map(o => o.addr),
       agent: window.navigator.userAgent
     });
-    this.log('addconnection');
+    this.log('addconnection', this.connections);
   }
 
   log() {
-    const line = this.name().concat(Array.from(arguments));
+    const line = [this.name()].concat(Array.from(arguments));
     if (
       window.document &&
       window.document.getElementById('p2pweb-log')
@@ -468,9 +473,9 @@ module.exports = class Node {
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const window = __webpack_require__(2);
-const assert = __webpack_require__(0);
-const {ascii2buf, buf2ascii, hex2buf, buf2hex} = __webpack_require__(1);
+const window = __webpack_require__(0);
+const assert = __webpack_require__(1);
+const {ascii2buf, buf2ascii, hex2buf, buf2hex} = __webpack_require__(2);
 
 /**
  * Hashes as addresses, and utility functions for Kademlia-like routing.
@@ -612,11 +617,11 @@ module.exports = class HashAddress {
 /***/ (function(module, exports, __webpack_require__) {
 
 const rpc = module.exports;
-const assert = __webpack_require__(0);
+const assert = __webpack_require__(1);
 
 rpc.connect = function({con, data}) {
   const msg = data;
-  this.print(
+  this.log(
     'connect',
     msg.addr.slice(0, 4),
     msg.peers.map(s => s.slice(0, 4))
@@ -630,8 +635,8 @@ rpc.connect = function({con, data}) {
   peer.peers = msg.peers;
 
   if (this.findConnection(msg.addr)) {
-    this.print('already connected to', msg.addr.slice(0, 4));
-    this.print(
+    this.log('already connected to', msg.addr.slice(0, 4));
+    this.log(
       'timestamps for consitent cleanup (not implemented yet)',
       con.t2,
       msg.time,
@@ -644,7 +649,7 @@ rpc.connect = function({con, data}) {
     return;
   }
   this.connections.push(con);
-  this.send(msg.addr, {rpc: 'this.print', from: this.name()});
+  this.send(msg.addr, {rpc: 'print', from: this.name()});
 
   for (const peer of this.connections.map(o => o.addr)) {
     if (peer !== con.addr) {
@@ -659,13 +664,13 @@ rpc.connect = function({con, data}) {
     const allPeers = this.allPeers();
     const randomPeer = allPeers[(Math.random() * allPeers.length) | 0];
     if (!randomPeer) {
-      return this.print('no peers');
+      return this.log('no peers');
     }
-    this.print('randomPeer:', randomPeer.slice(0, 4));
+    this.log('randomPeer:', randomPeer.slice(0, 4));
     if (!this.findConnection(randomPeer)) {
-      this.print('connecting to randomPeer');
+      this.log('connecting to randomPeer');
       this.send(randomPeer, {
-        rpc: 'this.print',
+        rpc: 'print',
         data: 'hello from ' + this.name()
       });
 
@@ -693,7 +698,7 @@ rpc.connect = function({con, data}) {
 
       signalChannel.send('hello');
     } else {
-      this.print('already connected to randomPeer');
+      this.log('already connected to randomPeer');
     }
   }, 2000);
 };
@@ -703,7 +708,7 @@ rpc.handleSignalConnection = function(msg) {
   const rpcEndpoint = msg.data.endpoint;
   assert(rpcEndpoint.startsWith('signal'));
 
-  this.print('handleSignalConnection', msg.data.data);
+  this.log('handleSignalConnection', msg.data.data);
 
   const signalChannel = {
     close: () => delete this.rpc[rpcEndpoint],
@@ -719,7 +724,7 @@ rpc.handleSignalConnection = function(msg) {
 };
 
 rpc.lostPeer = function(msg) {
-  this.print(
+  this.log(
     'lostPeer',
     msg.con.addr.slice(0, 4),
     msg.data.addr.slice(0, 4)
@@ -730,7 +735,7 @@ rpc.lostPeer = function(msg) {
 };
 
 rpc.newPeer = function(msg) {
-  this.print(
+  this.log(
     'newPeer',
     msg.con.addr.slice(0, 4),
     msg.data.addr.slice(0, 4)
@@ -742,8 +747,8 @@ rpc.relay = function(msg) {
   this.send(msg.data.dst, msg.data.data);
 };
 
-rpc.this.print = function(msg) {
-  this.print('this.print', JSON.stringify(msg.data));
+rpc.print = function(msg) {
+  this.log('this.log', JSON.stringify(msg.data));
 };
 
 

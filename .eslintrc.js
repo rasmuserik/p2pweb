@@ -8,7 +8,9 @@ module.exports = {
     'no-unused-vars': 'warn',
     'keyword-spacing': 'warn',
     'spaced-comment': 'warn',
-    'standard/computed-property-even-spacing': 'off'
+    'standard/computed-property-even-spacing': 'off',
+    'indent': 'warn',
+    'padded-blocks': 'warn',
   },
   globals: {
     'self': true

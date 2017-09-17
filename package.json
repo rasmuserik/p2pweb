@@ -2,15 +2,15 @@
   "name": "p2pweb",
   "version": "0.0.4",
   "description": "",
-  "main": "src/p2pweb.js",
+  "browser": "dist/p2pweb.js",
+  "main": "src/nodejs.js",
   "scripts": {
     "dev": "webpack-dev-server --content-base dist/",
     "build": "make",
     "docs": "make docs; git add docs",
     "test": "nyc mocha",
-    "testX": "make ./coverage/lcov.info",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
-    "git-add": "git add README.md src/p2pweb.js docs"
+    "git-add": "git add README.md src/*.js docs"
   },
   "pre-commit": [
     "build",
@@ -46,8 +46,7 @@
     "pre-commit": "^1.2.2",
     "prettier": "^1.6.1",
     "uglify-es": "github:mishoo/UglifyJS2#harmony",
-    "webpack": "^3.5.6",
-    "webpack-dev-server": "^2.7.1"
+    "webpack": "^3.5.6"
   },
   "jshintConfig": {
     "esversion": 7

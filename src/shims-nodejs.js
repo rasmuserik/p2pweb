@@ -3,8 +3,8 @@ const {hex2buf} = require('./util');
 const assert = require('assert');
 
 if (!window.atob) {
-  window.atob = str => new Buffer(str, 'base64').toString('binary');
-  window.btoa = str => new Buffer(str, 'binary').toString('base64');
+  window.atob = str => Buffer.from(str, 'base64').toString('binary');
+  window.btoa = str => Buffer.from(str, 'binary').toString('base64');
 }
 
 if (!window.crypto) {
@@ -12,12 +12,12 @@ if (!window.crypto) {
   window.crypto.subtle.digest = async function(cipher, data) {
     assert.equal(cipher, 'SHA-256');
     if (typeof data !== 'string') {
-      data = new Buffer(data);
+      data = Buffer.from(data);
     }
     return hex2buf(
       require('crypto')
         .createHash('sha256')
-        .update(new Buffer(data))
+        .update(Buffer.from(data))
         .digest('hex')
     );
   };
@@ -34,6 +34,10 @@ if (!window.crypto) {
         }
       });
     });
+}
+
+if (!window.navigator) {
+  window.navigator = 'NodeJS';
 }
 
 if (!window.location) {

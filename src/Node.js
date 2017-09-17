@@ -1,8 +1,11 @@
 // # Node
 const HashAddress = require('./HashAddress');
 const rpc = require('./rpc');
+const {pairsToObject} = require('./util');
 
 let nodes = [];
+let printLines = [];
+
 /**
   */
 module.exports = class Node {
@@ -122,8 +125,6 @@ module.exports = class Node {
   /**
     */
   addConnection(con) {
-    let name = '';
-
     const peer = {con};
     peer.con.onmessage = msg => this.local(msg);
 
@@ -149,7 +150,7 @@ module.exports = class Node {
       rpc: 'connect',
       addr: this.address().toString(),
       peers: this.connections.map(o => o.addr),
-      isNodeJs: isNodeJs
+      agent: window.navigator.userAgent
     });
     this.log('addconnection');
   }

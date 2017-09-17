@@ -1,21 +1,20 @@
+const window = require('./window');
 const networkAbstraction = {};
 function connectWebSocket(url) {
   const con = {};
-  const ws = new WebSocket(url);
+  const ws = new window.WebSocket(url);
   con.send = msg => ws.send(JSON.stringify(msg));
   con.close = () => ws.close();
   ws.onmessage = msg => {
     con.onmessage &&
       con.onmessage({data: JSON.parse(msg.data), con: con});
   };
-  ws.onerror = err => {
+  ws.onerror = e => {
     con.onclose && con.onclose();
-    signalConnection.close();
   };
   ws.onclose = () => con.onclose && con.onclose();
   ws.onopen = () => {
     networkAbstraction.onconnection(con);
-    signalConnection.close();
   };
 }
 
@@ -26,7 +25,7 @@ networkAbstraction.receiveSignalling = signalConnection => {
       connectWebSocket(signalMessage.websocket);
     } else {
       signalConnection.close();
-      throw 'WebRTC not implemented yet';
+      throw new Error('WebRTC not implemented yet');
       // TODO
     }
   };

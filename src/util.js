@@ -1,8 +1,7 @@
 /**
     */
 
-assert = require('./assert');
-window = require('./window');
+const window = require('./window');
 
 exports.hex2buf = function hex2buf(str) {
   let a = new Uint8Array(str.length / 2);
@@ -40,24 +39,6 @@ exports.buf2ascii = function buf2ascii(buf) {
     .call(new Uint8Array(buf), i => String.fromCharCode(i))
     .join('');
 };
-
-// TODO
-const printLines = [];
-function print() {
-  const line = [nodes.length === 1 ? nodes[0].name() : '????'].concat(
-    Array.from(arguments)
-  );
-  if (window.document && window.document.getElementById('p2pweb-log')) {
-    if (printLines.length > 20) {
-      printLines.shift(1);
-    }
-    printLines.push(line.map(String).join(' '));
-    window.document.getElementById('p2pweb-log').innerHTML = `
-        <pre>${printLines.join('\n')}</pre>
-      `;
-  }
-  console.log.apply(console, line);
-}
 
 exports.throwError = function throwError(msg) {
   throw new Error(msg);

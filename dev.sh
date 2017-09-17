@@ -22,7 +22,7 @@ while inotifywait -e modify,close_write,move_self -q src src/* package.json .esl
 do 
   kill `cat .pid`; sleep 1
   kill -9 `cat .pid`; rm .pid
-  npx eslint src/* && (
+  npx eslint src/*.js && (
 
   P2PWEB_URL=ws://localhost:3500 \
   P2PWEB_BOOTSTRAP=ws://localhost:3501 \
@@ -34,7 +34,7 @@ do
   P2PWEB_URL=ws://localhost:3501 \
   P2PWEB_BOOTSTRAP=ws://localhost:3500 \
   P2PWEB_PORT=3501 \
-  # node src/nodejs.js &
+  node src/nodejs.js &
   echo $! >> .pid
   )
 done

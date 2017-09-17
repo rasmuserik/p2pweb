@@ -1,4 +1,5 @@
 const window = require('./window');
+const assert = require('./assert');
 const {ascii2buf, buf2ascii, hex2buf, buf2hex} = require('../src/util');
 
 /**

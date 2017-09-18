@@ -11,6 +11,10 @@ module.exports = {
     'standard/computed-property-even-spacing': 'off',
     'indent': 'warn',
     'padded-blocks': 'warn',
+    'comma-spacing': 'warn',
+    'no-trailing-spaces': 'warn',
+    'indent': 'off',
+    'space-before-blocks': 'warn',
   },
   globals: {
     'self': true

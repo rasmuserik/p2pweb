@@ -198,6 +198,26 @@
               
                 
                 <li><a
+                  href='#unique'
+                  class="">
+                  unique
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#hex2buf'
+                  class="">
+                  hex2buf
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#buf2hex'
                   class="">
                   buf2hex
@@ -221,6 +241,26 @@
                   href='#buf2ascii'
                   class="">
                   buf2ascii
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#throwerror'
+                  class="">
+                  throwError
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#tryfn'
+                  class="">
+                  tryFn
                   
                 </a>
                 
@@ -1469,6 +1509,134 @@ within a single precision float. (with some loss on least significant bits)</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='unique'>
+      unique
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Find unique values in array</p>
+
+
+  <div class='pre p1 fill-light mt0'>unique(arr: any, f: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>arr</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>f</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='hex2buf'>
+      hex2buf
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Convert hex string to ArrayBuffer</p>
+
+
+  <div class='pre p1 fill-light mt0'>hex2buf(str: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>str</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='buf2hex'>
       buf2hex
     </h3>
@@ -1477,7 +1645,8 @@ within a single precision float. (with some loss on least significant bits)</p>
   </div>
   
 
-  
+  <p>Convert ArrayBuffer to hex string</p>
+
 
   <div class='pre p1 fill-light mt0'>buf2hex(buf: any)</div>
   
@@ -1536,7 +1705,8 @@ within a single precision float. (with some loss on least significant bits)</p>
   </div>
   
 
-  
+  <p>Convert 8-bit string to ArrayBuffer</p>
+
 
   <div class='pre p1 fill-light mt0'>ascii2buf(str: any)</div>
   
@@ -1595,7 +1765,8 @@ within a single precision float. (with some loss on least significant bits)</p>
   </div>
   
 
-  
+  <p>Convert arrayBuffer to 8-bit string</p>
+
 
   <div class='pre p1 fill-light mt0'>buf2ascii(buf: any)</div>
   
@@ -1646,6 +1817,134 @@ within a single precision float. (with some loss on least significant bits)</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='throwerror'>
+      throwError
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Expression <code>throw new Error(...)</code></p>
+
+
+  <div class='pre p1 fill-light mt0'>throwError(msg: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='tryfn'>
+      tryFn
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Expression try/catch</p>
+
+
+  <div class='pre p1 fill-light mt0'>tryFn(f: any, alt: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>f</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>alt</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='sleep'>
       sleep
     </h3>
@@ -1654,7 +1953,8 @@ within a single precision float. (with some loss on least significant bits)</p>
   </div>
   
 
-  
+  <p>Sleep promise</p>
+
 
   <div class='pre p1 fill-light mt0'>sleep(n: any)</div>
   
@@ -1714,7 +2014,8 @@ within a single precision float. (with some loss on least significant bits)</p>
   </div>
   
 
-  
+  <p>Convert array of <code>[key, value]</code> to object.</p>
+
 
   <div class='pre p1 fill-light mt0'>pairsToObject(keyvals: any)</div>
   
@@ -1773,7 +2074,8 @@ within a single precision float. (with some loss on least significant bits)</p>
   </div>
   
 
-  
+  <p>Extract environment from <code>location.hash</code></p>
+
 
   <div class='pre p1 fill-light mt0'>getEnv()</div>
   

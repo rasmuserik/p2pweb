@@ -1,6 +1,6 @@
 const assert = require('./assert');
 const Node = require('./Node');
-const {getEnv} = require('./util');
+const {getEnv, unique} = require('./util');
 
 module.exports = ({networkAbstraction}) => {
   let bootstrapNodes = getEnv().P2PWEB_BOOTSTRAP;
@@ -13,4 +13,12 @@ module.exports = ({networkAbstraction}) => {
   networkAbstraction.onconnection = con => {
     node.addConnection(con);
   };
+  setInterval(() => {
+    node.connections.map(o => o.addr).forEach(addr => {
+      node.send(addr, {
+        rpc: 'print',
+        data: 'hello from ' + node.name()
+      });
+    });
+  }, 3000);
 };

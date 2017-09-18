@@ -1,6 +1,5 @@
 const rpc = module.exports;
 const assert = require('./assert');
-
 rpc.connect = function({con, data}) {
   const msg = data;
   this.log(
@@ -8,14 +7,11 @@ rpc.connect = function({con, data}) {
     msg.addr.slice(0, 4),
     msg.peers.map(s => s.slice(0, 4))
   );
-
   con.t2 += msg.time;
-
   const peer = con;
   peer.addr = msg.addr;
   peer.con = con;
   peer.peers = msg.peers;
-
   if (this.findConnection(msg.addr)) {
     this.log('already connected to', msg.addr.slice(0, 4));
     this.log(
@@ -32,16 +28,12 @@ rpc.connect = function({con, data}) {
   }
   this.connections.push(con);
   this.send(msg.addr, {rpc: 'print', from: this.name()});
-
   for (const peer of this.connections.map(o => o.addr)) {
     if (peer !== con.addr) {
       this.send(peer, {rpc: 'newPeer', addr: msg.addr});
     }
   }
-
-  // experiment
-  // TODO: remove this later
-  //
+  // experiment: TODO: remove this later
   setTimeout(() => {
     const allPeers = this.allPeers();
     const randomPeer = allPeers[(Math.random() * allPeers.length) | 0];
@@ -50,11 +42,7 @@ rpc.connect = function({con, data}) {
     }
     this.log('randomPeer:', randomPeer.slice(0, 4));
     if (!this.findConnection(randomPeer)) {
-      this.log('connecting to randomPeer');
-      this.send(randomPeer, {
-        rpc: 'print',
-        data: 'hello from ' + this.name()
-      });
+      this.log('connecting to', randomPeer.slice(0, 4));
 
       const peer = randomPeer;
       const rpcEndpoint =
@@ -72,39 +60,35 @@ rpc.connect = function({con, data}) {
         close: () => delete this.rpc[rpcEndpoint],
         send: data => this.send(peer, {rpc: rpcEndpoint, data: data}),
         onmessage: msg => {
+          this.log('signalChannel start msg', msg);
           msg.con = signalChannel;
-          console.log('signalChannel start msg', msg.data);
         }
       };
-      this.rpc[rpcEndpoint] = msg => signalChannel.onmessage(msg);
-
-      signalChannel.send('hello');
+      this.rpc[rpcEndpoint] = msg => signalChannel.onmessage(msg.data);
+      this.networkAbstraction.startSignalling(signalChannel);
     } else {
       this.log('already connected to randomPeer');
     }
   }, 2000);
 };
-
 rpc.handleSignalConnection = function(msg) {
   const peer = msg.data.peer;
   const rpcEndpoint = msg.data.endpoint;
   assert(rpcEndpoint.startsWith('signal'));
 
-  this.log('handleSignalConnection', msg.data.data);
+  this.log('handleSignalConnection', msg.data);
 
   const signalChannel = {
     close: () => delete this.rpc[rpcEndpoint],
     send: data => this.send(peer, {rpc: rpcEndpoint, data: data}),
     onmessage: msg => {
+      this.log('signalChannel receive msg', msg.data);
       msg.con = signalChannel;
-      console.log('signalChannel receive msg', msg.data);
-      msg.con.send('hello2');
     }
   };
-  this.rpc[rpcEndpoint] = msg => signalChannel.onmessage(msg);
-  signalChannel.send('hi');
+  this.rpc[rpcEndpoint] = msg => signalChannel.onmessage(msg.data);
+  this.networkAbstraction.receiveSignalling(signalChannel);
 };
-
 rpc.lostPeer = function(msg) {
   this.log(
     'lostPeer',
@@ -115,7 +99,6 @@ rpc.lostPeer = function(msg) {
     o => o.addr !== msg.data.addr
   );
 };
-
 rpc.newPeer = function(msg) {
   this.log(
     'newPeer',
@@ -124,11 +107,9 @@ rpc.newPeer = function(msg) {
   );
   this.findConnection(msg.con.addr).peers.push(msg.data.addr);
 };
-
 rpc.relay = function(msg) {
   this.send(msg.data.dst, msg.data.data);
 };
-
 rpc.print = function(msg) {
   this.log('this.log', JSON.stringify(msg.data));
 };

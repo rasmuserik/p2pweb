@@ -3,14 +3,12 @@ title: A Blockchain Computer [DRAFT/NOTES]
 author: Rasmus Erik Voel Jensen
 date: 2017
 abstract: |
-    We propose a design for a new kind of decentralised trustless computer. 
+    A proposal a design for a new kind of decentralised trustless computer. 
     The shared state is stored in a blockchain. 
-    This allows computations to be distributed safely across without trusting indivudual nodes.
+    This allows computations to be distributed and verified safely across without trusting individual nodes.
     It also allows proofs of work, and thus crediting nodes for their commputations.
-    Computations are securely distributed and verified, through a blockchain containing the state 
-    By storing shared state in the blockchain, it is possible to 
-    By storing the machine state in the blockchain, it is possible to securely run distributed computations, without trusting the individual nodes. Individual nodes only need to know/store the small subset of the blockchain that they need for their computation. 
 ---
+
 
 Outline:
 
@@ -26,7 +24,7 @@ Outline:
     - Actual implementation (in progress)
     - Stakes in addition to proof of work for better security
 
-# Introduction
+# TODO Introduction
 
 This paper describes the design of a decentralised trustless network computer.
 When a node in the network does computation for the computer, it saves up currency.
@@ -60,9 +58,9 @@ TODO: explore these in more details, and document differences to our approach
 
 # Architecture
 
-The blockchain computer has a global memory on which computations run in parallel. Both memory and computation are distributed across the nodes of the network.
+The blockchain computer has a global memory on which computation runs in parallel. Both memory and computation are distributed across the nodes of the network.
 
-**A node** is any device/browser/app/client that connects into the network, 
+**A node** is any application/web-browser that connects into the network, 
 and contributes computation and storage. 
 The address of a node is the hash of its public key.
 Nodes are connected in a kademlia-like topology.
@@ -73,7 +71,7 @@ Notice that honest nodes will be evenly distributed across the address space.
 
 **The state** of the computer consists of addressable entries with data. 
 Every entry has a *credit balance*, that pays for keeping it in the state.
-Entries are CRDTs, and timestamped.
+Entries are CRDTs, timestamped, and cryptographically/computationally signed.
 
 Every node stores and replicates entries in a neighbourhood around its own address. 
 The size of the neighbourhood is determined by the median density of nodes across the address space. 
@@ -87,18 +85,18 @@ There are two kinds of entries: keyed entries and computational entries. *Keyed 
 There is a keyed entry for each node, which contains the state of the node, and whoose credit balance is incremented for replicating the state (based on the local node address density to avoid cheating). 
 
 
-**The blockchain** keeps a history of the state. Each block contains a reference to the previous blocks, and a references to a snapshot of the state. Both references are the hash of binary merkle trees to minimise lengths of proofs.
+**The blockchain** keeps a history of the state. Each block contains a reference to the previous blocks, and a reference to a snapshot of the state. Both references are hashes of binary merkle trees, in order to minimise lengths of proofs.
 
-The merkle tree *snapshot* of the state, has branching based on the bit-pattern of the address. It can be calculated in divide-and-conquor fashion, where the nodes are responsible for verifying and storing the path through the tree, that their address lay on (for the most recent couple of blocks). 
+The *snapshot* is a merkle tree of the state, that branches with the bits of the address.
+It is calculated with a divide-and-conquor consensus algorithm. Nodes are responsible for verifying and storing the path through the tree, that their address lay on. The nodes remembers the entries of their neighbourhood for several snapshots back in the past, and the merkle path to prove their value.
 
-The theoretical time for computing the consensus state snapshot corresponds to the branching depth times network latency times. For a huge global network, this would be in the order of magnitude of 10 seconds. This rough estimate assumes 1 billion nodes, binary branching(easily improved), and a high network latency(also improvable by optimising topology).
+The theoretical time for computing the snapshot corresponds to (branching depth) $\times$ (network latency). For a huge global network, this would be in the order of magnitude of 10 seconds. The estimate assumes 1 billion nodes, binary branching(easily improved), and a high network latency(improvable by optimising topology).
 
-Protection against evil nodes halting the computation by issueing delayed entry updates, can be implemented by requiring every entry update to be timestamped before a certain time by a random third party (in a similar way to the scheduling randomisation, this approximately doubles the time of the consensus).
+Protection against evil nodes halting the consensus(by issueing delayed entry updates), can be implemented by requiring every entry update to be timestamped before a certain time by a random third party (in a similar way to the scheduling randomisation). This approximately doubles the time of the consensus.
 
 
-## Computation
+## TODO Computation
 
-----
 
 TODO: document origin.
 TODO: document scheduling
@@ -112,11 +110,11 @@ provable results
 - reveal result (and amount of work)
 - update of ledger
 
-# Distributed ledger
+# TODO Distributed ledger
 
 The currency is bound to the value of computational work, and not based on artificial scarcity. Upper bound on value: solving a computational task gives the node currency corresponding to amount of computing power used. Lower bound on value: the currency is used to 
 
-# Conclusion
+# TODO Conclusion
 
 ## Future work
 
@@ -125,3 +123,5 @@ Finishing the actual implementation.
 Generalise computational tasks to storage, bandwidth, etc.
 
 Adding stake, in addition to proof of work for better security.
+
+# TODO Bibliography

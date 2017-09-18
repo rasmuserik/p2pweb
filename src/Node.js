@@ -99,7 +99,12 @@ module.exports = class Node {
     */
   local(msg) {
     if (this.rpc[msg.data.rpc]) {
-      this.rpc[msg.data.rpc](msg);
+      try {
+        this.rpc[msg.data.rpc](msg);
+      } catch (e) {
+        this.log('error calling endpoint:', msg.data.rpc);
+        this.log(e);
+      }
     } else {
       this.log('no such endpoint ' + JSON.stringify(msg.data));
     }

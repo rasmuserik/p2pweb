@@ -135,11 +135,11 @@ const window = __webpack_require__(0);
 exports.unique = function(arr, f) {
   f = f || String;
   const hash = {};
-  for(const val of arr) {
+  for (const val of arr) {
     hash[f(val)] = val;
   }
   return Object.values(hash);
-}
+};
 
 /** Convert hex string to ArrayBuffer
 */
@@ -250,7 +250,7 @@ networkAbstraction.receiveSignalling = signalConnection => {
     signalMessage = signalMessage.data;
     if (signalMessage.websocket) {
       connectWebSocket(signalMessage.websocket);
-    } else if (signalMessage.webrtc){
+    } else if (signalMessage.webrtc) {
       // TODO signalConnection.close();
       receiveSignalling(signalConnection, signalMessage.webrtc);
     } else {
@@ -262,7 +262,7 @@ networkAbstraction.receiveSignalling = signalConnection => {
 networkAbstraction.startSignalling = signalConnection => {
   // TODO signalConnection.close();
   startSignalling(signalConnection);
-}
+};
 
 function connectWebSocket(url) {
   const con = {};
@@ -283,17 +283,31 @@ function connectWebSocket(url) {
 }
 // WEBRTC
 
-let iceServers = ['stun.l.google.com:19302', 'stun1.l.google.com:19302',
-    'stun2.l.google.com:19302', 'stun3.l.google.com:19302',
-    'stun4.l.google.com:19302', 'stun01.sipphone.com', 'stun.ekiga.net',
-    'stun.fwdnet.net', 'stun.ideasip.com', 'stun.iptel.org',
-    'stun.rixtelecom.se', 'stun.schlund.de', 'stunserver.org',
-    'stun.softjoys.com', 'stun.voiparound.com', 'stun.voipbuster.com',
-    'stun.voipstunt.com', 'stun.voxgratia.org', 'stun.xten.com'];
+let iceServers = [
+  'stun.l.google.com:19302',
+  'stun1.l.google.com:19302',
+  'stun2.l.google.com:19302',
+  'stun3.l.google.com:19302',
+  'stun4.l.google.com:19302',
+  'stun01.sipphone.com',
+  'stun.ekiga.net',
+  'stun.fwdnet.net',
+  'stun.ideasip.com',
+  'stun.iptel.org',
+  'stun.rixtelecom.se',
+  'stun.schlund.de',
+  'stunserver.org',
+  'stun.softjoys.com',
+  'stun.voiparound.com',
+  'stun.voipbuster.com',
+  'stun.voipstunt.com',
+  'stun.voxgratia.org',
+  'stun.xten.com'
+];
 iceServers = iceServers.map(s => ({url: 'stun:' + s}));
 
 async function startSignalling(sc) {
-  sc.con = new window.RTCPeerConnection({ 'iceServers': iceServers });
+  sc.con = new window.RTCPeerConnection({iceServers: iceServers});
   sc.con.onicecandidate = iceHandler(sc);
   sc.con.onerror = e => console.log(e);
 
@@ -303,58 +317,60 @@ async function startSignalling(sc) {
   sc.con.setLocalDescription(offer);
   sc.send({webrtc: offer});
   console.log('startSignalling', offer);
-  sc.onmessage = (answer) => {
+  sc.onmessage = answer => {
     console.log('got answer:', answer);
     sc.con.setRemoteDescription(answer.data);
 
-    sc.onmessage = (ice) => {
+    sc.onmessage = ice => {
       console.log('add ice', ice);
       sc.con.addIceCandidate(ice.data);
-    }
+    };
   };
-};
+}
 async function receiveSignalling(sc, offer) {
-  sc.con = new window.RTCPeerConnection({ 'iceServers': iceServers });
+  sc.con = new window.RTCPeerConnection({iceServers: iceServers});
   sc.con.onicecandidate = iceHandler(sc);
   sc.con.onerror = e => console.log(e);
 
   console.log('receiveSignalling', offer);
-  sc.con.ondatachannel = (ev) => {
+  sc.con.ondatachannel = ev => {
     sc.chan = ev.channel;
     addChanHandlers(sc);
-  }
-  sc.onmessage = (ice) => {
-      console.log('add ice', ice);
+  };
+  sc.onmessage = ice => {
+    console.log('add ice', ice);
     sc.con.addIceCandidate(ice.data);
-  }
+  };
   await sc.con.setRemoteDescription(offer);
   const answer = await sc.con.createAnswer();
   sc.con.setLocalDescription(answer);
   sc.send(answer);
-
 }
 function iceHandler(sc) {
-  return (ev) => {
-    if(ev.candidate) {
+  return ev => {
+    if (ev.candidate) {
       sc.send(ev.candidate);
     }
-  }
+  };
 }
 function addChanHandlers(sc) {
   console.log('addChanHandlers');
   sc.chan.onopen = () => {
     console.log('sc.chan.onopen', sc);
     const con = {
-      send: (msg) => sc.chan.send(JSON.stringify(msg))
+      send: msg => sc.chan.send(JSON.stringify(msg))
       // TODO close
     };
-    sc.chan.onmessage = (msg) => {
+    sc.chan.onmessage = msg => {
       console.log('webrtc message', msg.data);
-      con.onmessage && con.onmessage({con: con,
-        data: JSON.parse(msg.data)});
-    }
+      con.onmessage &&
+        con.onmessage({
+          con: con,
+          data: JSON.parse(msg.data)
+        });
+    };
     networkAbstraction.onconnection(con);
-  }
+  };
 }
 
 __webpack_require__(5)({networkAbstraction});
@@ -381,7 +397,10 @@ module.exports = ({networkAbstraction}) => {
   };
   setInterval(() => {
     node.connections.map(o => o.addr).forEach(addr => {
-      node.send(addr, {rpc: 'print', data: 'hello from ' + node.name()});
+      node.send(addr, {
+        rpc: 'print',
+        data: 'hello from ' + node.name()
+      });
     });
   }, 3000);
 };
@@ -492,7 +511,12 @@ module.exports = class Node {
     */
   local(msg) {
     if (this.rpc[msg.data.rpc]) {
+      try {
       this.rpc[msg.data.rpc](msg);
+      } catch (e) {
+        this.log('error calling endpoint:', msg.data.rpc);
+        this.log(e);
+      }
     } else {
       this.log('no such endpoint ' + JSON.stringify(msg.data));
     }
@@ -761,7 +785,7 @@ rpc.connect = function({con, data}) {
     }
     this.log('randomPeer:', randomPeer.slice(0, 4));
     if (!this.findConnection(randomPeer)) {
-      this.log('connecting to', randomPeer.slice(0,4));
+      this.log('connecting to', randomPeer.slice(0, 4));
 
       const peer = randomPeer;
       const rpcEndpoint =

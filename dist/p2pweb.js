@@ -512,7 +512,7 @@ module.exports = class Node {
   local(msg) {
     if (this.rpc[msg.data.rpc]) {
       try {
-      this.rpc[msg.data.rpc](msg);
+        this.rpc[msg.data.rpc](msg);
       } catch (e) {
         this.log('error calling endpoint:', msg.data.rpc);
         this.log(e);

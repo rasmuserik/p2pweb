@@ -27,7 +27,7 @@ watch-docs:
 		do make docs; done
 
 docs/jsdoc/index.html: src/*.js
-	./node_modules/.bin/documentation build src/*.js -f html -o docs/jsdoc; git add docs/jsdoc
+	npx documentation build src -f html -o docs/jsdoc; git add docs/jsdoc
 
 docs/notes.pdf: notes.md pandoc/*.html pandoc/*.yml pandoc/*.bib
 	pandoc --toc pandoc/notes.yml pandoc/template.yml --bibliography=pandoc/bibliography.bib notes.md --template=pandoc/template.html -s -o docs/notes.html

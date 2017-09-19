@@ -1,11 +1,12 @@
 const {get, set, merge} = require('./util');
-const {assert} = require('./assert');
+const assert = require('./assert');
 
 let state = {
   handlers: {
     p2pweb: {
       addHandler: ({state, data: {path, fns}}) => {
         assert(typeof path === 'string', 'handler path must be string');
+        path = `handlers.${path}`;
         return {
           state: set(state, path, merge(get(state, path), fns))
         };
@@ -14,7 +15,7 @@ let state = {
   }
 };
 
-async function dispatch(action) {
+function dispatch(action) {
   assert(typeof action.type === 'string', 'action must have a type');
   const handler = get(state, `handlers.${action.type}`);
   assert(
@@ -22,22 +23,33 @@ async function dispatch(action) {
     `missing handler for "${action.type}"`
   );
 
-  let result = handler({state: this.state, action, data: action.data});
-  if (result instanceof Promise) {
-    result = await result;
-    assert(
-      !result.state,
-      `async handler "${action.type}" tries to update state`
-    );
-  }
-  if (result === null || typeof result !== 'object') {
+  let result = handler({state, action, data: action.data});
+  if (!(result instanceof Object)) {
     result = {};
   }
-  if (result.state) {
-    assert(typeof result.state === Object, 'state must be an Object');
-
-    this.state = state;
+  if (
+    result instanceof Object &&
+    !(result instanceof Promise) &&
+    result.state
+  ) {
+    assert(result.state instanceof Object, 'state must be an Object');
+    assert(result.state.handlers, 'state missing handlers');
+    state = result.state;
   }
+  if (result instanceof Promise) {
+    return result.then(result => {
+      assert(
+        !result.state,
+        `async handler "${action.type}" tries to update state`
+      );
+      return handleDispatchResult(result);
+    });
+  } else {
+    return Promise.resolve(handleDispatchResult(result));
+  }
+}
+
+function handleDispatchResult(result) {
   if (result.dispatch) {
     assert(
       Array.isArray(result.dispatch),
@@ -49,7 +61,7 @@ async function dispatch(action) {
         action = {};
       }
       try {
-        await dispatch(action);
+        dispatch(action);
       } catch (error) {
         errors.push({action, error});
       }
@@ -69,9 +81,11 @@ async function dispatch(action) {
     return result.result;
   }
 }
-
-function handler(path, fns) {
+function handle(path, fns) {
   dispatch({type: 'p2pweb.addHandler', data: {path, fns}});
 }
+function getState() {
+  return state;
+}
 
-modules.exports = {dispatch, handler};
+module.exports = {dispatch, handle, getState};

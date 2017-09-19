@@ -1,6 +1,6 @@
 const assert = require('./assert');
 const Node = require('./Node');
-const {getEnv, unique} = require('./util');
+const {getEnv} = require('./util');
 
 module.exports = ({networkAbstraction}) => {
   let bootstrapNodes = getEnv().P2PWEB_BOOTSTRAP;

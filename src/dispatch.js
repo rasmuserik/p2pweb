@@ -58,7 +58,7 @@ async function handleDispatchResult(result) {
     );
     const errors = [];
     for (let action of result.dispatch) {
-      if (typeof action === null || typeof action !== 'object') {
+      if (action === null || typeof action !== 'object') {
         action = {};
       }
       try {

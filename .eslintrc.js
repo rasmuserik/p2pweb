@@ -15,6 +15,7 @@ module.exports = {
     'no-trailing-spaces': 'warn',
     'indent': 'off',
     'space-before-blocks': 'warn',
+    'no-warning-comments': 'warn',
   },
   globals: {
     'self': true

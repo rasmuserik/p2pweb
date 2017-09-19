@@ -13,6 +13,7 @@ clean:
 
 .prettiered: src/* test/*
 	./node_modules/.bin/prettier --write src/*.js test/*.js --print-width 72 --single-quote --no-bracket-spacing \
+		&& npx eslint src/*.js \
 		&& git add src/*.js test/*.js \
 		&& date > .prettiered
 

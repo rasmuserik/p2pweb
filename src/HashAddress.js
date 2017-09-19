@@ -2,8 +2,7 @@ const window = require('./window');
 const assert = require('./assert');
 const {ascii2buf, buf2ascii, hex2buf, buf2hex} = require('../src/util');
 
-/**
- * Hashes as addresses, and utility functions for Kademlia-like routing.
+/** Hashes as addresses, and utility functions for Kademlia-like routing.
  */
 module.exports = class HashAddress {
   constructor(o) {
@@ -15,8 +14,9 @@ module.exports = class HashAddress {
   }
 
   /**
+   *
     */
-  static async generate(src /*ArrayBuffer | String*/) {
+  static async generate(src /* ArrayBuffer | String */) {
     if (typeof src === 'string') {
       src = ascii2buf(src);
     } else {

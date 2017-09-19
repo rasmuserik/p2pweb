@@ -23,7 +23,7 @@ module.exports = class Node {
       this.rpc[method] = rpc[method].bind(this);
     }
 
-    (async () => {
+    (async function() {
       console.log('a');
       await sleep(0);
       // TODO generate through DSA-key here later (bad random for the moment).

@@ -480,7 +480,7 @@ __webpack_require__(5)({networkAbstraction});
 
 const assert = __webpack_require__(1);
 const Node = __webpack_require__(6);
-const {getEnv, unique} = __webpack_require__(2);
+const {getEnv} = __webpack_require__(2);
 
 module.exports = ({networkAbstraction}) => {
   let bootstrapNodes = getEnv().P2PWEB_BOOTSTRAP;
@@ -533,7 +533,7 @@ module.exports = class Node {
       this.rpc[method] = rpc[method].bind(this);
     }
 
-    (async () => {
+    (async function() {
       console.log('a');
       await sleep(0);
       // TODO generate through DSA-key here later (bad random for the moment).
@@ -700,8 +700,7 @@ const window = __webpack_require__(0);
 const assert = __webpack_require__(1);
 const {ascii2buf, buf2ascii, hex2buf, buf2hex} = __webpack_require__(2);
 
-/**
- * Hashes as addresses, and utility functions for Kademlia-like routing.
+/** Hashes as addresses, and utility functions for Kademlia-like routing.
  */
 module.exports = class HashAddress {
   constructor(o) {
@@ -713,8 +712,9 @@ module.exports = class HashAddress {
   }
 
   /**
+   *
     */
-  static async generate(src /*ArrayBuffer | String*/) {
+  static async generate(src /* ArrayBuffer | String */) {
     if (typeof src === 'string') {
       src = ascii2buf(src);
     } else {

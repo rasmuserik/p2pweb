@@ -1,4 +1,4 @@
-const {get, set, get} = require('./util');
+const {get, set, merge} = require('./util');
 const {assert} = require('./assert');
 
 let state = {

@@ -56,7 +56,7 @@ function handleDispatchResult(result) {
       'handler result.dispatch must be an array'
     );
     const errors = [];
-    for (let action of dispatch) {
+    for (let action of result.dispatch) {
       if (typeof action === null || typeof action !== 'object') {
         action = {};
       }
@@ -68,7 +68,7 @@ function handleDispatchResult(result) {
     }
     if (errors.length) {
       if (errors.length === 1) {
-        throw errors[0];
+        throw errors[0].error;
       } else {
         throw new Error(
           'Multiple errors during dispatch:\n' +

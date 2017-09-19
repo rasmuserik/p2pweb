@@ -5,55 +5,68 @@ const assert = require('./assert');
 */
 exports.merge = function merge(a, b) {
   assert(arguments.length === 2);
-  if(a === null || b === null || Array.isArray(a) !== Array.isArray(b) || typeof a !== 'object' || typeof b !== 'object') {
+  if (
+    a === null ||
+    b === null ||
+    Array.isArray(a) !== Array.isArray(b) ||
+    typeof a !== 'object' ||
+    typeof b !== 'object'
+  ) {
     return b;
   }
   const result = Array.isArray(a) ? a.slice(0) : Object.assign({}, a);
-  for(const key in b) {
-    if(result[key] !== undefined) {
+  for (const key in b) {
+    if (result[key] !== undefined) {
       result[key] = merge(result[key], b[key]);
     } else {
       result[key] = b[key];
     }
   }
   return result;
-}
+};
 
 /** Sets a value through a path in an object
 */
 exports.set = function set(obj, path, value) {
-  if(typeof path === 'string') {
+  if (typeof path === 'string') {
     path = path.split('.');
   } else {
     path = path.slice(0);
   }
   return _set(obj, path, value);
-}
+};
 
 function _set(obj, path, value) {
-  if(path.length === 0) {
+  if (path.length === 0) {
     return value;
   }
-  const key = path.shift()
+  const key = path.shift();
 
-  if(typeof key === 'string') {
-    if(typeof obj === 'object' && obj !== null && !Array.isArray(obj)) {
-    const result = {};
-    result[key] = _set(obj[key], path, value);
+  if (typeof key === 'string') {
+    if (
+      typeof obj === 'object' &&
+      obj !== null &&
+      !Array.isArray(obj)
+    ) {
+      const result = {};
+      result[key] = _set(obj[key], path, value);
       return Object.assign({}, obj, result);
     } else {
-    const result = {};
-    result[key] = _set(undefined, path, value);
+      const result = {};
+      result[key] = _set(undefined, path, value);
       return result;
     }
-  } 
+  }
 
-  if(typeof key === 'number') {
-    if(Array.isArray(obj)) {
-      return obj.slice(0, key).concat(
-        new Array(Math.max(0, key - obj.length)),
-        [_set(obj[key], path, value)],
-        obj.slice(key + 1));
+  if (typeof key === 'number') {
+    if (Array.isArray(obj)) {
+      return obj
+        .slice(0, key)
+        .concat(
+          new Array(Math.max(0, key - obj.length)),
+          [_set(obj[key], path, value)],
+          obj.slice(key + 1)
+        );
     } else {
       const result = new Array(key);
       result[key] = _set(undefined, path, value);
@@ -67,23 +80,26 @@ function _set(obj, path, value) {
 /** Gets a value through a path in an object
 */
 exports.get = function get(obj, path, defaultValue) {
-  if(typeof path === 'string') {
+  if (typeof path === 'string') {
     path = path.split('.');
   } else {
     path = path.slice(0);
   }
-  for(;;) {
-    if(path.length === 0) {
+  for (;;) {
+    if (path.length === 0) {
       return obj;
     }
     const key = path.shift();
-    if(typeof obj !== 'object' || obj === null || obj[key] === undefined) {
+    if (
+      typeof obj !== 'object' ||
+      obj === null ||
+      obj[key] === undefined
+    ) {
       return defaultValue;
     }
     obj = obj[key];
   }
-}
-
+};
 
 /** Find unique values in array
 */

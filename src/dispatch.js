@@ -44,7 +44,7 @@ async function dispatch(action) {
       'handler result.dispatch must be an array'
     );
     const errors = [];
-    for (const action of dispatch) {
+    for (let action of dispatch) {
       if (typeof action === null || typeof action !== 'object') {
         action = {};
       }

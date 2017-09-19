@@ -21,15 +21,15 @@ describe('dispatch', () => {
     dispatch({type: 'test.a', data: 'abc'});
     assert.equal(await dispatch({type: 'test.b'}), 'abc');
   });
-  it('handles errors', () => {
+  it('handles errors', async () => {
     try {
-      dispatch({type: 'test.err'});
+      await dispatch({type: 'test.err'});
     } catch (e) {
       assert.equal(String(e), `Error: argh`);
     }
 
     try {
-      dispatch({type: 'test.twiceErr'});
+      await dispatch({type: 'test.twiceErr'});
     } catch (e) {
       assert.equal(
         String(e),
@@ -39,9 +39,9 @@ test.err: Error: argh`
       );
     }
   });
-  it('runs through all dispatches, even if errors occurs', () => {
+  it('runs through all dispatches, even if errors occurs', async () => {
     try {
-      dispatch({type: 'test.twiceWithErr'});
+      await dispatch({type: 'test.twiceWithErr'});
     } catch (e) {
       assert.equal(String(e), `Error: argh`);
     }

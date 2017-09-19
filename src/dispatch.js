@@ -45,11 +45,11 @@ function dispatch(action) {
       return handleDispatchResult(result);
     });
   } else {
-    return Promise.resolve(handleDispatchResult(result));
+    return handleDispatchResult(result);
   }
 }
 
-function handleDispatchResult(result) {
+async function handleDispatchResult(result) {
   if (result.dispatch) {
     assert(
       Array.isArray(result.dispatch),
@@ -61,7 +61,7 @@ function handleDispatchResult(result) {
         action = {};
       }
       try {
-        dispatch(action);
+        await dispatch(action);
       } catch (error) {
         errors.push({action, error});
       }

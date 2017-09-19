@@ -1,6 +1,8 @@
 const {get, set, merge} = require('./util');
 const assert = require('./assert');
 
+// TODO state should just have get/set/merge method instead of being an actual object
+// TODO rename to state.js
 // TODO should be part of object, instead of global
 let state = {
   handlers: {

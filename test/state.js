@@ -1,4 +1,4 @@
-const {dispatch, handle, getState} = require('../src/dispatch');
+const {dispatch, handle, getState} = require('../src/state');
 const {set, get, sleep, throwError} = require('../src/util');
 const assert = require('assert');
 

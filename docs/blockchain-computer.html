@@ -52,6 +52,14 @@ body {
 <li>Stakes in addition to proof of work for better security</li>
 </ul></li>
 </ul>
+<hr />
+<p>The goal is to make it possible to build web-apps with backend-like functionality, but without needing to host a backend.</p>
+<p>For this to happen, you need a system, where you can can save up computations/storage when your device is online, - which can then be spend on computation/storage, when your device is offline.</p>
+<p>Every time you do computation/storage for the network, you get credits, which can be used to execute computation.</p>
+<p>Devices/peers can make a single distributed network, via WebRTC peer data connections. It is safe to run computations for others, due to the sandboxing of WebAssembly.</p>
+<p>You cannot necessarily trust other peers. The way to make sure that the result a computation is correct, is to schedule the computation on several random nodes in the network, and verify that they yield the same result.</p>
+<p>The underlying datastructure for assigning computational tasks, and making the proofs needed for assigning the credits, etc., turns out to be a blockchain.</p>
+<hr />
 <h1 id="todo-introduction">TODO Introduction</h1>
 <p>This paper describes the design of a decentralised trustless network computer. When a node in the network does computation for the computer, it saves up currency. Currency can be used to run computations in the computer. The computer has a distributed state, whoose merkle tree is stored in a blockchain. This makes it possible to schedule and verify computation in a safe manner. Each node only stores a small part of the blockchain. It is designed such that it is easy to boot up a full node within modern web browsers.</p>
 <p>The motivation comes from web apps: The blockchain computer could be used instead of a backend. Apps could save up computation, to allow others to interact with user data, even when the users app is offline. There is no server maintenance/scaleability (clients bring their own &quot;server&quot;-resources). If an app is not supported anymore, it can still continue to run, as it does not depend on central services.</p>
@@ -62,6 +70,8 @@ body {
 <p><strong>Computes.io</strong> <a href="https://blog.computes.io/distributed-computed-centralized-vs-decentralized-c1d21202bde8" class="uri">https://blog.computes.io/distributed-computed-centralized-vs-decentralized-c1d21202bde8</a></p>
 <p><strong>TrueBit</strong> <a href="https://people.cs.uchicago.edu/~teutsch/papers/truebit.pdf" class="uri">https://people.cs.uchicago.edu/~teutsch/papers/truebit.pdf</a></p>
 <p><strong>iEx.co</strong> ??</p>
+<h1 id="section"></h1>
+<p>The motivation is to make it possible to built webapps that does not need a backend.</p>
 <h1 id="architecture">Architecture</h1>
 <p>The blockchain computer has a global memory on which computation runs in parallel. Both memory and computation are distributed across the nodes of the network.</p>
 <p><strong>A node</strong> is any application/web-browser that connects into the network, and contributes computation and storage. The address of a node is the hash of its public key. Nodes are connected in a kademlia-like topology.</p>
@@ -76,8 +86,20 @@ body {
 <p>The <em>snapshot</em> is a merkle tree of the state, that branches with the bits of the address. It is calculated with a divide-and-conquor consensus algorithm. Nodes are responsible for verifying and storing the path through the tree, that their address lay on. The nodes remembers the entries of their neighbourhood for several snapshots back in the past, and the merkle path to prove their value.</p>
 <p>The theoretical time for computing the snapshot corresponds to (branching depth) <span class="math inline">×</span> (network latency). For a huge global network, this would be in the order of magnitude of 10 seconds. The estimate assumes 1 billion nodes, binary branching(easily improved), and a high network latency(improvable by optimising topology).</p>
 <p>Protection against evil nodes halting the consensus(by issueing delayed entry updates), can be implemented by requiring every entry update to be timestamped before a certain time by a random third party (in a similar way to the scheduling randomisation). This approximately doubles the time of the consensus.</p>
-<h2 id="todo-computation">TODO Computation</h2>
+<h2 id="computation">Computation</h2>
+<p>The way to ensure the correct results of computations in an untrusted network, is to do the computation multiple times on different random nodes, and compare the result.</p>
+<p>The list of nodes in the snapshot of the state is used to assign tasks to nodes (pseudorandomly, based on the hash of the state, such that it is deterministic, and cannot be determined beforehand). Thus a node cannot control which tasks it gets.</p>
+<p>There is a tradeoff between the number of times the computation is done, and the probabilty that an adversary controlling a large part of network theoretically could return a wrong result.</p>
+<p>A (computational) task has several steps:</p>
+<ol style="list-style-type: decimal">
+<li>The task is scheduled by storing it in the state snapshot in a block of the blockchain, - this can either be done by a previous task, or by a node.</li>
+<li>Nodes solve the task. A proof-of-result is stored in the the state at the task. Only N proof-of-works are stored (with the lowest distance between the task, and the hash of the scheduling block combined with the addresse of the node (which must be in the list of nodes at scheduling time)).</li>
+<li>When sufficient proof-of-result/time has arrived, the nodes release the actual result, and they are compared to check if they ar correct.</li>
+<li>The nodes are credited by the system for their computational work.</li>
+</ol>
+<h2 id="section-1"></h2>
 <p>TODO: document origin. TODO: document scheduling</p>
+<p>What is a &quot;task&quot;:</p>
 <p>provable results</p>
 <ul>
 <li>task definition (and max amount of work )</li>

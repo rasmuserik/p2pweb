@@ -1,3 +1,4 @@
+/*
 const {dispatch, handle, getState} = require('../src/state');
 const {set, get, sleep, throwError} = require('../src/util');
 const assert = require('assert');
@@ -48,3 +49,4 @@ test.err: Error: argh`
     assert.equal(getState().test.hello, 123);
   });
 });
+*/

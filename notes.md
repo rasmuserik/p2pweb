@@ -157,6 +157,7 @@ Ideas of places for publications:
 
 Various articles etc. that I should take a look add (and possibly add notes here eventually)
 
+- [@truebit-2017]
 - [@delegate-verify-public-verifiable-computing-2012]
 - [@embracing-peer-next-door-kademlia-2008]
 - [@ethereum-yellowpaper-2014]

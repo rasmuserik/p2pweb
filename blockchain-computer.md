@@ -7,25 +7,6 @@ abstract: |
   TODO
 ---
 
-
-<!--
-----
-
-The goal is to make it possible to build web-apps with backend-like functionality, but without needing to host a backend.
-
-For this to happen, you need a system, where you can can save up computations/storage when your device is online, - which can then be spend on computation/storage, when your device is offline. 
-
-Every time you do computation/storage for the network, you get credits, which can be used to execute computation. 
-
-Devices/peers can make a single distributed network, via WebRTC peer data connections.
-It is safe to run computations for others, due to the sandboxing of WebAssembly.
-
-You cannot necessarily trust other peers.  The way to make sure that the result a computation is correct, is to schedule the computation on several random nodes in the network, and verify that they yield the same result.
-
-The underlying datastructure for assigning computational tasks, and making the proofs needed for assigning the credits, etc., turns out to be a blockchain.
-
-----
--->
 # Introduction
 
 The vision is to have a decentralised infrastructure for webapplications, where each client brings its own backend-resources. This leads to a blockchain computer, with an economy for computational resources. The client can then save up resources to make its backend code continue run, even when it is offline. The blockchain is also needed to ensure trustable results on a trustless network. Using the blockchain computer as the application backend, has several interesting aspects:
@@ -37,39 +18,19 @@ The vision is to have a decentralised infrastructure for webapplications, where 
 
 The time is ripe for making this, as the needed building blocks (p2p networking and a performant sandbox) just arrived across major browsers late 2017.
 
-<!--
-
-This paper describes the design of a decentralised trustless network computer.
-When a node in the network does computation for the computer, it saves up currency.
-Currency can be used to run computations in the computer.
-The computer has a distributed state, whoose merkle tree is stored in a blockchain.
-This makes it possible to schedule and verify computation in a safe manner.
-Each node only stores a small part of the blockchain.
-It is designed such that it is easy to boot up a full node within modern web browsers.
-
-The motivation comes from web apps: The blockchain computer could be used instead of a backend.
-Apps could save up computation, to allow others to interact with user data, even when the users app is offline.
-There is no server maintenance/scaleability (clients bring their own "server"-resources).
-If an app is not supported anymore, it can still continue to run, as it does not depend on central services.
-
--->
-
 ## Related Work
 
 Difference from projects in the same sphere:
 
-**Ethereum** ...
+**Ethereum** [@ethereum-yellowpaper-2014]
 
-**Golem** ...
+**Golem** [@golem-whitepaper-2016]
 
-**Computes.io**
-<https://blog.computes.io/distributed-computed-centralized-vs-decentralized-c1d21202bde8>
+**Computes.io** [@computes-io-2017]
 
-**TrueBit**
-<https://people.cs.uchicago.edu/~teutsch/papers/truebit.pdf>
+**TrueBit** [@truebit-2017]
 
-**iEx.co** ??
-
+**iEx.ec** [@iex-ec-2017]
 
 
 # Architecture
@@ -77,12 +38,15 @@ Difference from projects in the same sphere:
 The blockchain computer has a global memory on which computation runs in parallel. Both memory and computation are distributed across the nodes of the network.
 
 **A node** is any application/web-browser that connects into the network, and contributes computation and storage. 
+
+## Overlay Network
+
 The address of a node is the hash of its public key.
 Nodes are connected in a kademlia-like topology.
 
 Notice that honest nodes will be evenly distributed across the address space.
 
-## Memory
+## State Blockchain
 
 **The state** of the computer consists of addressable entries with data. 
 Every entry has a *credit balance*, that pays for keeping it in the state.
@@ -109,7 +73,22 @@ The theoretical time for computing the snapshot corresponds to (branching depth)
 
 Protection against evil nodes halting the consensus(by issueing delayed entry updates), can be implemented by requiring every entry update to be timestamped before a certain time by a random third party (in a similar way to the scheduling randomisation). This approximately doubles the time of the consensus.
 
-## Computation
+
+## Resource economy
+
+The currency is bound to the value of computational work, and not based on artificial scarcity. Upper bound on value: solving a computational task gives the node currency corresponding to amount of computing power used. Lower bound on value: the currency can be used to schedule computational tasks, 
+
+## Tasks
+
+- task definition (and max amount of work )
+- scheduling and computation
+- proof of work done, without revealing value
+- reveal result (and amount of work)
+- update of ledger
+
+## Computational tasks
+
+Sandboxed webassembly
 
 The way to ensure the correct results of computations in an untrusted network, is to do the computation multiple times on different random nodes, and compare the result.
 
@@ -125,36 +104,14 @@ A (computational) task has several steps:
 3. When sufficient proof-of-result/time has arrived, the nodes release the actual result, and they are compared to check if they ar correct.
 4. The nodes are credited by the system for their computational work.
 
-## 
 
-TODO: document origin.
-TODO: document scheduling
+## Autonomous Computations
 
-What is a "task":
+# (Example use cases)
 
+# Conclusion
 
-
-
-
-
-
-
-
-provable results
-
-- task definition (and max amount of work )
-- scheduling and computation
-- proof of work done, without revealing value
-- reveal result (and amount of work)
-- update of ledger
-
-# TODO Distributed ledger
-
-The currency is bound to the value of computational work, and not based on artificial scarcity. Upper bound on value: solving a computational task gives the node currency corresponding to amount of computing power used. Lower bound on value: the currency is used to 
-
-# TODO Conclusion
-
-## Future work
+# Future work
 
 Finishing the actual implementation.
 
@@ -162,4 +119,4 @@ Generalise computational tasks to storage, bandwidth, etc.
 
 Adding stake, in addition to proof of work for better security.
 
-# TODO Bibliography
+# Bibliography

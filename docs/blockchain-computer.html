@@ -30,48 +30,58 @@ body {
                         <p class="author">Rasmus Erik Voel Jensen</p>
                         <p class="date">2017</p>
                         <h2>Abstract</h2>
-        <p class="abstract"><p>A proposal a design for a new kind of decentralised trustless computer. The shared state is stored in a blockchain. This allows computations to be distributed and verified safely across without trusting individual nodes. It also allows proofs of work, and thus crediting nodes for their commputations.</p></p>
+        <p class="abstract"><p>TODO</p></p>
               </header>
-                  <p>Outline:</p>
+                  <!--
+----
+
+The goal is to make it possible to build web-apps with backend-like functionality, but without needing to host a backend.
+
+For this to happen, you need a system, where you can can save up computations/storage when your device is online, - which can then be spend on computation/storage, when your device is offline. 
+
+Every time you do computation/storage for the network, you get credits, which can be used to execute computation. 
+
+Devices/peers can make a single distributed network, via WebRTC peer data connections.
+It is safe to run computations for others, due to the sandboxing of WebAssembly.
+
+You cannot necessarily trust other peers.  The way to make sure that the result a computation is correct, is to schedule the computation on several random nodes in the network, and verify that they yield the same result.
+
+The underlying datastructure for assigning computational tasks, and making the proofs needed for assigning the credits, etc., turns out to be a blockchain.
+
+----
+-->
+<h1 id="introduction">Introduction</h1>
+<p>The vision is to have a decentralised infrastructure for webapplications, where each client brings its own backend-resources. This leads to a blockchain computer, with an economy for computational resources. The client can then save up resources to make its backend code continue run, even when it is offline. The blockchain is also needed to ensure trustable results on a trustless network. Using the blockchain computer as the application backend, has several interesting aspects:</p>
 <ul>
-<li>Introduction
-<ul>
-<li>Motivation</li>
-<li>Related work</li>
-</ul></li>
-<li>Architecture
-<ul>
-<li>State</li>
-<li>Computation</li>
-<li>Scheduling of computation</li>
-<li>General tasks</li>
-</ul></li>
-<li>Future work
-<ul>
-<li>Actual implementation (in progress)</li>
-<li>Stakes in addition to proof of work for better security</li>
-</ul></li>
+<li>You can run the application 10 years from now, as it does not depend on a central server, that may have disappeared in the meantime.</li>
+<li>Security needs to move to the data layer, which leads to more privacy for the end user.</li>
+<li>The application will be able to run on networks that a disconnected from the Internet.</li>
+<li>No server management nor operations, - the resources scales with the number of clients.</li>
 </ul>
-<hr />
-<p>The goal is to make it possible to build web-apps with backend-like functionality, but without needing to host a backend.</p>
-<p>For this to happen, you need a system, where you can can save up computations/storage when your device is online, - which can then be spend on computation/storage, when your device is offline.</p>
-<p>Every time you do computation/storage for the network, you get credits, which can be used to execute computation.</p>
-<p>Devices/peers can make a single distributed network, via WebRTC peer data connections. It is safe to run computations for others, due to the sandboxing of WebAssembly.</p>
-<p>You cannot necessarily trust other peers. The way to make sure that the result a computation is correct, is to schedule the computation on several random nodes in the network, and verify that they yield the same result.</p>
-<p>The underlying datastructure for assigning computational tasks, and making the proofs needed for assigning the credits, etc., turns out to be a blockchain.</p>
-<hr />
-<h1 id="todo-introduction">TODO Introduction</h1>
-<p>This paper describes the design of a decentralised trustless network computer. When a node in the network does computation for the computer, it saves up currency. Currency can be used to run computations in the computer. The computer has a distributed state, whoose merkle tree is stored in a blockchain. This makes it possible to schedule and verify computation in a safe manner. Each node only stores a small part of the blockchain. It is designed such that it is easy to boot up a full node within modern web browsers.</p>
-<p>The motivation comes from web apps: The blockchain computer could be used instead of a backend. Apps could save up computation, to allow others to interact with user data, even when the users app is offline. There is no server maintenance/scaleability (clients bring their own &quot;server&quot;-resources). If an app is not supported anymore, it can still continue to run, as it does not depend on central services.</p>
+<p>The time is ripe for making this, as the needed building blocks (p2p networking and a performant sandbox) just arrived across major browsers late 2017.</p>
+<!--
+
+This paper describes the design of a decentralised trustless network computer.
+When a node in the network does computation for the computer, it saves up currency.
+Currency can be used to run computations in the computer.
+The computer has a distributed state, whoose merkle tree is stored in a blockchain.
+This makes it possible to schedule and verify computation in a safe manner.
+Each node only stores a small part of the blockchain.
+It is designed such that it is easy to boot up a full node within modern web browsers.
+
+The motivation comes from web apps: The blockchain computer could be used instead of a backend.
+Apps could save up computation, to allow others to interact with user data, even when the users app is offline.
+There is no server maintenance/scaleability (clients bring their own "server"-resources).
+If an app is not supported anymore, it can still continue to run, as it does not depend on central services.
+
+-->
 <h2 id="related-work">Related Work</h2>
-<p>TODO: explore these in more details, and document differences to our approach</p>
+<p>Difference from projects in the same sphere:</p>
 <p><strong>Ethereum</strong> ...</p>
 <p><strong>Golem</strong> ...</p>
 <p><strong>Computes.io</strong> <a href="https://blog.computes.io/distributed-computed-centralized-vs-decentralized-c1d21202bde8" class="uri">https://blog.computes.io/distributed-computed-centralized-vs-decentralized-c1d21202bde8</a></p>
 <p><strong>TrueBit</strong> <a href="https://people.cs.uchicago.edu/~teutsch/papers/truebit.pdf" class="uri">https://people.cs.uchicago.edu/~teutsch/papers/truebit.pdf</a></p>
 <p><strong>iEx.co</strong> ??</p>
-<h1 id="section"></h1>
-<p>The motivation is to make it possible to built webapps that does not need a backend.</p>
 <h1 id="architecture">Architecture</h1>
 <p>The blockchain computer has a global memory on which computation runs in parallel. Both memory and computation are distributed across the nodes of the network.</p>
 <p><strong>A node</strong> is any application/web-browser that connects into the network, and contributes computation and storage. The address of a node is the hash of its public key. Nodes are connected in a kademlia-like topology.</p>
@@ -97,7 +107,7 @@ body {
 <li>When sufficient proof-of-result/time has arrived, the nodes release the actual result, and they are compared to check if they ar correct.</li>
 <li>The nodes are credited by the system for their computational work.</li>
 </ol>
-<h2 id="section-1"></h2>
+<h2 id="section"></h2>
 <p>TODO: document origin. TODO: document scheduling</p>
 <p>What is a &quot;task&quot;:</p>
 <p>provable results</p>

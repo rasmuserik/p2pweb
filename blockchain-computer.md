@@ -2,28 +2,13 @@
 title: A Blockchain Computer [DRAFT/NOTES]
 author: Rasmus Erik Voel Jensen
 date: 2017
-abstract: |
-    A proposal a design for a new kind of decentralised trustless computer. 
-    The shared state is stored in a blockchain. 
-    This allows computations to be distributed and verified safely across without trusting individual nodes.
-    It also allows proofs of work, and thus crediting nodes for their commputations.
+toc: true
+abstract: | 
+  TODO
 ---
 
 
-Outline:
-
-- Introduction
-    - Motivation
-    - Related work
-- Architecture
-    - State
-    - Computation
-    - Scheduling of computation
-    - General tasks
-- Future work
-    - Actual implementation (in progress)
-    - Stakes in addition to proof of work for better security
-
+<!--
 ----
 
 The goal is to make it possible to build web-apps with backend-like functionality, but without needing to host a backend.
@@ -40,9 +25,19 @@ You cannot necessarily trust other peers.  The way to make sure that the result 
 The underlying datastructure for assigning computational tasks, and making the proofs needed for assigning the credits, etc., turns out to be a blockchain.
 
 ----
+-->
+# Introduction
 
-# TODO Introduction
+The vision is to have a decentralised infrastructure for webapplications, where each client brings its own backend-resources. This leads to a blockchain computer, with an economy for computational resources. The client can then save up resources to make its backend code continue run, even when it is offline. The blockchain is also needed to ensure trustable results on a trustless network. Using the blockchain computer as the application backend, has several interesting aspects:
 
+- You can run the application 10 years from now, as it does not depend on a central server, that may have disappeared in the meantime.
+- Security needs to move to the data layer, which leads to more privacy for the end user.
+- The application will be able to run on networks that a disconnected from the Internet.
+- No server management nor operations, - the resources scales with the number of clients. 
+
+The time is ripe for making this, as the needed building blocks (p2p networking and a performant sandbox) just arrived across major browsers late 2017.
+
+<!--
 
 This paper describes the design of a decentralised trustless network computer.
 When a node in the network does computation for the computer, it saves up currency.
@@ -57,10 +52,11 @@ Apps could save up computation, to allow others to interact with user data, even
 There is no server maintenance/scaleability (clients bring their own "server"-resources).
 If an app is not supported anymore, it can still continue to run, as it does not depend on central services.
 
+-->
 
 ## Related Work
 
-TODO: explore these in more details, and document differences to our approach
+Difference from projects in the same sphere:
 
 **Ethereum** ...
 
@@ -73,10 +69,6 @@ TODO: explore these in more details, and document differences to our approach
 <https://people.cs.uchicago.edu/~teutsch/papers/truebit.pdf>
 
 **iEx.co** ??
-
-# 
-
-The motivation is to make it possible to built webapps that does not need a backend. 
 
 
 

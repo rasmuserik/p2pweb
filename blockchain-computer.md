@@ -11,7 +11,7 @@ abstract: |
 
 The vision is to have a decentralised infrastructure for webapplications, where each client brings its own backend-resources. This leads to a blockchain computer, with an economy for computational resources. The client can then save up resources to make its backend code continue run, even when it is offline. The blockchain is also needed to ensure trustable results on a trustless network. Using the blockchain computer as the application backend, has several interesting aspects:
 
-- You can run the application 10 years from now, as it does not depend on a central server, that may have disappeared in the meantime.
+- You will still be able to run the application 10 years from now, as it does not depend on a central server, that may have disappeared in the meantime.
 - Security needs to move to the data layer, which leads to more privacy for the end user.
 - The application will be able to run on networks that a disconnected from the Internet.
 - No server management nor operations, - the resources scales with the number of clients. 

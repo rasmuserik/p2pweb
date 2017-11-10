@@ -10,6 +10,42 @@
 
 This is a library (**under development**) for building peer-to-peer web applications.
 
+## Design
+
+- Connection
+    - `send(data)`
+    - `close()`
+    - *abstract* `onclose()`
+    - *abstract* `onmessage(data)`
+- NetworkAbstraction (abstraction across websocket/webrtc)
+    - `startSignalling(signalConnection)`
+    - `receiveSignalling(signalConnection)`
+        - `{websocket: url}`
+    - *abstract* `onconnection(resultConnection)`
+- Node
+    - `String address` (const)
+    - `Map connections[address]` (semi-private)
+    - `Map handlers` `.set(type, [async(no-return-state)] {data, state, call, emit, local, address} => {state, result}`)
+    - `emit({dest, type, data})`
+    - `async call({dest, type, data, timeout})`
+    - `onconnection(con)`
+    - `state`
+- message:
+    - `type`
+    - `data`
+    - `from`
+    - `dest`
+    - `reply: [dest, type]`
+    - data: ...
+
+
+### Node
+
+
+
+
+## Old notes:
+
 - [Introduction/readme](https://p2pweb.solsort.com)
 - [Code documentation](https://p2pweb.solsort.com/jsdoc)
 - [Source code on github](https://github.com/solsort/p2pweb)

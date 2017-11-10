@@ -34,6 +34,46 @@ body {
 <p><a href="https://p2pweb.solsort.com/"><img src="https://img.shields.io/badge/website-p2pweb.solsort.com-blue.svg" alt="website" /></a> <a href="https://github.com/solsort/p2pweb"><img src="https://img.shields.io/badge/github-solsort/p2pweb-blue.svg" alt="github" /></a> <a href="https://travis-ci.org/solsort/p2pweb"><img src="https://img.shields.io/travis/solsort/p2pweb.svg" alt="travis" /></a> <a href="https://coveralls.io/r/solsort/p2pweb?branch=master"><img src="https://img.shields.io/coveralls/solsort/p2pweb.svg" alt="coveralls" /></a> <a href="https://www.npmjs.com/package/p2pweb"><img src="https://img.shields.io/npm/v/p2pweb.svg" alt="npm" /></a></p>
 <h1 id="p2p-web">P2P Web</h1>
 <p>This is a library (<strong>under development</strong>) for building peer-to-peer web applications.</p>
+<h2 id="design">Design</h2>
+<ul>
+<li>Connection
+<ul>
+<li><code>send(data)</code></li>
+<li><code>close()</code></li>
+<li><em>abstract</em> <code>onclose()</code></li>
+<li><em>abstract</em> <code>onmessage(data)</code></li>
+</ul></li>
+<li>NetworkAbstraction (abstraction across websocket/webrtc)
+<ul>
+<li><code>startSignalling(signalConnection)</code></li>
+<li><code>receiveSignalling(signalConnection)</code>
+<ul>
+<li><code>{websocket: url}</code></li>
+</ul></li>
+<li><em>abstract</em> <code>onconnection(resultConnection)</code></li>
+</ul></li>
+<li>Node
+<ul>
+<li><code>String address</code> (const)</li>
+<li><code>Map connections[address]</code> (semi-private)</li>
+<li><code>Map handlers</code> <code>.set(type, [async(no-return-state)] {data, state, call, emit, local, address} =&gt; {state, result}</code>)</li>
+<li><code>emit({dest, type, data})</code></li>
+<li><code>async call({dest, type, data, timeout})</code></li>
+<li><code>onconnection(con)</code></li>
+<li><code>state</code></li>
+</ul></li>
+<li>message:
+<ul>
+<li><code>type</code></li>
+<li><code>data</code></li>
+<li><code>from</code></li>
+<li><code>dest</code></li>
+<li><code>reply: [dest, type]</code></li>
+<li>data: ...</li>
+</ul></li>
+</ul>
+<h3 id="node">Node</h3>
+<h2 id="old-notes">Old notes:</h2>
 <ul>
 <li><a href="https://p2pweb.solsort.com">Introduction/readme</a></li>
 <li><a href="https://p2pweb.solsort.com/jsdoc">Code documentation</a></li>

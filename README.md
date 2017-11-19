@@ -17,26 +17,28 @@ This is a library (**under development**) for building peer-to-peer web applicat
     - `close()`
     - *abstract* `onclose()`
     - *abstract* `onmessage(data)`
-- NetworkAbstraction (abstraction across websocket/webrtc)
+- NetworkAbstraction (abstraction across websocket/webrtc/...)
     - `startSignalling(signalConnection)`
     - `receiveSignalling(signalConnection)`
         - `{websocket: url}`
     - *abstract* `onconnection(resultConnection)`
 - Node
+    - `static async createNode(network)`
     - `String address` (const)
+    - `defaultTimeout = 5000`
+    - `addHandler({type, fn, access='local'})`
+        - fn: `[async(no-return-state)] {data, state, node} => {state, result}` 
+    - `removeHandler(handlerId)`
+    - `void emit({type, data, address=node.address, reply=undefined})`
+    - `var async call({type, data, address=node.address, timeout=defaultTimeout})`
     - `Map connections[address]` (semi-private)
-    - `Map handlers` `.set(type, [async(no-return-state)] {data, state, call, emit, local, address} => {state, result}`)
-    - `emit({dest, type, data})`
-    - `async call({dest, type, data, timeout})`
-    - `onconnection(con)`
-    - `state`
+    - `NetworkAbstraction network` (semi-private)
+        - `onconnection(con)` (semi-private)
 - message:
+    - `address`
     - `type`
     - `data`
-    - `from`
-    - `dest`
-    - `reply: [dest, type]`
-    - data: ...
+    - `reply: [address, type]`
 
 
 ### Node

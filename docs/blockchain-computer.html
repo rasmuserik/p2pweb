@@ -30,12 +30,31 @@ body {
                         <p class="author">Rasmus Erik Voel Jensen</p>
                         <p class="date">2018</p>
                         <h2>Abstract</h2>
-        <p class="abstract"><p>This paper proposes a new decentralised computer architecture with the following features: A blockchain is used for safe scheduling and verification of tasks among nodes, for an economic incentive. Verifiable tasks include computation, message passing, storage, etc. Computational tasks can be done with performance within an order of magnitude of running it locally. The economy is based on supply and demand of computation. The currency is strongly linked to the cost of computation. Nodes are designed to run within a web browsers, such that a network of web frontend applications can run its own backend functionality.</p></p>
+        <p class="abstract"><p>This paper proposes a new decentralised computer architecture with the following features: A blockchain is used for safe scheduling and verification of tasks among nodes with an economic incentive. Verifiable tasks include computation, message passing, storage, etc. Computational tasks can be done with performance within an order of magnitude of running it locally. The economy is based on supply and demand of computational resources. The currency is strongly linked to the cost of computation. Nodes are designed to run within a web browsers, such that a network of web frontend applications can run its own backend functionality.</p></p>
               </header>
                   <h1 id="introduction">Introduction</h1>
-<h1 id="section">...</h1>
+<h1 id="nodes-and-network">Nodes and network</h1>
+<p>The blockchain computer consist of a distributed network of nodes. Each node has an address which is the hash of its public key. Nodes are connected in a Kademlie-like topology.</p>
+<p>Each node has a balance, that increases when it does work for the network, and decrease when it schedules tasks.</p>
+<h1 id="memory">Memory</h1>
+<p>The memory of the blockchain computer is a distributed hash table. The address of a node determines which parts of the data it stores. Data is duplicated across nodes with nearby addresses. The data for a given node, will be stored at the hash of the public key of the node, and thus on the node itself, and in nearby nodes. Each node has a constant limit of how much data it can store.</p>
+<p>The balance of a node increases when it is online and stores nearby data, and decreases when it is offline. The cost of storing data corresponds to the density of online nodes at the point of data. If the balance reaches 0, its data is expunged from the memory.</p>
+<p>Each block of the blockchain, contains the root hash of the merkle tree of a snapshot of the entire memory, including the list of online nodes at the time of the snapshot. This can be calculated with a distributed divide-and-conquor algorithm across the network, in <span class="math inline"><em>O</em>(log <em>n</em>)</span> where <span class="math inline"><em>n</em></span> is the number of nodes, and the constant factor correspond to the network latency. This is also the clock of the computer.</p>
+<p>A proof of certain data in the memory at a given time can be given by through the merkle path through the blockchain and memory in <span class="math inline"><em>O</em>(log <em>n</em>)+<em>O</em>(log <em>t</em>)</span> space where <span class="math inline"><em>n</em></span> is the number of nodes, and <span class="math inline"><em>t</em></span> is time passed.</p>
+<h1 id="computation">Computation</h1>
+<h1 id="the-block-clock">The block clock</h1>
+<p>The blockchain computer has a global state, that is distributed across the network.</p>
+<p>A block of the blockchain computer is the merkle-hash of the computers state at that point in time. The clock blockchain computer, increments each time the</p>
+<p>Each node</p>
+<h1 id="architecture">Architecture</h1>
+<p>We can safely store data on an untrusted network, by duplicating it across several nodes, and keeping the cryptographic signature. We can safely do computation on an untrusted network, by running the computation on different random nodes, and verifying that the results are the same. If we keep a blockchain of</p>
+<p>A node is computer participating in the network. The address of a node is the hash of its public key, which will be evenly distributed. Nodes are connected in a kademlia-like topology.</p>
+<p>The blockchain computer has a global state. Each node stores a part of the state</p>
+<p>The blockchain computer has a global memory on which computation runs in parallel.</p>
+<h1 id="verifiable-tasks">Verifiable tasks</h1>
+<h1 id="computational-performance">Computational performance</h1>
 <h1 id="conclusion">Conclusion</h1>
-<!--
+<h1 id="section"><!--
 # Introduction
 
 The vision is to have a decentralised infrastructure for webapplications, where each client brings its own backend-resources. This leads to a blockchain computer, with an economy for computational resources. The client can then save up resources to make its backend code continue run, even when it is offline. The blockchain is also needed to ensure trustable results on a trustless network. Using the blockchain computer as the application backend, has several interesting aspects:
@@ -64,14 +83,12 @@ Difference from projects in the same sphere:
 
 # Architecture
 
-The blockchain computer has a global memory on which computation runs in parallel. Both memory and computation are distributed across the nodes of the network.
+Both memory and computation are distributed across the nodes of the network.
 
 **A node** is any application/web-browser that connects into the network, and contributes computation and storage. 
 
 ## Overlay Network
 
-The address of a node is the hash of its public key.
-Nodes are connected in a kademlia-like topology.
 
 Notice that honest nodes will be evenly distributed across the address space.
 
@@ -149,7 +166,7 @@ Generalise computational tasks to storage, bandwidth, etc.
 Adding stake, in addition to proof of work for better security.
 
 # Bibliography
--->
+--></h1>
           </div>
   </body>
 </html>

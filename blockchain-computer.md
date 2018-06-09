@@ -1,12 +1,25 @@
 ---
 title: A Blockchain Computer [DRAFT/NOTES]
 author: Rasmus Erik Voel Jensen
-date: 2017
+date: 2018
 toc: true
 abstract: | 
-  TODO
+  This paper proposes a new decentralised computer architecture with the following features:
+  A blockchain is used for safe scheduling and verification of tasks among nodes, for an economic incentive.
+  Verifiable tasks include computation, message passing, storage, etc. 
+  Computational tasks can be done with performance within an order of magnitude of running it locally.
+  The economy is based on supply and demand of computation. The currency is strongly linked to the cost of computation.
+  Nodes are designed to run within a web browsers, such that a network of web frontend applications can run its own backend functionality.
 ---
 
+
+# Introduction
+
+# ...
+# Conclusion
+
+
+<!--
 # Introduction
 
 The vision is to have a decentralised infrastructure for webapplications, where each client brings its own backend-resources. This leads to a blockchain computer, with an economy for computational resources. The client can then save up resources to make its backend code continue run, even when it is offline. The blockchain is also needed to ensure trustable results on a trustless network. Using the blockchain computer as the application backend, has several interesting aspects:
@@ -120,3 +133,4 @@ Generalise computational tasks to storage, bandwidth, etc.
 Adding stake, in addition to proof of work for better security.
 
 # Bibliography
+-->
